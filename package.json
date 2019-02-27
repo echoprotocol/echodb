@@ -13,7 +13,7 @@
 		"start": "npm run start:api",
 		"start:api": "npm run build && cd dist && cross-env MODULE=api NODE_CONFIG_DIR=../config node server.js",
 		"dev:api": "nodemon -e ts -w ./src -x npm run start:api",
-		"lint": "npm run lint:*",
+		"lint": "npm run lint:src && npm run lint:typing && npm run lint:types",
 		"lint:src": "npx tslint -p tsconfig.json -c tslint.json",
 		"lint:typing": "npx tslint -c tslint.json ./typing/**/*.d.ts",
 		"lint:types": "npx tslint -c tslint.json ./src/types/**/*.d.ts",
