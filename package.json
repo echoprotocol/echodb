@@ -1,17 +1,18 @@
 {
-	"name": "pixelplex-base-server",
-	"version": "0.2.0",
+	"name": "echodb",
+	"version": "0.1.0",
 	"repository": {
 		"type": "git",
-		"url": "git@gitlab.pixelplex.by:full-stack/backend.git"
+		"url": "git@gitlab.pixelplex.by:645.echo/echodb.git"
 	},
-	"homepage": "https://gitlab.pixelplex.by/full-stack/backend",
+	"homepage": "https://gitlab.pixelplex.by/645.echo/echodb",
 	"license": "UNLICENSED",
 	"private": true,
 	"scripts": {
 		"build": "rm -rf ./dist && npx tsc",
 		"start": "npm run start:api",
 		"start:api": "npm run build && cd dist && cross-env MODULE=api NODE_CONFIG_DIR=../config node server.js",
+		"start:parser": "npm run build && cd dist && cross-env MODULE=parser NODE_CONFIG_DIR=../config node server.js",
 		"dev:api": "nodemon -e ts -w ./src -x npm run start:api",
 		"lint": "npm run lint:src && npm run lint:typing && npm run lint:types",
 		"lint:src": "npx tslint -p tsconfig.json -c tslint.json",
@@ -26,6 +27,7 @@
 		"config": "^3.0.1",
 		"connect-mongo": "^2.0.3",
 		"cors": "^2.8.5",
+		"echojs-lib": "^1.0.4",
 		"express": "^4.16.4",
 		"joi": "^14.3.1",
 		"log4js": "^4.0.2",
@@ -34,6 +36,7 @@
 		"raven": "^2.6.4"
 	},
 	"devDependencies": {
+		"@babel/runtime": "^7.3.1",
 		"@types/bcrypt": "^3.0.0",
 		"@types/connect-mongo": "0.0.40",
 		"@types/cors": "^2.8.4",

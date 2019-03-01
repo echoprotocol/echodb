@@ -7,7 +7,10 @@
 		"password": "",
 		"host": "127.0.0.1",
 		"port": "27017",
-		"database": "000-full-stack"
+		"database": ""
+	},
+	"echo" : {
+		"url": ""
 	},
 	"logger": {
 		"level": "trace"

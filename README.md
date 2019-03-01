@@ -1,6 +1,6 @@
-# Base node js server
+# Echo DB
 
-PixelPlex base TypeScript server
+Convenient interface to Echo blockchain data
 
 ## Installation
 ### Prepare project

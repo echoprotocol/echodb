@@ -10,6 +10,7 @@
 		// "indent": false,
         "import-name": false,
 		"align": false,
-		"no-parameter-reassignment": false
+		"no-parameter-reassignment": false,
+		"variable-name": [true, "check-format", "allow-leading-underscore"]
 	}
 }

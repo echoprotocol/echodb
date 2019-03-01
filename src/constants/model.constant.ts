@@ -1,9 +1,6 @@
 // TODO: check tslint here
-// TODO: refactor structure ?
-// TODO: rm export default
 
-export default {
-	NAME: {
-		USER: 'user',
-	},
+export const NAME = {
+	INFO: 'info',
+	BLOCK: 'block',
 };

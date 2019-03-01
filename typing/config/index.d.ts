@@ -11,6 +11,9 @@ declare module 'config' {
 		port: string;
 		database: string;
 	};
+	export const echo: {
+		url: string;
+	};
 	export const logger: {
 		level: string;
 	};

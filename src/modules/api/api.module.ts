@@ -4,20 +4,20 @@ import * as config from 'config';
 import AbstractModule from '../abstract.module';
 import * as express from 'express';
 import { initMiddleware } from './middleware';
-import UserController from './controllers/user.controller';
 import RestError from '../../errors/rest.error';
 import FormError from '../../errors/form.error';
 import * as HTTP from '../../constants/http.constants';
 import RavenHelper from 'helpers/raven.helper';
 import { Response, Request } from 'express-serve-static-core';
 import { Action, Handler } from '../../types/api';
+import AbstractController from './controllers/abstract.controller';
 
 const logger = getLogger('api.module');
 
 export default class ApiModule extends AbstractModule {
 	private app: express.Express;
 
-	constructor(readonly userController: UserController, readonly ravenHelper: RavenHelper) {
+	constructor(readonly ravenHelper: RavenHelper) {
 		super();
 	}
 
@@ -30,8 +30,7 @@ export default class ApiModule extends AbstractModule {
 	}
 
 	initRoutes() {
-		const controllers = [
-			this.userController,
+		const controllers: AbstractController[] = [
 		];
 		for (const controller of controllers) {
 			controller.initRoutes(this.addRoute.bind(this));
