@@ -11,6 +11,7 @@
         "import-name": false,
 		"align": false,
 		"no-parameter-reassignment": false,
-		"variable-name": [true, "check-format", "allow-leading-underscore"]
+		"variable-name": [true, "check-format", "allow-leading-underscore"],
+		"ter-arrow-parens": [true, "always"]
 	}
 }

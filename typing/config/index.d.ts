@@ -11,6 +11,10 @@ declare module 'config' {
 		port: string;
 		database: string;
 	};
+	export const redis: {
+		channel: string,
+		host: string;
+	};
 	export const echo: {
 		url: string;
 	};
