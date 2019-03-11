@@ -2,8 +2,8 @@ import * as config from 'config';
 import * as log4js from 'log4js';
 import { initConnections, initInitableHelpers, initModule } from './_awilix';
 
+log4js.configure(config.logger);
 const logger = log4js.getLogger();
-logger.level = config.logger.level || 'info'; // FIXME: what for is config.logger.level?
 
 async function main() {
 	try {

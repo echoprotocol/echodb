@@ -1,11 +1,11 @@
 export enum KEY {
-	LAST_PARSED_BLOCK_NUMBER = 'last_block_number',
+	BLOCK_TO_PARSE_NUMBER = 'block_to_parse_number',
 }
 
 export const DEFAULT_VALUE: { [x in KEY]: unknown} = {
-	[KEY.LAST_PARSED_BLOCK_NUMBER]: 0,
+	[KEY.BLOCK_TO_PARSE_NUMBER]: 1,
 };
 
 export type KEY_TYPE =  {
-	[KEY.LAST_PARSED_BLOCK_NUMBER]: number;
+	[KEY.BLOCK_TO_PARSE_NUMBER]: number;
 };

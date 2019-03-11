@@ -7,6 +7,7 @@ export enum EVENT {
 	NEW_BLOCK,
 	NEW_TRANSACTION,
 	NEW_OPERATION,
+	ACCOUNT_UPDATED,
 }
 
 // FIXME: use IBlock
@@ -14,6 +15,7 @@ export type EVENT_PAYLOAD_TYPE = {
 	[EVENT.NEW_BLOCK]: IBlockDocument;
 	[EVENT.NEW_TRANSACTION]: ITransactionDocument;
 	[EVENT.NEW_OPERATION]: IOperationDocument<ECHO.OPERATION_ID>;
+	[EVENT.ACCOUNT_UPDATED]: string; // account id
 };
 
 export enum KEY {

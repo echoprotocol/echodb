@@ -13,6 +13,7 @@ import OperationManager from './operations/operation.manager';
 import { getLogger } from 'log4js';
 
 const logger = getLogger('parser.module');
+const blockLogger = getLogger('parser.block');
 
 export default class ParserModule extends AbstractModule {
 
@@ -42,7 +43,7 @@ export default class ParserModule extends AbstractModule {
 	async init() {
 		this.subscribeToBlockApply();
 		const [lastParsedBlockNum, lastBlockNum] = await Promise.all([
-			this.infoRepository.get(INFO.KEY.LAST_PARSED_BLOCK_NUMBER),
+			this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER),
 			this.echoRepository.getLastBlockNum(),
 		]);
 		this.from = lastParsedBlockNum;
@@ -53,7 +54,7 @@ export default class ParserModule extends AbstractModule {
 	subscribeToBlockApply() {
 		this.echoRepository.subscribeToBlockApply(async () => {
 			const blockNum =  await this.echoRepository.getLastBlockNum();
-			logger.info(`New block #${blockNum} appeared`);
+			logger.trace(`New block #${blockNum} appeared`);
 			this.parseTo(blockNum);
 		});
 	}
@@ -66,7 +67,7 @@ export default class ParserModule extends AbstractModule {
 			try {
 				const block = await this.echoRepository.getBlock(this.from);
 				await this.parseBlock(block);
-				await this.infoRepository.set(INFO.KEY.LAST_PARSED_BLOCK_NUMBER, this.from);
+				await this.infoRepository.set(INFO.KEY.BLOCK_TO_PARSE_NUMBER, this.from);
 				this.from += 1;
 			} catch (error) {
 				logger.error(error);
@@ -79,7 +80,7 @@ export default class ParserModule extends AbstractModule {
 
 	async parseBlock(block: Block) {
 		// TODO: new_block hook after transaction
-		logger.trace(`Parsing block #${block.round}`);
+		blockLogger.trace(`Parsing block #${block.round}`);
 		const dBlock = await this.blockRepository.create(block);
 		for (const tx of block.transactions) {
 			logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
@@ -97,7 +98,7 @@ export default class ParserModule extends AbstractModule {
 	private enableBlocksPerPeriodLogger(delay = TIME.SECOND, prevCount?: number) {
 		const currentCount = this.from;
 		if (prevCount !== undefined) {
-			logger.info(`Blocks per ${delay}ms:`, currentCount - prevCount);
+			logger.info(`#${this.from} block | ${currentCount - prevCount} blocks per ${delay}ms`);
 		}
 		this.bppLoggerTimeout = setTimeout(() => this.enableBlocksPerPeriodLogger(delay, currentCount), delay);
 	}

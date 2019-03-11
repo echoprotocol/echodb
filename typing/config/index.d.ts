@@ -31,9 +31,14 @@ declare module 'config' {
 	export const echo: {
 		url: string;
 	};
-	export const logger: {
-		level: string;
+	export const redis: {
+		channel: string,
+		host: string;
 	};
+	export const echo: {
+		url: string;
+	};
+	export const logger: import('log4js').Configuration;
 	export const raven: {
 		enabled: boolean;
 		config: string;

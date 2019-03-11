@@ -4,8 +4,9 @@ import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import OperationRepository from '../../../repositories/operation.repository';
 import { ITransactionDocument } from 'interfaces/ITransaction';
-import AccountCreateOperation from './account.create.operation';
 import RedisConnection from '../../../connections/redis.connection';
+import AccountCreateOperation from './account.create.operation';
+import AccountUpdateOperation from './account.update.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -18,9 +19,11 @@ export default class OperationManager {
 		readonly operationRepository: OperationRepository,
 		readonly redisConnection: RedisConnection,
 		accountCreateOperation: AccountCreateOperation,
+		accountUpdateOperation: AccountUpdateOperation,
 	) {
 		this.map = {
 			[accountCreateOperation.id]: accountCreateOperation,
+			[accountUpdateOperation.id]: accountUpdateOperation,
 		};
 	}
 

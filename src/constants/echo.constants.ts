@@ -76,10 +76,11 @@ type ACCOUNT_UPDATE = {
 		amount: number,
 		asset_id: string,
 	},
+	account: string;
+	ed_key: string;
 	registrar: string,
 	referrer: string,
 	referrer_percent: number,
-	account: string;
 	name: string,
 	owner: {
 		weight_threshold: number,

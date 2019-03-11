@@ -18,7 +18,24 @@
 		"url": ""
 	},
 	"logger": {
-		"level": "trace"
+		"appenders": {
+			"console": { "type": "console" },
+			"blocks.log": {
+				"type": "file",
+				"filename": "../logs/blocks.log",
+				"maxLogSize": 10000000,
+				"backups": 1
+			}
+		},
+		"categories": {
+			"default": { "appenders": ["console"], "level": "all" },
+			"parser.block": { "appenders": ["blocks.log"], "level": "all" }
+		}
+	},
+	"memory": {
+		"enabled": true,
+		"logOnStart": true,
+		"delay": 3000
 	},
 	"memory": {
 		"enabled": true,
