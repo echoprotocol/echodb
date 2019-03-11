@@ -1,3 +1,5 @@
+import { ClientSession } from 'mongoose';
+
 // https://mongoosejs.com/docs/api.html#query_Query-setOptions
 
 declare type Lean = {
@@ -27,7 +29,7 @@ declare type Find = {
 };
 
 declare type Common = {
-	session?: unknown,
+	session?: ClientSession,
 	collation?: {
 		locale?: string,
 		caseLevel?: boolean,
@@ -41,7 +43,9 @@ declare type Common = {
 };
 
 export type QueryOptions = {
+	readonly Create: Create;
 	readonly Update: Update,
+	readonly UpdateOne: Update,
 	readonly Find: Find,
 	readonly FindOne: FindOne,
 	readonly FindOneAndUpdate: FindOneAndUpdate,
@@ -59,6 +63,7 @@ export type QueryOptions = {
 // };
 
 // FIXME: refactor export
+export declare type Create = Common;
 export declare type Update = CommonUpdate & Lean & Common & MaxTimeMs;
 export declare type Find = Find & Lean & Common;
 export declare type FindOne = Lean & Common;

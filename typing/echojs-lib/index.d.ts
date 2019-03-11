@@ -1,11 +1,20 @@
+// import { OPERATION_RESULT_VARIANT } from 'echojs-lib/types/echo/transaction';
+
 declare module 'echojs-lib' {
 	declare type ConnectionOptions = {};
 
-	export class Transaction {}
-
-	class Cache {}
+	class Cache {
+		isUsed: boolean = true;
+	}
 
 	class WSAPI {}
+
+	type OperationResult = [any, any];
+
+	export interface Account {
+		id: string;
+		name: string;
+	}
 
 	export interface BlockHeader { // virtual export
 		previous: string;
@@ -21,10 +30,10 @@ declare module 'echojs-lib' {
 		ref_block_num: number;
 		ref_block_prefix: number;
 		expiration: string;
-		operations: unknow[];
-		extensions: unknown;
+		operations: any[];
+		extensions: unknown[];
 		signatures: string[];
-		operation_results: unknown[][];
+		operation_results: OperationResult[];
 	}
 	export interface Signature { // virtual export
 		_step: number;
@@ -78,11 +87,14 @@ declare module 'echojs-lib' {
 		// getBitAssetData
 		// getDynamicAssetData
 		getBlockHeader(blockNum: number): Promise<BlockHeader>;
-		getBlock(blockNum: number): Promise<Block>;
+		getBlock(blockNum: number, force: boolean = false): Promise<Block>;
 		getDynamicGlobalProperties(): Promise<DynamicGlobalProperties>;
+		getAccounts(ids: string[]): Promise<Account[]>;
 	}
 
-	export class Subscriber {}
+	export class Subscriber {
+		setBlockApplySubscribe(cb: (block: Block) => void): void;
+	}
 
 	export class Echo {
 		api?: API;

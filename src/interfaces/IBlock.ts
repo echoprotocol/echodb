@@ -1,4 +1,7 @@
+import { Document } from 'mongoose';
+
 export interface IBlock {
+	fullyParsed: boolean;
 	previous: string;
 	timestamp: string;
 	witness: string;
@@ -24,3 +27,5 @@ export interface IBlock {
 		}[];
 	};
 }
+
+export interface IBlockDocument extends IBlock, Document {}

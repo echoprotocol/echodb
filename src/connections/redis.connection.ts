@@ -100,8 +100,9 @@ export default class RedisConnection extends AbstractConnection {
 	}
 
 	// TODO: make it async (use third parameter(cb) in publish(...))
-	emit<T extends REDIS.EVENT>(event: T, payload: REDIS.EVENT_PAYLOAD_TYPE[T]) {
-		const result = this.pubClient.publish(this.channelName, JSON.stringify({ event, payload }));
+	async emit<T extends REDIS.EVENT>(event: T, payload: REDIS.EVENT_PAYLOAD_TYPE[T]) {
+		const result = await promisify((cb) =>
+			this.pubClient.publish(this.channelName, JSON.stringify({ event, payload }), cb))();
 		if (!result) throw new ConnectionError(ERROR.CAN_NOT_EMIT);
 		return result;
 	}
@@ -136,7 +137,7 @@ export default class RedisConnection extends AbstractConnection {
 	private async processMessage(message: string) {
 		try {
 			const { event, payload }: Message = JSON.parse(message);
-			if (typeof event !== 'string' || !(event in REDIS.EVENT)) return;
+			// if (typeof event !== 'string' || !(event in REDIS.EVENT)) return;
 			const rEvent = <REDIS.EVENT>event;
 			if (!this.events[rEvent]) return;
 			for (const cb of this.events[rEvent]) cb(payload);

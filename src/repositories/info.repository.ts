@@ -1,18 +1,23 @@
 import InfoModel from '../models/info.model';
 import * as INFO from '../constants/info.constants';
+import { IInfoDocument } from 'interfaces/IInfo';
 
 export default class InfoRepository {
+	private cache: { [x in INFO.KEY]?: IInfoDocument} = {};
 
 	async get<T extends INFO.KEY>(key: T): Promise<INFO.KEY_TYPE[T]> {
-		const document = await InfoModel.findOne({ key })
-			|| await InfoModel.create({ key, value: INFO.DEFAULT_VALUE[key] });
-		return <INFO.KEY_TYPE[T]>document.value;
+		if (!this.cache[key]) {
+			this.cache[key] = await InfoModel.findOne({ key })
+				|| await InfoModel.create({ key, value: INFO.DEFAULT_VALUE[key] });
+		}
+		return <INFO.KEY_TYPE[T]>this.cache[key].value;
 	}
 
 	async set<T extends INFO.KEY>(key: T, value: INFO.KEY_TYPE[T]): Promise<void> {
-		await InfoModel.update({ key }, { key, value });
+		if (this.cache[key]) {
+			this.cache[key].value = value;
+			await this.cache[key].save();
+		} else await InfoModel.updateOne({ key }, { key, value });
 	}
-
-	// TODO: refactor ?
 
 }

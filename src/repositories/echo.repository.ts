@@ -26,4 +26,8 @@ export default class EchoRepository {
 		}
 	}
 
+	subscribeToBlockApply(cb: (block: Block) => void) {
+		this.echoConnection.echo.subscriber.setBlockApplySubscribe(cb);
+	}
+
 }

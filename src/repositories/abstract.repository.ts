@@ -4,7 +4,12 @@ import { QueryOptions, MongoId } from '../types/mongoose';
 
 // TODO: do no send private info to raven ???
 export default abstract class AbstractRepository<T extends Document> {
-	constructor(private ravenHelper: RavenHelper, private model: Model<T>) {}
+	constructor(private ravenHelper: RavenHelper, private model: Model<T>) {
+		model.init(() => {
+			// @ts-ignore
+			model.createCollection();
+		});
+	}
 
 	async findById(id: MongoId, projection = {}, options: QueryOptions['FindById'] = {}) {
 		try {
@@ -42,6 +47,15 @@ export default abstract class AbstractRepository<T extends Document> {
 	async update(query: object, update: object, options: QueryOptions['Update'] = {}): Promise<Number> {
 		try {
 			return await this.model.update(query, update, options);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'model#update', { query, update, options });
+		}
+	}
+
+	// TODO: check return type
+	async updateOne(query: object, update: object, options: QueryOptions['UpdateOne'] = {}): Promise<Number> {
+		try {
+			return await this.model.updateOne(query, update, options);
 		} catch (error) {
 			throw this.ravenHelper.error(error, 'model#update', { query, update, options });
 		}

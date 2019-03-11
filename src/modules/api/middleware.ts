@@ -6,7 +6,7 @@ import * as connectMongo from 'connect-mongo';
 import * as passport from 'passport';
 import * as bodyParser from 'body-parser';
 import { connection } from 'mongoose';
-import * as TIME from '../../constants/time.constant';
+import * as TIME from '../../constants/time.constants';
 import * as HTTP from '../../constants/http.constants';
 
 export function initMiddleware(app: express.Express) {

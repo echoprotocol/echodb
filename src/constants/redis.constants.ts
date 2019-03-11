@@ -1,11 +1,19 @@
+import { IBlockDocument } from '../interfaces/IBlock';
+import { IOperationDocument } from 'interfaces/IOperation';
+import * as ECHO from './echo.constants';
+import { ITransactionDocument } from 'interfaces/ITransaction';
+
 export enum EVENT {
-	TEST = 'test',
-	TEST2 = 'test2',
+	NEW_BLOCK,
+	NEW_TRANSACTION,
+	NEW_OPERATION,
 }
 
+// FIXME: use IBlock
 export type EVENT_PAYLOAD_TYPE = {
-	[EVENT.TEST]: string;
-	[EVENT.TEST2]: number;
+	[EVENT.NEW_BLOCK]: IBlockDocument;
+	[EVENT.NEW_TRANSACTION]: ITransactionDocument;
+	[EVENT.NEW_OPERATION]: IOperationDocument<ECHO.OPERATION_ID>;
 };
 
 export enum KEY {

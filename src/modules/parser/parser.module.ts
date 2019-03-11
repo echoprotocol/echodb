@@ -1,53 +1,109 @@
 import AbstractModule from '../abstract.module';
 import InfoRepository from '../../repositories/info.repository';
 import * as INFO from '../../constants/info.constants';
+import * as TIME from '../../constants/time.constants';
+import * as REDIS from '../../constants/redis.constants';
 import EchoRepository from '../../repositories/echo.repository';
-import Queue from '../../utils/queue';
-import EchoService from 'services/echo.service';
+import BlockRepository from '../../repositories/block.repository';
+import TransactionRepository from '../../repositories/transaction.repository';
+import MemoryHelper from '../../helpers/memory.helper';
+import RedisConnection from '../../connections/redis.connection';
+import { Block } from 'echojs-lib';
+import OperationManager from './operations/operation.manager';
+import { getLogger } from 'log4js';
+
+const logger = getLogger('parser.module');
 
 export default class ParserModule extends AbstractModule {
+
+	private bppLoggerTimeout: NodeJS.Timeout;
+	private started = false;
+	private from: number;
+	private to: number;
+
+	private parseTo(value: number) {
+		if (value <= this.to) return;
+		this.to = value;
+		this.start();
+	}
+
 	constructor(
+		readonly redisConnection: RedisConnection,
 		readonly infoRepository: InfoRepository,
 		readonly echoRepository: EchoRepository,
-		readonly echoService: EchoService,
+		readonly blockRepository: BlockRepository,
+		readonly transactionRepository: TransactionRepository,
+		readonly memoryHelper: MemoryHelper,
+		readonly operationManager: OperationManager,
 	) {
 		super();
 	}
 
 	async init() {
-		this.start();
-	}
-
-	async start(): Promise<void> {
+		this.subscribeToBlockApply();
 		const [lastParsedBlockNum, lastBlockNum] = await Promise.all([
 			this.infoRepository.get(INFO.KEY.LAST_PARSED_BLOCK_NUMBER),
 			this.echoRepository.getLastBlockNum(),
 		]);
+		this.from = lastParsedBlockNum;
+		this.parseTo(lastBlockNum);
+	}
 
-		// TODO: remove this block
-		const startTime = new Date().getTime();
-		const startBlockCount = lastParsedBlockNum;
-		process.on('SIGINT', async () => {
-			console.log('time passed:', Number((new Date().getTime() - startTime) / 60000).toFixed(2), 'minutes');
-			console.log('block parsed:',
-				await this.infoRepository.get(INFO.KEY.LAST_PARSED_BLOCK_NUMBER) - startBlockCount);
-			process.exit(0);
-		  });
+	// TODO: search for subscription returning blockNum
+	subscribeToBlockApply() {
+		this.echoRepository.subscribeToBlockApply(async () => {
+			const blockNum =  await this.echoRepository.getLastBlockNum();
+			logger.info(`New block #${blockNum} appeared`);
+			this.parseTo(blockNum);
+		});
+	}
 
-		const queue = new Queue<number>();
-		for (let i = lastParsedBlockNum + 1; i < lastBlockNum; i += 1) {
-			queue.push(i);
+	async start(): Promise<void> {
+		if (!this.from || this.started) return;
+		this.started = true;
+		this.enableBlocksPerPeriodLogger();
+		while (this.from <= this.to) {
+			try {
+				const block = await this.echoRepository.getBlock(this.from);
+				await this.parseBlock(block);
+				await this.infoRepository.set(INFO.KEY.LAST_PARSED_BLOCK_NUMBER, this.from);
+				this.from += 1;
+			} catch (error) {
+				logger.error(error);
+				process.exit(1);
+			}
 		}
-		console.log('size', queue.size);
+		this.disableBlocksPerPeriodLogger();
+		this.started = false;
+	}
 
-		while (queue.size) {
-			const blockNum = queue.pop();
-			const block = await this.echoRepository.getBlock(blockNum);
-			await this.echoService.parseBlock(block);
-			this.infoRepository.set(INFO.KEY.LAST_PARSED_BLOCK_NUMBER, blockNum);
-			console.log(queue.size);
+	async parseBlock(block: Block) {
+		// TODO: new_block hook after transaction
+		logger.trace(`Parsing block #${block.round}`);
+		const dBlock = await this.blockRepository.create(block);
+		for (const tx of block.transactions) {
+			logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
+			const dTx = await this.transactionRepository.create({ ...tx, block: dBlock });
+			for (const [i, operation] of tx.operations.entries()) {
+				await this.operationManager.parse(operation, tx.operation_results[i], dTx);
+			}
+			this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 		}
-		console.log('DONE', queue.size);
+		dBlock.fullyParsed = true;
+		await dBlock.save();
+		this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
+	}
+
+	private enableBlocksPerPeriodLogger(delay = TIME.SECOND, prevCount?: number) {
+		const currentCount = this.from;
+		if (prevCount !== undefined) {
+			logger.info(`Blocks per ${delay}ms:`, currentCount - prevCount);
+		}
+		this.bppLoggerTimeout = setTimeout(() => this.enableBlocksPerPeriodLogger(delay, currentCount), delay);
+	}
+
+	private async disableBlocksPerPeriodLogger() {
+		clearTimeout(this.bppLoggerTimeout);
 	}
 
 }

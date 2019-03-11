@@ -1,4 +1,4 @@
-export default abstract class AbsctractInitableHelper {
+export default abstract class AbstractInitableHelper {
 
 	abstract init(): void | Promise<void>;
 

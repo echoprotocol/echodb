@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import * as MODEL from '../constants/model.constant';
-import { IBlockDocument } from '../interfaces/IBlockDocument';
+import { IBlockDocument } from '../interfaces/IBlock';
 
 const signaturesSchema = new Schema({
 	_step: Number,
@@ -15,6 +15,7 @@ const verificationsSchema = new Schema({}, { _id: false });
 
 // TODO: make all fields reequired
 const blockSchema = new Schema({
+	fullyParsed: { type: Boolean, default: false },
 	previous: String,
 	timestamp: String,
 	witness: String,

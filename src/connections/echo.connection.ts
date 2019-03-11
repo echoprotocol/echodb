@@ -14,6 +14,7 @@ export default class EchoConnection extends AbstractConnection {
 		if (!this._connection || !this._connection.isConnected) {
 			throw new ConnectionError(ERROR.NOT_CONNECTED);
 		}
+		this._connection.cache.isUsed = false;
 		return this._connection;
 	}
 

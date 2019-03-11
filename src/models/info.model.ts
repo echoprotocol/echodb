@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import * as MODEL from '../constants/model.constant';
-import { IInfoDocument } from '../interfaces/IInfoDocument';
+import { IInfoDocument } from '../interfaces/IInfo';
 
 const schema = new Schema({
 	key: String,

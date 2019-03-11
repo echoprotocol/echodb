@@ -4,12 +4,25 @@ declare module 'config' {
 	export const traceApiRequests: boolean;
 	export const port: number;
 	export const sessionSecret: string;
+	export const memory: {
+		enabled: boolean,
+		logOnStart: boolean,
+		delay: number,
+	};
 	export const db: {
 		user: string;
 		password: string;
 		host: string;
 		port: string;
 		database: string;
+		protocol: string;
+	};
+	export const redis: {
+		channel: string,
+		host: string;
+	};
+	export const echo: {
+		url: string;
 	};
 	export const redis: {
 		channel: string,
