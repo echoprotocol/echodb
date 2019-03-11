@@ -31,7 +31,7 @@ export async function initModule(name: string) {
 	const scope = container.createScope();
 	scope.loadModules([
 		`modules/${name}/${name}.module.js`,
-		`modules/${name}/*/*.js`,
+		`modules/${name}/**/*.js`,
 	], {
 		formatName: 'camelCase',
 		resolverOptions: {

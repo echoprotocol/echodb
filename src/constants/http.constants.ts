@@ -7,11 +7,11 @@ export enum RESPONSE_TYPE {
 }
 
 export enum METHOD {
-	GET= 'get',
-	PUT= 'put',
-	POST= 'post',
-	PATCH= 'patch',
-	DELETE= 'delete',
+	GET = 'get',
+	PUT = 'put',
+	POST = 'post',
+	PATCH = 'patch',
+	DELETE = 'delete',
 }
 
 export enum CODE {

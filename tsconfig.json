@@ -10,11 +10,9 @@
 		"target": "es2018",
 		"outDir": "./dist",
 		"baseUrl": "./src",
-
 		"noUnusedParameters": true,
 		"noUnusedLocals": true,
 		"noImplicitAny": true,
-
 		"types": ["log4js"]
 	},
 	"include": [

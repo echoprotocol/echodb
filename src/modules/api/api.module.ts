@@ -3,6 +3,7 @@ import { getLogger } from 'log4js';
 import * as config from 'config';
 import AbstractModule from '../abstract.module';
 import * as express from 'express';
+import * as graphqlHTTP from 'express-graphql';
 import { initMiddleware } from './middleware';
 import RestError from '../../errors/rest.error';
 import FormError from '../../errors/form.error';
@@ -10,33 +11,43 @@ import * as HTTP from '../../constants/http.constants';
 import RavenHelper from 'helpers/raven.helper';
 import { Response, Request } from 'express-serve-static-core';
 import { Action, Handler } from '../../types/api';
+
 import AbstractController from './controllers/abstract.controller';
+
+import GraphqlSchema from './graphql/graphql.schema';
 
 const logger = getLogger('api.module');
 
 export default class ApiModule extends AbstractModule {
 	private app: express.Express;
 
-	constructor(readonly ravenHelper: RavenHelper) {
+	constructor(
+		readonly ravenHelper: RavenHelper,
+		readonly graphqlSchema: GraphqlSchema,
+	) {
 		super();
 	}
 
 	async init() {
 		this.app = express();
+
 		initMiddleware(this.app);
 		await promisify(this.app.listen.bind(this.app))(config.port);
 		logger.info('API application listens to', config.port, 'port');
+
 		this.initRoutes();
 	}
 
 	initRoutes() {
-		const controllers: AbstractController[] = [
-		];
+		const controllers: AbstractController[] = [];
 		for (const controller of controllers) {
 			controller.initRoutes(this.addRoute.bind(this));
 		}
 		// FIXME: move to constants ?
 		if (config.env === 'development') this.app.use('/apidoc', express.static('apidoc'));
+
+		this.initGraphql();
+
 		this.addRoute(HTTP.METHOD.GET, '*', [
 			() => { throw new RestError(HTTP.CODE.METHOD_NOT_ALLOWED); },
 		]);
@@ -75,6 +86,15 @@ export default class ApiModule extends AbstractModule {
 				} else this.sendError(res, error);
 			}
 		});
+	}
+
+	initGraphql() {
+		const schema = this.graphqlSchema.init();
+		this.app.use('/graphql', graphqlHTTP({ schema, graphiql: false }));
+		// FIXME: move to constants ?
+		if (config.env === 'development') {
+			this.app.use('/graphiql', graphqlHTTP({ schema, graphiql: true }));
+		}
 	}
 
 	private sendError(res: Response, error: RestError | FormError) {
