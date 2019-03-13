@@ -8,6 +8,7 @@ import RedisConnection from '../../../connections/redis.connection';
 import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
 import AccountTransferOperation from './account.transfer.operation';
+import AccountWhitelistOperation from './account.whitelist.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -22,10 +23,13 @@ export default class OperationManager {
 		accountCreateOperation: AccountCreateOperation,
 		accountUpdateOperation: AccountUpdateOperation,
 		accountTransferOperation: AccountTransferOperation,
+		accountWhitelistOperation: AccountWhitelistOperation,
 	) {
 		this.map = {
 			[accountCreateOperation.id]: accountCreateOperation,
+			[accountTransferOperation.id]: accountTransferOperation,
 			[accountUpdateOperation.id]: accountUpdateOperation,
+			[accountWhitelistOperation.id]: accountWhitelistOperation,
 			[accountTransferOperation.id]: accountTransferOperation,
 		};
 	}

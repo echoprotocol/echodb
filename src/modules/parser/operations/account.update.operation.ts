@@ -1,11 +1,12 @@
-import AbstractOperation from './abstract.operation';
 import RedisConnection from '../../../connections/redis.connection';
+import AbstractOperation from './abstract.operation';
+import AccountRepository from '../../../repositories/account.repository';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
-import AccountRepository from '../../../repositories/account.repository';
 
 type OP_ID = ECHO.OPERATION_ID.ACCOUNT_UPDATE;
 
+// TODO: look for owner change and emit REDOS.EVENT.ACCOUNT_OWNER_CHANGED
 export default class AccountUpdateOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.ACCOUNT_UPDATE;
 

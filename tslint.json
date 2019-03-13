@@ -7,7 +7,6 @@
 			"SwitchCase": 1
 		}],
 		"indent": [true, "tabs", 4],
-		// "indent": false,
         "import-name": false,
 		"align": false,
 		"no-parameter-reassignment": false,
