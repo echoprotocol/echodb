@@ -6,4 +6,5 @@ export const NAME = {
 	TRANSACTION: 'transaction',
 	OPERATION: 'operation',
 	ACCOUNT: 'account',
+	CONTRACT: 'contract',
 };

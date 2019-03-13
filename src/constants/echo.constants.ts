@@ -4,6 +4,7 @@ export enum OPERATION_ID {
 	ACCOUNT_UPDATE = 6,
 	ACCOUNT_WHITELIST = 7,
 	ACCOUNT_TRANSFER = 9,
+	CONTRACT_CREATE = 47,
 }
 
 export type Operations = {
@@ -12,6 +13,7 @@ export type Operations = {
 	[OPERATION_ID.ACCOUNT_UPDATE]: AccountUpdateOperation;
 	[OPERATION_ID.ACCOUNT_TRANSFER]: AccountTransferOperation;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: AccountWhitelistOperation;
+	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 };
 
 export type OperationsResult = {
@@ -20,11 +22,13 @@ export type OperationsResult = {
 	[OPERATION_ID.ACCOUNT_UPDATE]: string;
 	[OPERATION_ID.ACCOUNT_TRANSFER]: string;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: unknown;
+	[OPERATION_ID.CONTRACT_CREATE]: string;
 };
 
 export type OPERATION_PROPS = { [x in OPERATION_ID]: Operations[x] };
 export type OPERATION_RESULT = { [x in OPERATION_ID]: OperationsResult[x] };
 
+export type Authority = [number, {}];
 type ExtensionsArr = unknown[];
 type ExtensionsObj = {};
 type Fee = {
@@ -32,89 +36,74 @@ type Fee = {
 	asset_id: string,
 };
 
-type TranfserOperation = {
-	fee: Fee,
-	from: string,
-	to: string,
+interface TranfserOperation {
+	fee: Fee;
+	from: string;
+	to: string;
 	amount: {
 		amount: number,
 		asset_id: string,
-	},
-	extenstions: ExtensionsArr,
-	memo? : {
-		from: string,
-		to: string,
-		nonce: string,
-		message: string,
-	},
-};
+	};
+	extensions: ExtensionsArr;
+	memo?: {
+		from: string;
+		to: string;
+		nonce: string;
+		message: string;
+	};
+}
 
-type AccountCreateOperation = {
-	fee: Fee,
-	registrar: string,
-	referrer: string,
-	referrer_percent: number,
-	name: string,
-	owner: {
-		weight_threshold: number,
-		account_auths: unknown[],
-		key_auths: unknown[],
-		address_auths: unknown[],
-	},
-	active: {
-		weight_threshold: number,
-		account_auths: unknown[],
-		key_auths: unknown[],
-		address_auths: unknown[],
-	},
-	options: {
-		memo_key: string,
-		voting_account: string,
-		num_witness: number,
-		num_committee: number,
-		votes: unknown[],
-		extenstions: ExtensionsArr,
-	},
-	extensions: ExtensionsObj,
-};
+export interface AccountPerson {
+	weight_threshold: number;
+	account_auths: unknown[];
+	key_auths: unknown[][];
+	address_auths: unknown[];
+}
 
-type AccountUpdateOperation = {
-	fee: Fee,
-	registrar: string,
-	referrer: string,
-	referrer_percent: number,
-	account: string;
+export interface AccountOptions {
+	memo_key: string;
+	voting_account: string;
+	delegating_account: string;
+	num_witness: number;
+	num_committee: number;
+	votes: unknown[];
+	extensions: ExtensionsArr;
+}
+
+interface AccountCreateOperation {
+	fee: Fee;
+	registrar: string;
+	referrer: string;
+	referrer_percent: number;
+	name: string;
+	owner: AccountPerson;
+	active: AccountPerson;
+	options: AccountOptions;
+	extensions: ExtensionsObj;
 	ed_key: string;
-	name: string,
-	owner: {
-		weight_threshold: number,
-		account_auths: unknown[],
-		key_auths: unknown[],
-		address_auths: unknown[],
-	},
-	active: {
-		weight_threshold: number,
-		account_auths: unknown[],
-		key_auths: unknown[],
-		address_auths: unknown[],
-	},
-	new_options: {
-		memo_key: string,
-		voting_account: string,
-		num_witness: number,
-		num_committee: number,
-		votes: unknown[],
-		extenstions: [],
-	},
-	extensions: ExtensionsObj,
-};
+	owner_special_authority?: Authority;
+	active_special_authority?: Authority;
+	buyback_options?: unknown;
+}
 
-type AccountTransferOperation = {
-	fee: Fee,
+interface AccountUpdateOperation {
+	fee: Fee;
+	account: string;
+	owner?: AccountPerson;
+	active?: AccountPerson;
+	ed_key?: string;
+	new_options?: AccountOptions;
+	owner_special_authority?: Authority;
+	active_special_authority?: Authority;
+	extensions: ExtensionsObj;
+}
+
+interface AccountTransferOperation {
+	fee: Fee;
 	account_id: string;
 	new_owner: string;
-	extensions: ExtensionsArr,
-};
+	extensions: ExtensionsArr;
+}
 
 export enum ACCOUNT_WHITELIST {
 	NO_LISTING,
@@ -123,10 +112,22 @@ export enum ACCOUNT_WHITELIST {
 	WHITE_AND_BLACK_LISTED,
 }
 
-type AccountWhitelistOperation = {
+interface AccountWhitelistOperation {
 	fee: Fee;
 	authorizing_account: string;
 	account_to_list: string;
-	new_listing: ACCOUNT_WHITELIST,
+	new_listing: ACCOUNT_WHITELIST;
 	extensions: ExtensionsArr;
-};
+}
+
+interface ContractCreateOperation {
+	fee: Fee;
+	registrar: string;
+	value: {
+		amount: number;
+		asset_id: string;
+	};
+	code: string;
+	supported_asset_id?: string;
+	eth_accuracy: true;
+}

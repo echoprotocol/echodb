@@ -1,9 +1,10 @@
-import { model, Schema } from 'mongoose';
-import * as MODEL from '../constants/model.constant';
-import { IAccountDocument } from '../interfaces/IAccount';
+import { Schema } from 'mongoose';
+import * as MODEL from '../constants/model.constants';
+import { IAccount } from '../interfaces/IAccount';
+import AbstractModel from './abstract.model';
 
-const accountSchema = new Schema({
-	account: String,
+export default AbstractModel<IAccount>(MODEL.NAME.ACCOUNT, {
+	id: String,
 	membership_expiration_date: String,
 	registrar: String,
 	referrer: String,
@@ -26,7 +27,7 @@ const accountSchema = new Schema({
 	},
 	ed_key: String,
 	options: {
-		 memo_key: String,
+		memo_key: String,
 		voting_account: String,
 		delegating_account: String,
 		num_witness: Number,
@@ -39,10 +40,7 @@ const accountSchema = new Schema({
 	blacklisting_accounts: [Schema.Types.Mixed],
 	whitelisted_accounts: [Schema.Types.Mixed],
 	blacklisted_accounts: [Schema.Types.Mixed],
-	cashback_vb: String,
 	owner_special_authority: [Schema.Types.Mixed],
 	active_special_authority: [Schema.Types.Mixed],
 	top_n_control_flags: Number,
 });
-
-export default model<IAccountDocument>(MODEL.NAME.ACCOUNT, accountSchema);

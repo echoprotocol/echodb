@@ -1,12 +1,12 @@
-import { model, Schema } from 'mongoose';
-import * as MODEL from '../constants/model.constant';
-import { IOperationDocument } from '../interfaces/IOperation';
+import AbstractModel from './abstract.model';
+import { Schema } from 'mongoose';
+import { IOperation } from '../interfaces/IOperation';
+import * as MODEL from '../constants/model.constants';
 import * as ECHO from '../constants/echo.constants';
 
-export const schema = new Schema({
+export default AbstractModel<IOperation<ECHO.OPERATION_ID>>(MODEL.NAME.OPERATION, {
 	id: Number,
 	body: Schema.Types.Mixed,
 	result: Schema.Types.Mixed,
+	_tx: { type: Schema.Types.ObjectId, ref: MODEL.NAME.TRANSACTION },
 });
-
-export default model<IOperationDocument<ECHO.OPERATION_ID>>(MODEL.NAME.OPERATION, schema);

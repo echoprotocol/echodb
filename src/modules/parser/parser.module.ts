@@ -84,14 +84,12 @@ export default class ParserModule extends AbstractModule {
 		const dBlock = await this.blockRepository.create(block);
 		for (const tx of block.transactions) {
 			logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
-			const dTx = await this.transactionRepository.create({ ...tx, block: dBlock });
+			const dTx = await this.transactionRepository.create({ ...tx, _block: dBlock });
 			for (const [i, operation] of tx.operations.entries()) {
 				await this.operationManager.parse(operation, tx.operation_results[i], dTx);
 			}
 			this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 		}
-		dBlock.fullyParsed = true;
-		await dBlock.save();
 		this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
 	}
 

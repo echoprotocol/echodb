@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface IAccount {
-	account: string;
+	id: string;
 	membership_expiration_date: string;
 	registrar: string;
 	referrer: string;
@@ -24,7 +24,7 @@ export interface IAccount {
 	};
 	ed_key: string;
 	options: {
-		 memo_key: string;
+		memo_key: string;
 		voting_account: string;
 		delegating_account: string;
 		num_witness: number;
@@ -37,7 +37,6 @@ export interface IAccount {
 	blacklisting_accounts: unknown[];
 	whitelisted_accounts: unknown[];
 	blacklisted_accounts: unknown[];
-	cashback_vb: string;
 	owner_special_authority: [number, {}];
 	active_special_authority: [number, {}];
 	top_n_control_flags: number;

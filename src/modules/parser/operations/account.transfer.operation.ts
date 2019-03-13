@@ -19,7 +19,7 @@ export default class AccountTransferOperation extends AbstractOperation<OP_ID> {
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
 		await this.accountRepository.updateOne(
 			{ account: body.account_id },
-			{ $set: { account: body.new_owner } },
+			{ $set: { id: body.new_owner } },
 		);
 		this.redisConnection.emit(REDIS.EVENT.ACCOUNT_OWNER_CHANGED, { old: body.account_id, new: body.new_owner });
 	}

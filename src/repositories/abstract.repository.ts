@@ -2,9 +2,15 @@ import { Document, Model } from 'mongoose';
 import RavenHelper from '../helpers/raven.helper';
 import { QueryOptions, MongoId } from '../types/mongoose';
 
+// TODO: use mongoose Query<T>
 // TODO: do no send private info to raven ???
-export default abstract class AbstractRepository<T extends Document> {
-	constructor(private ravenHelper: RavenHelper, private model: Model<T>) {
+
+type SomeOf<T extends {}> = { [x in keyof T]?: T[x] };
+// TODO: add more words like $set
+type Update<T extends {}> = { $set: SomeOf<T> } | SomeOf<T>;
+
+export default abstract class AbstractRepository<T = object> {
+	constructor(private ravenHelper: RavenHelper, private model: Model<T & Document>) {
 		model.init(() => {
 			// @ts-ignore
 			model.createCollection();
@@ -35,7 +41,7 @@ export default abstract class AbstractRepository<T extends Document> {
 		}
 	}
 
-	async create(document: object | object[]) {
+	async create(document: T | T[]) {
 		try {
 			return await this.model.create(document);
 		} catch (error) {
@@ -44,7 +50,7 @@ export default abstract class AbstractRepository<T extends Document> {
 	}
 
 	// TODO: check return type
-	async update(query: object, update: object, options: QueryOptions['Update'] = {}): Promise<Number> {
+	async update(query: object, update: Update<T>, options: QueryOptions['Update'] = {}): Promise<Number> {
 		try {
 			return await this.model.update(query, update, options);
 		} catch (error) {
@@ -53,7 +59,7 @@ export default abstract class AbstractRepository<T extends Document> {
 	}
 
 	// TODO: check return type
-	async updateOne(query: object, update: object, options: QueryOptions['UpdateOne'] = {}): Promise<Number> {
+	async updateOne(query: object, update: Update<T>, options: QueryOptions['UpdateOne'] = {}): Promise<Number> {
 		try {
 			return await this.model.updateOne(query, update, options);
 		} catch (error) {
@@ -61,7 +67,7 @@ export default abstract class AbstractRepository<T extends Document> {
 		}
 	}
 
-	async findByIdAndUpdate(id: MongoId, update: object, options: QueryOptions['FindByIdAndUpdate'] = {}) {
+	async findByIdAndUpdate(id: MongoId, update: Update<T>, options: QueryOptions['FindByIdAndUpdate'] = {}) {
 		try {
 			return await this.model.findByIdAndUpdate(id, update, options);
 		} catch (error) {
@@ -69,7 +75,7 @@ export default abstract class AbstractRepository<T extends Document> {
 		}
 	}
 
-	async findOneAndUpdate(query: object, update: object, options: QueryOptions['FindOneAndUpdate'] = {}) {
+	async findOneAndUpdate(query: object, update: Update<T>, options: QueryOptions['FindOneAndUpdate'] = {}) {
 		try {
 			return await this.model.findOneAndUpdate(query, update, options);
 		} catch (error) {

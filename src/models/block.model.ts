@@ -1,6 +1,7 @@
-import { model, Schema } from 'mongoose';
-import * as MODEL from '../constants/model.constant';
-import { IBlockDocument } from '../interfaces/IBlock';
+import AbstractModel from './abstract.model';
+import { Schema } from 'mongoose';
+import * as MODEL from '../constants/model.constants';
+import { IBlock } from '../interfaces/IBlock';
 
 const signaturesSchema = new Schema({
 	_step: Number,
@@ -13,9 +14,7 @@ const signaturesSchema = new Schema({
 const extensionsSchema = new Schema({}, { _id: false });
 const verificationsSchema = new Schema({}, { _id: false });
 
-// TODO: make all fields reequired
-const blockSchema = new Schema({
-	fullyParsed: { type: Boolean, default: false },
+export default AbstractModel<IBlock>(MODEL.NAME.BLOCK, {
 	previous: String,
 	timestamp: String,
 	witness: String,
@@ -36,5 +35,3 @@ const blockSchema = new Schema({
 		_signatures: [signaturesSchema],
 	},
 });
-
-export default model<IBlockDocument>(MODEL.NAME.BLOCK, blockSchema);

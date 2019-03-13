@@ -9,13 +9,14 @@ import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
 import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
+import ContractCreateOperation from './contract.create.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
 const logger = getLogger('operation.parser');
 
 export default class OperationManager {
-	private map: OperationsMap;
+	private map: OperationsMap = {};
 
 	constructor(
 		readonly operationRepository: OperationRepository,
@@ -24,22 +25,29 @@ export default class OperationManager {
 		accountUpdateOperation: AccountUpdateOperation,
 		accountTransferOperation: AccountTransferOperation,
 		accountWhitelistOperation: AccountWhitelistOperation,
+		contractCreateOperation: ContractCreateOperation,
 	) {
-		this.map = {
-			[accountCreateOperation.id]: accountCreateOperation,
-			[accountTransferOperation.id]: accountTransferOperation,
-			[accountUpdateOperation.id]: accountUpdateOperation,
-			[accountWhitelistOperation.id]: accountWhitelistOperation,
-			[accountTransferOperation.id]: accountTransferOperation,
-		};
+		const operations: AbstractOperation<ECHO.OPERATION_ID>[] = [
+			accountCreateOperation,
+			accountTransferOperation,
+			accountUpdateOperation,
+			accountWhitelistOperation,
+			contractCreateOperation,
+		];
+		for (const operation of operations) {
+			if (!operation.status) return;
+			this.map[operation.id] = operation;
+		}
+
 	}
 
+	// FIXME: emit all (not only parsed) operations
 	async parse<T extends ECHO.OPERATION_ID>(
 		[id, body]: [T, ECHO.OPERATION_PROPS[T]],
 		[_, result]: [unknown, ECHO.OPERATION_RESULT[T]],
 		dTx: ITransactionDocument,
 	) {
-		const dOperation = await this.operationRepository.create([{ id, body, result, txId: dTx }]);
+		const dOperation = await this.operationRepository.create([{ id, body, result, _tx: dTx }]);
 		if (!this.map[id]) {
 			logger.warn(`Operation ${id} is not supported`);
 			return;

@@ -1,10 +1,9 @@
-import { model, Schema } from 'mongoose';
-import * as MODEL from '../constants/model.constant';
-import { IInfoDocument } from '../interfaces/IInfo';
+import AbstractModel from './abstract.model';
+import { Schema } from 'mongoose';
+import { IInfo } from '../interfaces/IInfo';
+import * as MODEL from '../constants/model.constants';
 
-const schema = new Schema({
+export default AbstractModel<IInfo>(MODEL.NAME.INFO, {
 	key: String,
 	value: Schema.Types.Mixed,
 });
-
-export default model<IInfoDocument>(MODEL.NAME.INFO, schema);

@@ -1,10 +1,11 @@
 import { Document } from 'mongoose';
+import { MongoId } from '../types/mongoose';
 
 export interface ITransaction {
+	_block: MongoId;
 	ref_block_num: number;
 	ref_block_prefix: number;
 	expiration: string;
-	operations: unknown[];
 	extensions: unknown;
 	signatures: string[];
 }

@@ -12,11 +12,11 @@ export default class EchoService {
 	async checkAccounts(accIds: string[]): Promise<void> {
 		const accIdsToCheck: string[] = [];
 		await Promise.all(removeDuplicates(accIds).map(async (accId) => {
-			const dAccount = await this.accountRepository.findOne({ Id: accId });
+			const dAccount = await this.accountRepository.findById(accId);
 			if (!dAccount) accIdsToCheck.push(accId);
 		}));
 		const accounts = await this.echoConnection.echo.api.getAccounts(accIdsToCheck);
-		if (accounts.length) await this.accountRepository.create(accounts);
+		await this.accountRepository.create(accounts);
 	}
 
 }
