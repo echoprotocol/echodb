@@ -7,6 +7,7 @@ import { ITransactionDocument } from 'interfaces/ITransaction';
 import RedisConnection from '../../../connections/redis.connection';
 import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
+import AccountTransferOperation from './account.transfer.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -20,10 +21,12 @@ export default class OperationManager {
 		readonly redisConnection: RedisConnection,
 		accountCreateOperation: AccountCreateOperation,
 		accountUpdateOperation: AccountUpdateOperation,
+		accountTransferOperation: AccountTransferOperation,
 	) {
 		this.map = {
 			[accountCreateOperation.id]: accountCreateOperation,
 			[accountUpdateOperation.id]: accountUpdateOperation,
+			[accountTransferOperation.id]: accountTransferOperation,
 		};
 	}
 
