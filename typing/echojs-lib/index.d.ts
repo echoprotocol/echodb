@@ -1,5 +1,3 @@
-// import { OPERATION_RESULT_VARIANT } from 'echojs-lib/types/echo/transaction';
-
 declare module 'echojs-lib' {
 	declare type ConnectionOptions = {};
 
@@ -118,6 +116,24 @@ declare module 'echojs-lib' {
 		last_irreversible_block_num: number;
 	}
 
+	export interface ContractResult {
+		exec_res: {
+			excepted: 'None' | unknown;
+			new_address: string;
+			output: string;
+			code_deposit: 'None' | unknown;
+			gas_refunded: number;
+			gas_for_deposit: number;
+			deposit_size: number;
+		};
+		tr_receipt: {
+			status_code: number;
+			gas_used: number;
+			bloom: string;
+			log: unknown[];
+		};
+	}
+
 	class API {
 		constructor(cache: Cache, wsApi: WSAPI);
 		getObjects(objectIds: string[], force = false): Promise<object[]>;
@@ -128,11 +144,14 @@ declare module 'echojs-lib' {
 		getBlock(blockNum: number, force: boolean = false): Promise<Block>;
 		getDynamicGlobalProperties(): Promise<DynamicGlobalProperties>;
 		getAccounts(ids: string[]): Promise<Account[]>;
+		getContractResult(resultId: string): Promise<[number, ContractResult]>;
 	}
 
 	export class Subscriber {
 		setBlockApplySubscribe(cb: (block: Block) => void): void;
 	}
+
+	export { PrivateKey  } from 'echojs-lib';
 
 	export class Echo {
 		api?: API;
@@ -142,7 +161,7 @@ declare module 'echojs-lib' {
 		async connect(address: string, options: ConnectionOptions = {}): void;
 		async reconnect(): void;
 		async disconnect(): void;
-		createTransaction(): Transaction;
+		createTransaction(): import('echojs-lib/types').Transaction;
 	}
 
 	export default new Echo();

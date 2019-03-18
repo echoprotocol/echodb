@@ -7,9 +7,14 @@ Convenient interface to Echo blockchain data
 1. Clone the project
 2. Move to the cloned directory
 3. Install dependencies: `npm install`
-### Install TypeScript
-* Ubuntu 18.04
-   * `sudo apt-get install node-typescript`
+## Install GitLab dependencies
+This project uses some GitLab dependencies needed to be install manually.  
+Steps to install such dependency:
+1) Clone dependency in a separate folder.
+2) Build. (`npm run build` is a common command)
+3) Run `npm link`
+4) Go to this project (not dependency!) folder
+5) Run `npm run link {dependency_name}`
 
 
 

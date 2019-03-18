@@ -1,0 +1,75 @@
+import AbstractOperation from './abstract.operation';
+import BalanceRepository from 'repositories/balance.repository';
+import ContractRepository from '../../../repositories/contract.repository';
+import ContractService from 'services/contract.service';
+import EchoService from 'services/echo.service';
+import EchoRepository from '../../../repositories/echo.repository';
+import * as ECHO from '../../../constants/echo.constants';
+import * as CONTRACT from '../../../constants/contract.constants';
+import * as ERC20 from '../../../constants/erc20.constants';
+import { decode } from 'echojs-contract';
+import { IContractDocument } from '../../../interfaces/IContract';
+
+type OP_ID = ECHO.OPERATION_ID.CONTRACT_CALL;
+
+export default class ContractCallOperation extends AbstractOperation<OP_ID> {
+	id = ECHO.OPERATION_ID.CONTRACT_CALL;
+
+	constructor(
+		readonly balanceRepository: BalanceRepository,
+		readonly contractRepository: ContractRepository,
+		readonly echoRepository: EchoRepository,
+		readonly contractService: ContractService,
+		readonly echoService: EchoService,
+	) {
+		super();
+	}
+
+	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
+		const dContract = await this.contractRepository.findById(body.callee);
+		if (!dContract) {
+			await this.echoService.checkAccounts([body.registrar]);
+			return;
+		}
+		if (dContract.type === CONTRACT.TYPE.ERC20) await this.handleERC20(dContract, body);
+	}
+
+	// FIXME: refactor ?
+	private async handleERC20(dContract: IContractDocument, body: ECHO.OPERATION_PROPS[OP_ID]) {
+		const method = ERC20.METHOD.MAP[body.code.substring(0, 8)];
+		if (!method) return;
+		const [name, parameters] = method;
+		const code = body.code.substring(8);
+		switch (name) {
+			case ERC20.METHOD_NAME.TRANSFER: {
+				const [to] = <[string]>decode(code, parameters);
+				await this.updateAccountBalances(dContract, body.registrar, to);
+				break;
+			}
+			case ERC20.METHOD_NAME.TRANSFER_FROM: {
+				const [from, to] = <[string, string]>decode(code, parameters);
+				await this.updateAccountBalances(dContract, from, to);
+				break;
+			}
+			default:
+				return;
+		}
+	}
+
+	async updateAccountBalances(dContract: IContractDocument, from: string, to: string) {
+		const [dFrom, dTo] = await this.echoService.checkAccounts([from, to]);
+		const [dFromBalance, dToBalance, fromBalance, toBalance] = await Promise.all([
+			this.balanceRepository.findTokensByAccountAndContract(dFrom, dContract),
+			this.balanceRepository.findTokensByAccountAndContract(dTo, dContract),
+			this.echoRepository.getAccountTokenBalance(dContract.id, from),
+			this.echoRepository.getAccountTokenBalance(dContract.id, to),
+		]);
+		dFromBalance.amount = fromBalance.toString();
+		dToBalance.amount = toBalance.toString();
+		await Promise.all([
+			dFromBalance.save(),
+			dToBalance.save(),
+		]);
+	}
+
+}

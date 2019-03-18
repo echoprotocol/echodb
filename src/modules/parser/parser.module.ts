@@ -13,7 +13,6 @@ import OperationManager from './operations/operation.manager';
 import { getLogger } from 'log4js';
 
 const logger = getLogger('parser.module');
-const blockLogger = getLogger('parser.block');
 
 export default class ParserModule extends AbstractModule {
 
@@ -80,7 +79,6 @@ export default class ParserModule extends AbstractModule {
 
 	async parseBlock(block: Block) {
 		// TODO: new_block hook after transaction
-		blockLogger.trace(`Parsing block #${block.round}`);
 		const dBlock = await this.blockRepository.create(block);
 		for (const tx of block.transactions) {
 			logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);

@@ -1,3 +1,7 @@
+export enum ASSET {
+	ECHO = '1.3.0',
+}
+
 export enum OPERATION_ID {
 	TRANSFER = 0,
 	ACCOUNT_CREATE = 5,
@@ -5,6 +9,7 @@ export enum OPERATION_ID {
 	ACCOUNT_WHITELIST = 7,
 	ACCOUNT_TRANSFER = 9,
 	CONTRACT_CREATE = 47,
+	CONTRACT_CALL = 48,
 }
 
 export type Operations = {
@@ -14,6 +19,7 @@ export type Operations = {
 	[OPERATION_ID.ACCOUNT_TRANSFER]: AccountTransferOperation;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: AccountWhitelistOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
+	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 };
 
 export type OperationsResult = {
@@ -23,6 +29,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ACCOUNT_TRANSFER]: string;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
+	[OPERATION_ID.CONTRACT_CALL]: unknown;
 };
 
 export type OPERATION_PROPS = { [x in OPERATION_ID]: Operations[x] };
@@ -130,4 +137,15 @@ interface ContractCreateOperation {
 	code: string;
 	supported_asset_id?: string;
 	eth_accuracy: true;
+}
+
+interface ContractCallOperation {
+	fee: Fee;
+	registrar: string;
+	value: {
+		amount: number,
+		asset_id: string,
+	};
+	code: string;
+	callee: string;
 }

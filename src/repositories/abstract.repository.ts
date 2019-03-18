@@ -8,9 +8,10 @@ import { QueryOptions, MongoId } from '../types/mongoose';
 type SomeOf<T extends {}> = { [x in keyof T]?: T[x] };
 // TODO: add more words like $set
 type Update<T extends {}> = { $set: SomeOf<T> } | SomeOf<T>;
+type TDocument<T extends {}> = T & Document;
 
 export default abstract class AbstractRepository<T = object> {
-	constructor(private ravenHelper: RavenHelper, private model: Model<T & Document>) {
+	constructor(private ravenHelper: RavenHelper, private model: Model<TDocument<T>>) {
 		model.init(() => {
 			// @ts-ignore
 			model.createCollection();
@@ -40,8 +41,9 @@ export default abstract class AbstractRepository<T = object> {
 			throw this.ravenHelper.error(error, 'model#find', { query, projection, options });
 		}
 	}
-
-	async create(document: T | T[]) {
+	async create(document: T): Promise<TDocument<T>>;
+	async create(document: T[]): Promise<TDocument<T>[]>;
+	async create(document: T | T[]): Promise<T & Document| TDocument<T>[]> {
 		try {
 			return await this.model.create(document);
 		} catch (error) {

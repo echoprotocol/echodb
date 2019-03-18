@@ -10,6 +10,7 @@ import AccountUpdateOperation from './account.update.operation';
 import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import ContractCreateOperation from './contract.create.operation';
+import ContractCallOperation from './contract.call.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -26,6 +27,7 @@ export default class OperationManager {
 		accountTransferOperation: AccountTransferOperation,
 		accountWhitelistOperation: AccountWhitelistOperation,
 		contractCreateOperation: ContractCreateOperation,
+		contractCallOperation: ContractCallOperation,
 	) {
 		const operations: AbstractOperation<ECHO.OPERATION_ID>[] = [
 			accountCreateOperation,
@@ -33,6 +35,7 @@ export default class OperationManager {
 			accountUpdateOperation,
 			accountWhitelistOperation,
 			contractCreateOperation,
+			contractCallOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
@@ -47,7 +50,7 @@ export default class OperationManager {
 		[_, result]: [unknown, ECHO.OPERATION_RESULT[T]],
 		dTx: ITransactionDocument,
 	) {
-		const dOperation = await this.operationRepository.create([{ id, body, result, _tx: dTx }]);
+		const dOperation = await this.operationRepository.create({ id, body, result, _tx: dTx });
 		if (!this.map[id]) {
 			logger.warn(`Operation ${id} is not supported`);
 			return;

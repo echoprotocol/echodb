@@ -20,8 +20,7 @@ export default class AccountWhitelistOperation extends AbstractOperation<OP_ID> 
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
-		await this.echoService.checkAccounts([body.authorizing_account]);
-		const dAccount = await this.accountRepository.findOne({ account: body.authorizing_account });
+		const [dAccount] = await this.echoService.checkAccounts([body.authorizing_account]);
 		switch (body.new_listing) {
 			case ECHO.ACCOUNT_WHITELIST.BLACK_LISTED: {
 				// add to list if not listed

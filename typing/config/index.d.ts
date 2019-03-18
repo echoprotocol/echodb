@@ -21,15 +21,14 @@ declare module 'config' {
 		channel: string,
 		host: string;
 	};
-	export const echo: {
-		url: string;
-	};
 	export const redis: {
 		channel: string,
 		host: string;
 	};
 	export const echo: {
 		url: string;
+		accountId: string;
+		privateKeyWif: string;
 	};
 	export const redis: {
 		channel: string,
