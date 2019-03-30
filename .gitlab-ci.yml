@@ -14,7 +14,8 @@ lint:
     paths:
     - node_modules
   script:
-    - apk --no-cache add make gcc g++ python
+    - npm config set unsafe-perm true
+    - apk --no-cache add make gcc g++ python git
     - npm i
     - npm run audit
     - npm run lint
@@ -32,10 +33,12 @@ build.develop:
     paths:
       - node_modules
   script:
+    - npm config set unsafe-perm true
     - npm i
     - npm run migrate
     - npm run doc
-    - pm2 start pm2.json
+    - pm2 delete pm2.json
+    - pm2 run pm2.json
   only:
     - develop
   tags:
@@ -54,8 +57,8 @@ build.master:
       - node_modules
   script:
     - npm i
-    - npm run migrate
-    - pm2 start pm2.json
+    - npm delete migrate
+    - pm2 run pm2.json
   only:
     - master
   tags:

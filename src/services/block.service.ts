@@ -8,8 +8,8 @@ export default class BlockService {
 		readonly blockRepository: BlockRepository,
 	) {}
 
-	async getBlock(id: string) {
-		return this.blockRepository.findById(id);
+	async getBlock(round: number) {
+		return this.blockRepository.findOne({ round });
 	}
 
 	async getBlocks(count: number = API.PAGINATION.DEFAULT_COUNT, offset: number = 0) {

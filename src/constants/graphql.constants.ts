@@ -1,5 +1,6 @@
 export enum PLACE {
 	QUERY = 'query',
+	CONTRACT = 'contract',
 	MUTATION = 'mutation',
 }
 

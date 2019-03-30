@@ -10,6 +10,8 @@ export default class DbConnection extends AbstractConnection {
 	async connect() {
 		const { user, password, host, port, database: db, protocol } = config.db;
 		const url = `${protocol}://${(user) ? (`${user}:${password}@`) : ''}${host}${port ? `:${port}` : ''}/${db}`;
+		// FIXME: fix types !!! (coz of graph ql);
+		// @ts-ignore
 		this._connection = await connect(url, { useNewUrlParser: true });
 	}
 

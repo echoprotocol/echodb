@@ -14,13 +14,13 @@ export interface IAccount {
 		weight_threshold: number;
 		account_auths: unknown[];
 		key_auths: unknown[][];
-	   address_auths: unknown[];
+		address_auths: unknown[];
 	};
 	active: {
 		weight_threshold: number;
 		account_auths: unknown[];
 		key_auths: unknown[][];
-	   address_auths: unknown[];
+		address_auths: unknown[];
 	};
 	ed_key: string;
 	options: {
@@ -30,7 +30,7 @@ export interface IAccount {
 		num_witness: number;
 		num_committee: number;
 		votes: unknown[];
-	   extensions: unknown[];
+		extensions: unknown[];
 	};
 	statistics: string;
 	whitelisting_accounts: unknown[];
