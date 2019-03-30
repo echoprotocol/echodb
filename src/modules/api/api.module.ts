@@ -1,5 +1,6 @@
 import AccountResolver from './resolvers/account.resolver';
 import AbstractModule from '../abstract.module';
+import BalanceResolver from './resolvers/balance.resolver';
 import ContractResolver from './resolvers/contract.resolver';
 import RavenHelper from 'helpers/raven.helper';
 import * as config from 'config';
@@ -19,6 +20,7 @@ export default class ApiModule extends AbstractModule {
 		readonly ravenHelper: RavenHelper,
 		readonly accountResolver: AccountResolver,
 		readonly contractResolver: ContractResolver,
+		readonly balanceResolver: BalanceResolver,
 	) {
 		super();
 	}

@@ -17,6 +17,8 @@ declare type CommonUpdate = {
 };
 
 declare type Find = {
+	// TODO: check populate property
+	populate?: string;
 	tailable?: unknown,
 	sort?: object,
 	limit?: number,

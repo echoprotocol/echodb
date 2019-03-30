@@ -26,3 +26,4 @@ type Balance = {
 };
 
 export type IBalance<T extends BALANCE.TYPE> = Balance[T];
+export type IBalanceDocument = IBalanceAssetDocument | IBalanceTokenDocument;

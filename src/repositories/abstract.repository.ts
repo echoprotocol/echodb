@@ -1,4 +1,4 @@
-import { Document, Model } from 'mongoose';
+import { Document, Model, ModelPopulateOptions } from 'mongoose';
 import RavenHelper from '../helpers/raven.helper';
 import { QueryOptions, MongoId } from '../types/mongoose';
 
@@ -95,7 +95,7 @@ export default abstract class AbstractRepository<T = object> {
 
 	async count(query: object) {
 		try {
-			return await this.model.count(query);
+			return await this.model.countDocuments(query);
 		} catch (error) {
 			throw this.ravenHelper.error(error, 'model#count', query);
 		}
@@ -107,6 +107,20 @@ export default abstract class AbstractRepository<T = object> {
 		} catch (error) {
 			throw this.ravenHelper.error(error, 'model#aggregate', aggregation);
 		}
+	}
+
+	// FIXME: refactor, add types
+	async populate(documents: Document[], fieldOrOptions: string | ModelPopulateOptions) {
+		try {
+			const options = typeof fieldOrOptions === 'string' ? { path: fieldOrOptions } : fieldOrOptions;
+			return await this.model.populate(documents, options);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'model#populate', { fieldOrOptions, documents });
+		}
+	}
+
+	isChild(object: object) {
+		return object instanceof this.model;
 	}
 
 }
