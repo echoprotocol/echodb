@@ -5,6 +5,7 @@ import ContractResolver from './resolvers/contract.resolver';
 import BalanceResolver from './resolvers/balance.resolver';
 import BlockResolver from './resolvers/block.resolver';
 import OperationResolver from './resolvers/operation.resolver';
+import TransactionResolver from './resolvers/transaction.resolver';
 import RavenHelper from '../../helpers/raven.helper';
 import RestError from '../../errors/rest.error';
 import * as config from 'config';
@@ -28,6 +29,7 @@ export default class ApiModule extends AbstractModule {
 		readonly balanceResolver: BalanceResolver,
 		readonly blockResolver: BlockResolver,
 		readonly operationResolver: OperationResolver,
+		readonly transactionResolver: TransactionResolver,
 	) {
 		super();
 	}
@@ -49,6 +51,7 @@ export default class ApiModule extends AbstractModule {
 			this.balanceResolver,
 			this.blockResolver,
 			this.operationResolver,
+			this.transactionResolver,
 		];
 		// TODO: handle errors with middleware
 		const schema = await buildSchema({

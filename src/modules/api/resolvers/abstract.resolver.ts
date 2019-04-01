@@ -12,7 +12,7 @@ export default abstract class AbstractResolver {
 			const [code, message = error.message] = details;
 			return new RestError(code, message);
 		}
-		return new RestError(details, error.message);
+		return new RestError(details);
 	}
 
 }

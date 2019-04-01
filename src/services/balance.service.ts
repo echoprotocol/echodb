@@ -40,8 +40,8 @@ export default class BalanceService {
 			this.contractRepository.findById(contract),
 			this.accountRepository.findById(account),
 		]);
-		if (!dAccount) throw new Error(ERROR.ACCOUNT_NOT_FOUND);
-		if (!dContract) throw new Error(ERROR.CONTRACT_NOT_FOUND);
+		if (!dAccount) throw new ProcessingError(ERROR.ACCOUNT_NOT_FOUND);
+		if (!dContract) throw new ProcessingError(ERROR.CONTRACT_NOT_FOUND);
 		const balance =
 			<IBalanceTokenDocument>await this.balanceRepository.findOne({ _account: dAccount, _contract: dContract });
 		balance._account = dAccount;

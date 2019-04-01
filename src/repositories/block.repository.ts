@@ -11,6 +11,10 @@ export default class BlockRepository extends AbstractRepository<IBlock> {
 		super(ravenHelper, BlockModel);
 	}
 
+	findByRound(round: number) {
+		return super.findOne({ round });
+	}
+
 	findByMongoId(id: MongoId) {
 		return super.findById(id);
 	}

@@ -9,7 +9,7 @@ import { inject } from '../../../utils/graphql';
 const paginatedAccounts = PaginatedResponse(Account);
 
 @Resolver(Account)
-export default class AccountResolver extends AbstractResolver{
+export default class AccountResolver extends AbstractResolver {
 	@inject static accountService: AccountService;
 
 	constructor(
