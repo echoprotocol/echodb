@@ -23,13 +23,14 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID], result: ECHO.OPERATION_RESULT[OP_ID]) {
-		await this.echoService.checkAccounts([body.registrar]);
+		const [dAccount] = await this.echoService.checkAccounts([body.registrar]);
 		const [, { exec_res: { new_address: hexAddr } }] = await this.echoRepository.getContractResult(result);
 		await this.contractRepository.create({
 			id: ethAddrToEchoId(hexAddr),
-			type: this.contractService.getTypeByCode(body.code),
-			...body,
+			registrar: dAccount,
+			eth_accuracy: body.eth_accuracy,
 			supported_asset_id: body.supported_asset_id || null,
+			type: this.contractService.getTypeByCode(body.code),
 		});
 		return this.validateRelation({
 			from: [body.registrar],

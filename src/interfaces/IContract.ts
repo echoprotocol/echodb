@@ -1,9 +1,10 @@
-import { Document } from 'mongoose';
 import * as CONTRACT from '../constants/contract.constants';
+import { Document } from 'mongoose';
+import { MongoId } from '../types/mongoose';
 
 export interface IContract {
 	id: string;
-	registrar: string;
+	registrar: MongoId;
 	eth_accuracy: boolean;
 	supported_asset_id: string;
 	type: CONTRACT.TYPE;
