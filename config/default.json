@@ -15,9 +15,7 @@
 		"channel": "echodb"
 	},
 	"echo" : {
-		"url": "",
-		"accountId": "",
-		"privateKeyWif": ""
+		"url": ""
 	},
 	"logger": {
 		"appenders": {

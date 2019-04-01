@@ -145,6 +145,12 @@ declare module 'echojs-lib' {
 		getDynamicGlobalProperties(): Promise<DynamicGlobalProperties>;
 		getAccounts(ids: string[]): Promise<Account[]>;
 		getContractResult(resultId: string): Promise<[number, ContractResult]>;
+		callContractNoChangingState(
+			contractId: string,
+			accountId: string,
+			assetId: string,
+			bytecode: string,
+		): Promise<string>;
 	}
 
 	export class Subscriber {

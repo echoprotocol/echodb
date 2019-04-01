@@ -4,7 +4,7 @@ import { MongoId } from '../types/mongoose';
 
 export interface IContract {
 	id: string;
-	registrar: MongoId;
+	_registrar: MongoId;
 	eth_accuracy: boolean;
 	supported_asset_id: string;
 	type: CONTRACT.TYPE;

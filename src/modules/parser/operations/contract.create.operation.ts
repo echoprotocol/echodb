@@ -25,9 +25,10 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID], result: ECHO.OPERATION_RESULT[OP_ID]) {
 		const [dAccount] = await this.echoService.checkAccounts([body.registrar]);
 		const [, { exec_res: { new_address: hexAddr } }] = await this.echoRepository.getContractResult(result);
+		const contractId = ethAddrToEchoId(hexAddr);
 		await this.contractRepository.create({
-			id: ethAddrToEchoId(hexAddr),
-			registrar: dAccount,
+			id: contractId,
+			_registrar: dAccount,
 			eth_accuracy: body.eth_accuracy,
 			supported_asset_id: body.supported_asset_id || null,
 			type: this.contractService.getTypeByCode(body.code),
@@ -35,7 +36,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 		return this.validateRelation({
 			from: [body.registrar],
 			assets: [body.fee.asset_id],
-			contract: result,
+			contract: contractId,
 		});
 	}
 

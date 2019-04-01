@@ -1,8 +1,7 @@
 import EchoConnection from '../connections/echo.connection';
 import * as ECHO from '../constants/echo.constants';
 import * as ERC20 from '../constants/erc20.constants';
-import * as config from 'config';
-import { Block, PrivateKey } from 'echojs-lib';
+import { Block } from 'echojs-lib';
 import { encode, decode } from 'echojs-contract';
 
 export default class EchoRepository {
@@ -30,20 +29,13 @@ export default class EchoRepository {
 	}
 
 	async getAccountTokenBalance(contractId: string, address: string) {
-		const tx = this.echoConnection.echo.createTransaction();
-		tx.addOperation(ECHO.OPERATION_ID.CONTRACT_CALL, {
-			registrar: config.echo.accountId,
-			value: {
-				amount: 0,
-				asset_id: ECHO.ASSET.ECHO,
-			},
-			code: ERC20.METHOD.HASH.BALANCE_OF + encode({ value: address, type: 'address' }),
-			callee: contractId,
-		});
-		tx.addSigner(PrivateKey.fromWif(config.echo.privateKeyWif));
-		const [{ trx: { operation_results: [[, callResult]] } }] = await tx.broadcast();
-		const [, { exec_res: { output: hexValue } }] =
-			await this.getContractResult(<string>callResult);
+		const hexValue = await this.echoConnection.echo.api.callContractNoChangingState(
+			contractId,
+			address,
+			ECHO.ASSET.ECHO,
+			// FIXME: use constant
+			ERC20.METHOD.HASH.BALANCE_OF + encode({ value: address, type: 'address' }),
+		);
 		return decode(hexValue, ERC20.METHOD.RESULT_TYPE.BALANCE_OF);
 	}
 

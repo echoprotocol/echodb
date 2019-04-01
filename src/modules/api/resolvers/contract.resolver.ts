@@ -1,20 +1,22 @@
+import AccountRepository from '../../../repositories/account.repository';
 import AbstractResolver, { handleError } from './abstract.resolver';
-import AccountService from '../../../services/account.service';
 import Contract from '../types/contract.type';
 import ContractService, { ERROR as CONTRACT_SERVICE_ERROR } from '../../../services/contract.service';
 import PaginatedResponse from '../types/paginated.response.type';
 import { ContractForm, ContractsForm } from '../forms/contract.forms';
 import { Resolver, Query, Args, FieldResolver, Root } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
+import { isMongoObjectId } from '../../../utils/validators';
+
 const paginatedContracts = PaginatedResponse(Contract);
 
 @Resolver(Contract)
 export default class ContractResolver extends AbstractResolver {
-	@inject static accountService: AccountService;
+	@inject static accountRepository: AccountRepository;
 	@inject static contractService: ContractService;
 
 	constructor(
-		private accountService: AccountService,
+		private accountRepository: AccountRepository,
 		private contractService: ContractService,
 	) {
 		super();
@@ -33,8 +35,11 @@ export default class ContractResolver extends AbstractResolver {
 		return this.contractService.getContracts(count, offset, { registrars, type });
 	}
 
+	// FIXME: do it in a better way
 	@FieldResolver()
-	registrar(@Root('registrar') id: string) {
-		return this.accountService.getAccount(id);
+	registrar(@Root('_registrar') contract: any) {
+		if (isMongoObjectId(contract)) return this.accountRepository.findByMongoId(contract);
+		if (this.accountRepository.isChild(contract)) return contract;
 	}
+
 }

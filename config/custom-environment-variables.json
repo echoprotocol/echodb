@@ -2,7 +2,5 @@
     "env": "NODE_ENV",
     "port": "PORT",
     "echo": {
-        "accountId": "ACC_ID",
-        "privateKeyWif": "PK_WIF"
     }
 }
