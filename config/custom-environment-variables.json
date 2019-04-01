@@ -2,5 +2,22 @@
     "env": "NODE_ENV",
     "port": "PORT",
     "echo": {
-    }
+		"url": "ECHO_URL"
+	},
+	"raven": {
+		"enabled": "RAVEN_ENABLED",
+		"config": "RAVEN_CONFIG"
+	},
+	"redis": {
+		"host": "REDIS_HOST",
+		"channel": "REDIS_CHANNEL"
+	},
+	"db": {
+		"user": "DB_NAME",
+		"password": "DB_PASSOWRD",
+		"host": "DB_HOST",
+		"port": "DB_PORT",
+		"database": "DB_DATABASE",
+		"protocol": "DB_PROTOCOL"
+	}
 }
