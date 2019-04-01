@@ -20,13 +20,13 @@ export default class BalanceService {
 	) {}
 
 	// TODO: refactor coz of type
-	async getBalance(account: string, type?: BALANCE.TYPE) {
+	async getBalance(count: number, offset: number, account: string, type?: BALANCE.TYPE) {
 		const dAccount = await this.accountRepository.findById(account);
 		if (!dAccount) throw new ProcessingError(ERROR.ACCOUNT_NOT_FOUND);
 		const query: { _account: MongoId, type?: string } = { _account: dAccount };
 		if (type) query.type = type;
 		const [items, total] = await Promise.all([
-			this.balanceRepository.find(query, null, { populate: '_contract' }),
+			this.balanceRepository.find(query, null, { limit: count, skip: offset, populate: '_contract' }),
 			this.balanceRepository.count(query),
 		]);
 		for (const dBalance of items) {

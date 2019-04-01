@@ -29,8 +29,8 @@ export default class BalanceResolver extends AbstractResolver {
 	@handleError({
 		[BALANCE_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [404, 'account not found'],
 	})
-	getBalances(@Args() { account, type }: BalancesForm) {
-		return this.balanceService.getBalance(account, type);
+	getBalances(@Args() { count, offset, account, type }: BalancesForm) {
+		return this.balanceService.getBalance(count, offset, account, type);
 	}
 
 	@Query(() => Balance)
