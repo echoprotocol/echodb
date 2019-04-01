@@ -1,18 +1,31 @@
+import { SomeOfAny } from './../types/some.of.d';
 import ContractRepository from '../repositories/contract.repository';
+import AccountRepository from '../repositories/account.repository';
 import ProcessingError from '../errors/processing.error';
 import * as CONTRACT from '../constants/contract.constants';
 import * as ERC20 from '../constants/erc20.constants';
+import * as TOKEN from '../constants/token.constants';
+import { AccountId } from '../types/echo';
+import { ITokenInfo } from '../interfaces/IContract';
 
 type GetContractsQuery = { registrar?: object, type?: CONTRACT.TYPE };
+type GetTokensQuery = { _registrar?: any, type?: any, token_info?: SomeOfAny<ITokenInfo> };
 
+interface GetTokensParameters {
+	registrar?: AccountId;
+	name?: string;
+	symbol?: string;
+	type?: TOKEN.TYPE;
+}
 export const ERROR = {
-	CONTRACT_NOT_FOUND: 'not found',
+	CONTRACT_NOT_FOUND: 'contract not found',
 };
 
 export default class ContractService {
 
 	constructor(
 		readonly contractRepository: ContractRepository,
+		readonly accountRepository: AccountRepository,
 	) {}
 
 	getTypeByCode(bytecode: string): CONTRACT.TYPE {
@@ -43,6 +56,35 @@ export default class ContractService {
 		if (type) query.type = type;
 		const [items, total] = await Promise.all([
 			this.contractRepository.find(query, null, { limit: count, skip: offset }),
+			this.contractRepository.count(query),
+		]);
+		return { items, total };
+	}
+
+	// FIXME: refactor
+	async getTokens(
+		count: number,
+		offset: number,
+		{ registrar, type, name, symbol }: GetTokensParameters,
+	) {
+		const query: GetTokensQuery = {};
+		const tokenInfo: SomeOfAny<ITokenInfo> = {};
+		if (registrar) query._registrar = registrar;
+		if (type) query.type = type;
+		else query.type = { $in: Object.values(TOKEN.TYPE) };
+		if (symbol) tokenInfo.symbol = symbol;
+		// TODO: limit regex abilities
+		if (name) tokenInfo.name = new RegExp(name);
+		for (const key of Object.keys(tokenInfo)) {
+			// @ts-ignore
+			query[`token_info.${key}`] = tokenInfo[key];
+		}
+		console.log(query);
+		const [items, total] = await Promise.all([
+			this.contractRepository.find(query, null, {
+				limit: count,
+				skip: offset,
+			}),
 			this.contractRepository.count(query),
 		]);
 		return { items, total };

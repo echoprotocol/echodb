@@ -6,6 +6,7 @@ import BalanceResolver from './resolvers/balance.resolver';
 import BlockResolver from './resolvers/block.resolver';
 import OperationResolver from './resolvers/operation.resolver';
 import TransactionResolver from './resolvers/transaction.resolver';
+import TokenResolver from './resolvers/token.resolver';
 import RavenHelper from '../../helpers/raven.helper';
 import RestError from '../../errors/rest.error';
 import FormError from '../../errors/form.error';
@@ -31,6 +32,7 @@ export default class ApiModule extends AbstractModule {
 		readonly blockResolver: BlockResolver,
 		readonly operationResolver: OperationResolver,
 		readonly transactionResolver: TransactionResolver,
+		readonly tokenResolver: TokenResolver,
 	) {
 		super();
 	}

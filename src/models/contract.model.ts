@@ -1,8 +1,14 @@
-import AbstractModel from './abstract.model';
+import AbstractModel, { createSchema } from './abstract.model';
 import * as MODEL from '../constants/model.constants';
 import * as CONTRACT from '../constants/contract.constants';
-import { IContract } from '../interfaces/IContract';
+import { IContract, ITokenInfo } from '../interfaces/IContract';
 import { Schema } from 'mongoose';
+
+const erc20infoSchema = createSchema<ITokenInfo>({
+	total_supply: String,
+	name: String,
+	symbol: String,
+});
 
 export default AbstractModel<IContract>(MODEL.NAME.CONTRACT, {
 	id: String,
@@ -10,6 +16,7 @@ export default AbstractModel<IContract>(MODEL.NAME.CONTRACT, {
 	eth_accuracy: Boolean,
 	supported_asset_id: String,
 	type: { $type: String, enum: Object.values(CONTRACT.TYPE) },
+	token_info: erc20infoSchema,
 }, {
 	typeKey: '$type',
 });

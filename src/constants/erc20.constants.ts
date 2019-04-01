@@ -4,7 +4,9 @@ export enum METHOD_NAME {
 	BALANCE_OF = 'balanceOf',
 	TOTAL_SUPPLY = 'totalSupply',
 	ALLOWANCE = 'allowance',
-	APPROVE = '095ea7b3',
+	APPROVE = 'approve',
+	NAME = 'name',
+	SYMBOL = 'symbol',
 }
 
 export enum METHOD_HASH {
@@ -14,10 +16,15 @@ export enum METHOD_HASH {
 	BALANCE_OF = '70a08231',
 	ALLOWANCE = 'dd62ed3e',
 	APPROVE = '095ea7b3',
+	NAME = '06fdde03',
+	SYMBOL = '95d89b41',
 }
 
 export const METHOD_RESULT_TYPE = {
 	BALANCE_OF: ['uint256'],
+	TOTAL_SUPPLY: ['uint256'],
+	NAME: ['string'],
+	SYMBOL: ['string'],
 };
 
 export const METHOD_MAP: { [x: string]: null | [METHOD_NAME, string[]] } = {
