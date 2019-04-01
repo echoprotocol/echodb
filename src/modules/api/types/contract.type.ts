@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import Account from './account.type';
 import * as CONTRACT from '../../../constants/contract.constants';
 import { ObjectType, Field, registerEnumType } from 'type-graphql';

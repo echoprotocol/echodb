@@ -18,3 +18,6 @@ async function main() {
 }
 
 main();
+
+// global todos:
+// TODO: use const enums

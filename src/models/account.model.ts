@@ -1,7 +1,7 @@
-import { Schema } from 'mongoose';
+import AbstractModel from './abstract.model';
 import * as MODEL from '../constants/model.constants';
 import { IAccount } from '../interfaces/IAccount';
-import AbstractModel from './abstract.model';
+import { Schema } from 'mongoose';
 
 export default AbstractModel<IAccount>(MODEL.NAME.ACCOUNT, {
 	id: String,

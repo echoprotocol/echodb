@@ -31,6 +31,11 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			...body,
 			supported_asset_id: body.supported_asset_id || null,
 		});
+		return this.validateRelation({
+			from: [body.registrar],
+			assets: [body.fee.asset_id],
+			contract: result,
+		});
 	}
 
 }

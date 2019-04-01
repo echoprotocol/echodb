@@ -1,8 +1,13 @@
+import ContractRepository from '../repositories/contract.repository';
+import ProcessingError from '../errors/processing.error';
 import * as CONTRACT from '../constants/contract.constants';
 import * as ERC20 from '../constants/erc20.constants';
-import ContractRepository from '../repositories/contract.repository';
 
 type GetContractsQuery = { registrar?: object, type?: CONTRACT.TYPE };
+
+export const ERROR = {
+	CONTRACT_NOT_FOUND: 'not found',
+};
 
 export default class ContractService {
 
@@ -22,8 +27,10 @@ export default class ContractService {
 		return true;
 	}
 
-	getContract(id: string) {
-		return this.contractRepository.findById(id);
+	async getContract(id: string) {
+		const dContract = await this.contractRepository.findById(id);
+		if (!dContract) throw new ProcessingError(ERROR.CONTRACT_NOT_FOUND);
+		return dContract;
 	}
 
 	async getContracts(

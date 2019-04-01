@@ -1,6 +1,9 @@
-import BlockRepository from './../repositories/block.repository';
+import BlockRepository from '../repositories/block.repository';
+import ProcessingError from '../errors/processing.error';
 
-import * as API from '../constants/api.constants';
+export const ERROR = {
+	BLOCK_NOT_FOUND: 'block not found',
+};
 
 export default class BlockService {
 
@@ -9,18 +12,20 @@ export default class BlockService {
 	) {}
 
 	async getBlock(round: number) {
-		return this.blockRepository.findOne({ round });
+		const dBlock = await this.blockRepository.findOne({ round });
+		if (!dBlock) throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
+		return dBlock;
 	}
 
-	async getBlocks(count: number = API.PAGINATION.DEFAULT_COUNT, offset: number = 0) {
-		if (count > API.PAGINATION.MAX_COUNT) {
-			count = API.PAGINATION.MAX_COUNT;
-		}
-
-		return this.blockRepository.find({} , null, {
-			skip: offset,
-			limit: count,
-		});
+	async getBlocks(count: number, offset: number) {
+		const [items, total] = await Promise.all([
+			this.blockRepository.find({} , null, {
+				skip: offset,
+				limit: count,
+			}),
+			this.blockRepository.count({}),
+		]);
+		return { total, items };
 	}
 
 }

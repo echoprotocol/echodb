@@ -1,4 +1,9 @@
 import AccountRepository from './../repositories/account.repository';
+import ProcessingError from '../errors/processing.error';
+
+export const ERROR = {
+	ACCOUNT_NOT_FOUND: 'account not found',
+};
 
 export default class AccountService {
 
@@ -6,9 +11,12 @@ export default class AccountService {
 		readonly accountRepository: AccountRepository,
 	) {}
 
-	getAccount(id?: string, name?: string) {
-		if (id) return this.accountRepository.findById(id);
-		if (name) return this.accountRepository.findOne({ name });
+	async getAccount(id?: string, name?: string) {
+		let dAccount;
+		if (id) dAccount = await this.accountRepository.findById(id);
+		if (name) dAccount = await this.accountRepository.findOne({ name });
+		if (!dAccount) throw new ProcessingError(ERROR.ACCOUNT_NOT_FOUND);
+		return dAccount;
 	}
 
 	async getAccounts(count: number, offset: number) {

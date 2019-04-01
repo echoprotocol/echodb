@@ -47,6 +47,11 @@ export default class AccountWhitelistOperation extends AbstractOperation<OP_ID> 
 			}
 		}
 		this.redisConnection.emit(REDIS.EVENT.ACCOUNT_UPDATED, body.authorizing_account);
+		return this.validateRelation({
+			from: [body.authorizing_account],
+			assets: [body.fee.asset_id],
+			accounts: [body.account_to_list],
+		});
 	}
 
 }

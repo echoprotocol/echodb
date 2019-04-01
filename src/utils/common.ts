@@ -1,3 +1,5 @@
+// TODO: sort functions
+
 export function removeExtension(value: string): string {
 	return value.replace(/\.[a-z]+$/, '');
 }

@@ -1,11 +1,11 @@
-import { Document, Model, ModelPopulateOptions } from 'mongoose';
 import RavenHelper from '../helpers/raven.helper';
+import { SomeOf } from '../types/some.of';
+import { Document, Model, ModelPopulateOptions } from 'mongoose';
 import { QueryOptions, MongoId } from '../types/mongoose';
 
 // TODO: use mongoose Query<T>
 // TODO: do no send private info to raven ???
 
-type SomeOf<T extends {}> = { [x in keyof T]?: T[x] };
 // TODO: add more words like $set
 type Update<T extends {}> = { $set: SomeOf<T> } | SomeOf<T>;
 type TDocument<T extends {}> = T & Document;
@@ -119,7 +119,7 @@ export default abstract class AbstractRepository<T = object> {
 		}
 	}
 
-	isChild(object: object) {
+	isChild(object: any) {
 		return object instanceof this.model;
 	}
 

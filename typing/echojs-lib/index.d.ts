@@ -151,7 +151,7 @@ declare module 'echojs-lib' {
 		setBlockApplySubscribe(cb: (block: Block) => void): void;
 	}
 
-	export { PrivateKey  } from 'echojs-lib';
+	export { PrivateKey, validators } from 'echojs-lib';
 
 	export class Echo {
 		api?: API;

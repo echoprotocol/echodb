@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import Account from './account.type';
 import Contract from './contract.type';
 import * as BALANCE from '../../../constants/balance.constants';

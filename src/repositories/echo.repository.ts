@@ -24,7 +24,6 @@ export default class EchoRepository {
 				await this.echoConnection.echo.api.getDynamicGlobalProperties();
 			return lastBlockNum;
 		} catch (error) {
-			console.log(error);
 			// TODO: raven here
 			throw error;
 		}

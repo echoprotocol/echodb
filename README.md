@@ -14,7 +14,7 @@ Steps to install such dependency:
 2) Build. (`npm run build` is a common command)
 3) Run `npm link`
 4) Go to this project (not dependency!) folder
-5) Run `npm run link {dependency_name}`
+5) Run `npm link {dependency_name}`
 
 
 

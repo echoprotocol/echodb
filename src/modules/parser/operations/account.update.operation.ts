@@ -37,6 +37,11 @@ export default class AccountUpdateOperation extends AbstractOperation<OP_ID> {
 			{ $set: toUpdate },
 		);
 		this.redisConnection.emit(REDIS.EVENT.ACCOUNT_UPDATED, body.account);
+		// FIXME: add some fields from options ?
+		return this.validateRelation({
+			from: [body.account],
+			assets: [body.fee.asset_id],
+		});
 	}
 
 }

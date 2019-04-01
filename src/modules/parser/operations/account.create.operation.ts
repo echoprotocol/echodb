@@ -34,7 +34,7 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 			active: body.active,
 			ed_key: body.ed_key,
 			options: body.options,
-			statistics: '2.6.12',
+			statistics: '2.6.12', // FIXME: what sould be placed here?
 			whitelisting_accounts: [],
 			blacklisting_accounts: [],
 			whitelisted_accounts: [],
@@ -42,6 +42,11 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 			owner_special_authority: body.owner_special_authority,
 			active_special_authority: body.owner_special_authority,
 			top_n_control_flags: 0,
+		});
+		return this.validateRelation({
+			from: [body.registrar],
+			accounts: [result, body.registrar, body.referrer],
+			assets: [body.fee.asset_id],
 		});
 	}
 

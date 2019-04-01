@@ -66,3 +66,4 @@ config/local.json
 apidoc
 .idea/
 dist/
+.vscode/

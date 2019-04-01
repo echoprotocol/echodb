@@ -31,7 +31,12 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 			await this.echoService.checkAccounts([body.registrar]);
 			return;
 		}
-		if (dContract.type === CONTRACT.TYPE.ERC20) await this.handleERC20(dContract, body);
+		if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body);
+		return this.validateRelation({
+			from: [body.registrar],
+			assets: [body.fee.asset_id],
+			contract: body.callee,
+		});
 	}
 
 	// FIXME: refactor ?
@@ -40,16 +45,29 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		if (!method) return;
 		const [name, parameters] = method;
 		const code = body.code.substring(8);
+		const commonRelation = {
+			assets: [body.fee.asset_id],
+			token: body.callee,
+			contract: body.callee,
+		};
 		switch (name) {
 			case ERC20.METHOD_NAME.TRANSFER: {
 				const [to] = <[string]>decode(code, parameters);
 				await this.updateAccountBalances(dContract, body.registrar, to);
-				break;
+				return this.validateRelation({
+					...commonRelation,
+					to,
+					from: [body.registrar],
+				});
 			}
 			case ERC20.METHOD_NAME.TRANSFER_FROM: {
 				const [from, to] = <[string, string]>decode(code, parameters);
 				await this.updateAccountBalances(dContract, from, to);
-				break;
+				return this.validateRelation({
+					...commonRelation,
+					to,
+					from: [body.registrar, from],
+				});
 			}
 			default:
 				return;

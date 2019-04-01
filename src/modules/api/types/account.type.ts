@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import AccountAuthority from './account.authority.type';
 import AccountOptions from './account.options.type';
 import { ObjectType, Field } from 'type-graphql';

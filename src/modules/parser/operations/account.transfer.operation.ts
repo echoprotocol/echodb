@@ -22,6 +22,11 @@ export default class AccountTransferOperation extends AbstractOperation<OP_ID> {
 			{ $set: { id: body.new_owner } },
 		);
 		this.redisConnection.emit(REDIS.EVENT.ACCOUNT_OWNER_CHANGED, { old: body.account_id, new: body.new_owner });
+		return this.validateRelation({
+			from: [body.account_id],
+			accounts: [body.new_owner],
+			assets: [body.fee.asset_id],
+		});
 	}
 
 }

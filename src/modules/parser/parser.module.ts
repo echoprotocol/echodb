@@ -1,5 +1,6 @@
 import AbstractModule from '../abstract.module';
 import InfoRepository from '../../repositories/info.repository';
+import EchoService from '../../services/echo.service';
 import * as INFO from '../../constants/info.constants';
 import * as TIME from '../../constants/time.constants';
 import * as REDIS from '../../constants/redis.constants';
@@ -31,6 +32,7 @@ export default class ParserModule extends AbstractModule {
 		readonly redisConnection: RedisConnection,
 		readonly infoRepository: InfoRepository,
 		readonly echoRepository: EchoRepository,
+		readonly echoService: EchoService,
 		readonly blockRepository: BlockRepository,
 		readonly transactionRepository: TransactionRepository,
 		readonly memoryHelper: MemoryHelper,
@@ -79,7 +81,10 @@ export default class ParserModule extends AbstractModule {
 
 	async parseBlock(block: Block) {
 		// TODO: new_block hook after transaction
-		const dBlock = await this.blockRepository.create(block);
+		const [dBlock] = await Promise.all([
+			this.blockRepository.create(block),
+			this.echoService.checkAccounts([block.account]),
+		]);
 		for (const tx of block.transactions) {
 			logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
 			const dTx = await this.transactionRepository.create({ ...tx, _block: dBlock });

@@ -11,6 +11,7 @@ import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
+import { IOperation } from 'interfaces/IOperation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -50,13 +51,20 @@ export default class OperationManager {
 		[_, result]: [unknown, ECHO.OPERATION_RESULT[T]],
 		dTx: ITransactionDocument,
 	) {
-		const dOperation = await this.operationRepository.create({ id, body, result, _tx: dTx });
+		const operation: IOperation<T> = {
+			id,
+			body,
+			result,
+			_tx: dTx,
+			_relation: {},
+		};
 		if (!this.map[id]) {
 			logger.warn(`Operation ${id} is not supported`);
-			return;
+		} else {
+			logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
+			operation._relation = await this.map[id].parse(body, result);
 		}
-		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
-		await this.map[id].parse(body, result);
+		const dOperation = await this.operationRepository.create(operation);
 		this.redisConnection.emit(REDIS.EVENT.NEW_OPERATION, dOperation);
 	}
 
