@@ -1,4 +1,5 @@
 import Account from './account.type';
+import ContractId from './contract.id.type';
 import * as CONTRACT from '../../../constants/contract.constants';
 import { ObjectType, Field, registerEnumType } from 'type-graphql';
 
@@ -9,7 +10,7 @@ registerEnumType(CONTRACT.TYPE, {
 
 @ObjectType()
 export default class Contract {
-	@Field()
+	@Field(() => ContractId)
 	id: string;
 
 	@Field()

@@ -6,8 +6,8 @@ import BlockRepository from '../../../repositories/block.repository';
 import PaginatedResponse from '../types/paginated.response.type';
 import TransactionRepository from '../../../repositories/transaction.repository';
 import Transaction from '../types/transaction.type';
-import * as API from '../../../constants/api.constants';
-import { Resolver, Query, Arg, FieldResolver, Root } from 'type-graphql';
+import { BlockForm, BlocksForm } from '../forms/block.forms';
+import { Resolver, Query, Args, FieldResolver, Root } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
@@ -34,18 +34,13 @@ export default class BlockResolver extends AbstractResolver {
 	@handleError({
 		[BLOCK_SERVICE_ERROR.BLOCK_NOT_FOUND]: [404],
 	})
-	getBlock(
-		@Arg('round', { nullable: false }) round: number,
-	) {
+	getBlock(@Args() { round }: BlockForm) {
 		return this.blockService.getBlock(round);
 	}
 
 	// TODO: add filters
 	@Query(() => paginatedBlocks)
-	getBlocks(
-		@Arg('count', { defaultValue: API.PAGINATION.DEFAULT_COUNT }) count: number,
-		@Arg('offset', { defaultValue: 0 }) offset: number,
-	) {
+	getBlocks(@Args() { count, offset }: BlocksForm) {
 		return this.blockService.getBlocks(count, offset);
 	}
 

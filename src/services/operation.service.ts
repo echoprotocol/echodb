@@ -1,6 +1,5 @@
 import OperationRepository from '../repositories/operation.repository';
 import * as ECHO from '../constants/echo.constants';
-import * as API from '../constants/api.constants';
 import { SomeOfAny } from '../types/some.of';
 import { AccountId, ContractId, AssetId } from 'types/echo';
 import { IOperationRelation } from '../interfaces/IOperation';
@@ -64,11 +63,6 @@ export default class EchoService {
 			// @ts-ignore
 			query[`_relation.${relationKey}`] = relation[relationKey];
 		}
-
-		if (count > API.PAGINATION.MAX_COUNT) {
-			count = API.PAGINATION.MAX_COUNT;
-		}
-
 		const [items, total] = await Promise.all([
 			this.operationRepository.find(query , null, { skip: offset, limit: count }),
 			this.operationRepository.count(query),

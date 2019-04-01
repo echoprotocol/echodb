@@ -1,6 +1,11 @@
+import AbstractForm from '../forms/abstract.form';
+import AbstractJoiLanguage from '../forms/abstract.joi.language';
 import RestError from '../../../errors/rest.error';
 import ProcessingError from '../../../errors/processing.error';
+import FormError from '../../../errors/form.error';
+import * as Joi from 'joi';
 import { MethodErrorMap } from '../../../types/error.map';
+import { UseMiddleware } from 'type-graphql';
 
 export default abstract class AbstractResolver {
 
@@ -29,4 +34,23 @@ export function handleError(errorMap: MethodErrorMap) {
 		};
 		return descriptor;
 	};
+}
+
+export function validateArgs({ joiSchema }: typeof AbstractForm) {
+	return UseMiddleware(async ({ args }, next) => {
+		const { error } = Joi.validate(args, joiSchema, { language: AbstractJoiLanguage });
+		if (!error) return next();
+		const formError = new FormError();
+		for (const { message, path, context } of error.details) {
+			const field = path.join('.');
+			const matches = message.match(/(?<={!{0,2})\w+(?=})/g);
+			const variables = matches.reduce((obj, label) => {
+				if (!context || !context.hasOwnProperty(label)) throw new Error('error has no needed property');
+				obj[label] = context[label];
+				return obj;
+			}, <{ [key: string]: string }>{});
+			formError.add(field, message, variables);
+		}
+		throw formError;
+	});
 }

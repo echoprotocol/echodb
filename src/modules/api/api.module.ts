@@ -8,6 +8,7 @@ import OperationResolver from './resolvers/operation.resolver';
 import TransactionResolver from './resolvers/transaction.resolver';
 import RavenHelper from '../../helpers/raven.helper';
 import RestError from '../../errors/rest.error';
+import FormError from '../../errors/form.error';
 import * as config from 'config';
 import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
@@ -63,9 +64,12 @@ export default class ApiModule extends AbstractModule {
 			graphiql: config.env === 'development',
 			formatError: (error: GraphQLError) => {
 				const original = error.originalError;
-				if (!original) return formatError(error);
+				if (!original || original instanceof GraphQLError) return formatError(error);
 				if (original instanceof RestError) {
-					return { code: (<RestError>original).code, message: original.message };
+					return {
+						code: original.code,
+						message: original instanceof FormError ? original.details : original.message,
+					};
 				}
 				logger.error(error);
 				// TODO: add raven

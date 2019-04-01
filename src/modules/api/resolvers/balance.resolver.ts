@@ -4,8 +4,8 @@ import ContractRepository from '../../../repositories/contract.repository';
 import Balance from '../types/balance.type';
 import BalanceService, { ERROR as BALANCE_SERVICE_ERROR } from '../../../services/balance.service';
 import PaginatedResponse from '../types/paginated.response.type';
-import * as BALANCE from '../../../constants/balance.constants';
-import { Resolver, Query, Arg, FieldResolver, Root } from 'type-graphql';
+import { BalanceInForm, BalancesForm } from '../forms/balance.forms';
+import { Resolver, Query, Args, FieldResolver, Root } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 
@@ -29,10 +29,7 @@ export default class BalanceResolver extends AbstractResolver {
 	@handleError({
 		[BALANCE_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [404, 'account not found'],
 	})
-	getBalances(
-		@Arg('account', { nullable: false }) account: string,
-		@Arg('type', { nullable: true, description: 'balance type' }) type: BALANCE.TYPE,
-	) {
+	getBalances(@Args() { account, type }: BalancesForm) {
 		return this.balanceService.getBalance(account, type);
 	}
 
@@ -41,10 +38,7 @@ export default class BalanceResolver extends AbstractResolver {
 		[BALANCE_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [404],
 		[BALANCE_SERVICE_ERROR.CONTRACT_NOT_FOUND]: [404],
 	})
-	getBalanceIn(
-		@Arg('account', { nullable: false }) account: string,
-		@Arg('contract', { nullable: false }) contract: string,
-	) {
+	getBalanceIn(@Args() { account, contract }: BalanceInForm) {
 		return this.balanceService.getBalanceIn(account, contract);
 	}
 

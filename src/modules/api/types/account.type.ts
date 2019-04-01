@@ -1,10 +1,11 @@
 import AccountAuthority from './account.authority.type';
 import AccountOptions from './account.options.type';
+import AccountId from './account.id.type';
 import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
 export default class Account {
-	@Field() id: string;
+	@Field(() => AccountId) id: string;
 	@Field() membership_expiration_date: string;
 	@Field() registrar: Account;
 	@Field() referrer: Account;

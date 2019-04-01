@@ -14,7 +14,7 @@ export default class Balance {
 	_account: MongoId;
 	_contract: MongoId;
 	@Field() account: Account;
-	@Field() type: BALANCE.TYPE;
+	@Field(() => BALANCE.TYPE) type: BALANCE.TYPE;
 	@Field() amount: number;
 	@Field() asset: string;
 	@Field() contract: Contract;
