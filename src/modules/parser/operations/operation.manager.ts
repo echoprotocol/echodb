@@ -1,17 +1,18 @@
-import { getLogger } from 'log4js';
 import AbstractOperation from './abstract.operation';
-import * as ECHO from '../../../constants/echo.constants';
-import * as REDIS from '../../../constants/redis.constants';
-import OperationRepository from '../../../repositories/operation.repository';
-import { ITransactionDocument } from 'interfaces/ITransaction';
-import RedisConnection from '../../../connections/redis.connection';
+import AccountUpgradeOperation from './account.upgrade.operation';
 import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
 import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
+import OperationRepository from '../../../repositories/operation.repository';
+import RedisConnection from '../../../connections/redis.connection';
+import * as ECHO from '../../../constants/echo.constants';
+import * as REDIS from '../../../constants/redis.constants';
 import { IOperation } from 'interfaces/IOperation';
+import { ITransactionDocument } from 'interfaces/ITransaction';
+import { getLogger } from 'log4js';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -27,6 +28,7 @@ export default class OperationManager {
 		accountUpdateOperation: AccountUpdateOperation,
 		accountTransferOperation: AccountTransferOperation,
 		accountWhitelistOperation: AccountWhitelistOperation,
+		accountUpgradeOperation: AccountUpgradeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 	) {
@@ -37,6 +39,7 @@ export default class OperationManager {
 			accountWhitelistOperation,
 			contractCreateOperation,
 			contractCallOperation,
+			accountUpgradeOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
