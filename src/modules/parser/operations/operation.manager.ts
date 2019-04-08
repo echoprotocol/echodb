@@ -10,6 +10,7 @@ import AccountUpdateOperation from './account.update.operation';
 import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import AssetCreateOperation from './asset.create.operation';
+import AssetUpdateOperation from './asset.update.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import { IOperation } from 'interfaces/IOperation';
@@ -29,6 +30,7 @@ export default class OperationManager {
 		accountTransferOperation: AccountTransferOperation,
 		accountWhitelistOperation: AccountWhitelistOperation,
 		assetCreateOperation: AssetCreateOperation,
+		assetUpdateOperation: AssetUpdateOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 	) {
@@ -38,6 +40,7 @@ export default class OperationManager {
 			accountUpdateOperation,
 			accountWhitelistOperation,
 			assetCreateOperation,
+			assetUpdateOperation,
 			contractCreateOperation,
 			contractCallOperation,
 		];

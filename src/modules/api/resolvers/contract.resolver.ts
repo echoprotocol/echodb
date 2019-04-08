@@ -38,9 +38,9 @@ export default class ContractResolver extends AbstractResolver {
 
 	// FIXME: do it in a better way
 	@FieldResolver()
-	registrar(@Root('_registrar') account: IAccountDocument) {
-		if (isMongoObjectId(account)) return this.accountRepository.findByMongoId(account);
-		if (this.accountRepository.isChild(account)) return account;
+	registrar(@Root('_registrar') dAccount: IAccountDocument) {
+		if (isMongoObjectId(dAccount)) return this.accountRepository.findByMongoId(dAccount);
+		if (this.accountRepository.isChild(dAccount)) return dAccount;
 	}
 
 }

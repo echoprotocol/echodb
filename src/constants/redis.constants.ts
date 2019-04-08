@@ -10,6 +10,7 @@ export enum EVENT {
 	NEW_TRANSACTION,
 	NEW_OPERATION,
 	ACCOUNT_UPDATED,
+	ASSET_UPDATED,
 	ACCOUNT_OWNER_CHANGED,
 }
 
@@ -20,6 +21,7 @@ export type EVENT_PAYLOAD_TYPE = {
 	[EVENT.NEW_TRANSACTION]: ITransactionDocument;
 	[EVENT.NEW_OPERATION]: IOperationDocument<ECHO.OPERATION_ID>;
 	[EVENT.ACCOUNT_UPDATED]: string; // account id
+	[EVENT.ASSET_UPDATED]: string; // asset id
 	[EVENT.ACCOUNT_OWNER_CHANGED]: { old: string, new: string };
 };
 

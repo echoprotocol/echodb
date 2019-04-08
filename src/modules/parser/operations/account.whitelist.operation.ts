@@ -46,6 +46,7 @@ export default class AccountWhitelistOperation extends AbstractOperation<OP_ID> 
 				removeFromArray(dAccount.blacklisted_accounts, body.account_to_list);
 			}
 		}
+		await dAccount.save();
 		this.redisConnection.emit(REDIS.EVENT.ACCOUNT_UPDATED, body.authorizing_account);
 		return this.validateRelation({
 			from: [body.authorizing_account],

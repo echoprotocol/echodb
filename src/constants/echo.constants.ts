@@ -9,6 +9,7 @@ export enum OPERATION_ID {
 	ACCOUNT_WHITELIST = 7,
 	ACCOUNT_TRANSFER = 9,
 	ASSET_CREATE = 10,
+	ASSET_UPDATE = 11,
 	CONTRACT_CREATE = 47,
 	CONTRACT_CALL = 48,
 }
@@ -20,6 +21,7 @@ export type Operations = {
 	[OPERATION_ID.ACCOUNT_TRANSFER]: AccountTransferOperation;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: AccountWhitelistOperation;
 	[OPERATION_ID.ASSET_CREATE]: AssetCreateOperation;
+	[OPERATION_ID.ASSET_UPDATE]: AssetUpdateOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 };
@@ -31,6 +33,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ACCOUNT_TRANSFER]: string;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: unknown;
 	[OPERATION_ID.ASSET_CREATE]: string;
+	[OPERATION_ID.ASSET_UPDATE]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: unknown;
 };
@@ -188,6 +191,15 @@ interface AssetCreateOperation {
 	common_options: AssetOptions;
 	bitasset_opts: BitassetOpts;
 	is_prediction_market: boolean;
+	extensions: ExtensionsArr;
+}
+
+interface AssetUpdateOperation {
+	fee: Fee;
+	issuer: string;
+	asset_to_update: string;
+	new_issuer: string;
+	new_options: AssetOptions;
 	extensions: ExtensionsArr;
 }
 

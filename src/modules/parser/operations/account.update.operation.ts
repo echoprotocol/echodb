@@ -33,7 +33,7 @@ export default class AccountUpdateOperation extends AbstractOperation<OP_ID> {
 		if (body.ed_key) toUpdate.ed_key = body.ed_key;
 		if (body.new_options) toUpdate.options = body.new_options;
 		await this.accountRepository.updateOne(
-			{ account: body.account },
+			{ id: body.account },
 			{ $set: toUpdate },
 		);
 		this.redisConnection.emit(REDIS.EVENT.ACCOUNT_UPDATED, body.account);

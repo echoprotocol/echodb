@@ -1,9 +1,9 @@
 import AbstractOperation from './abstract.operation';
+import AssetRepository from '../../../repositories/asset.repository';
 import RedisConnection from 'connections/redis.connection';
+import EchoService from '../../../services/echo.service';
 import * as REDIS from '../../../constants/redis.constants';
 import * as ECHO from '../../../constants/echo.constants';
-import EchoService from '../../../services/echo.service';
-import AssetRepository from '../../../repositories/asset.repository';
 
 type OP_ID = ECHO.OPERATION_ID.ASSET_CREATE;
 
