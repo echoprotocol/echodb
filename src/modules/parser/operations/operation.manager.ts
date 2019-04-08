@@ -6,6 +6,7 @@ import AccountWhitelistOperation from './account.whitelist.operation';
 import AssetCreateOperation from './asset.create.operation';
 import AssetUpdateOperation from './asset.update.operation';
 import AssetIssueOperation from './asset.issue.operation';
+import AssetReserverOperation from './asset.reserve.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import OperationRepository from '../../../repositories/operation.repository';
@@ -33,6 +34,7 @@ export default class OperationManager {
 		assetCreateOperation: AssetCreateOperation,
 		assetUpdateOperation: AssetUpdateOperation,
 		assetIssueOperation: AssetIssueOperation,
+		assetReserveOperation: AssetReserverOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 	) {
@@ -46,6 +48,7 @@ export default class OperationManager {
 			contractCreateOperation,
 			contractCallOperation,
 			assetIssueOperation,
+			assetReserveOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

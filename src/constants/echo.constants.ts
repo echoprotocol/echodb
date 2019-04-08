@@ -12,6 +12,7 @@ export enum OPERATION_ID {
 	ASSET_CREATE = 10,
 	ASSET_UPDATE = 11,
 	ASSET_ISSUE = 14,
+	ASSET_RESERVE = 15,
 	CONTRACT_CREATE = 47,
 	CONTRACT_CALL = 48,
 }
@@ -25,6 +26,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_CREATE]: AssetCreateOperation;
 	[OPERATION_ID.ASSET_UPDATE]: AssetUpdateOperation;
 	[OPERATION_ID.ASSET_ISSUE]: AssetIssueOperation;
+	[OPERATION_ID.ASSET_RESERVE]: AssetReserveOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 };
@@ -38,6 +40,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ASSET_CREATE]: string;
 	[OPERATION_ID.ASSET_UPDATE]: unknown;
 	[OPERATION_ID.ASSET_ISSUE]: unknown;
+	[OPERATION_ID.ASSET_RESERVE]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: unknown;
 };
@@ -216,6 +219,16 @@ interface AssetIssueOperation {
 		asset_id: AssetId
 	};
 	issue_to_account: AccountId;
+	extensions: ExtensionsArr;
+}
+
+interface AssetReserveOperation {
+	fee: Fee;
+	payer: AccountId;
+	amount_to_reserve: {
+		amount: string | number,
+		asset_id: AssetId;
+	};
 	extensions: ExtensionsArr;
 }
 
