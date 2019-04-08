@@ -1,3 +1,5 @@
+import { AccountId } from '../types/echo';
+
 export enum ASSET {
 	ECHO = '1.3.0',
 }
@@ -7,6 +9,7 @@ export enum OPERATION_ID {
 	ACCOUNT_CREATE = 5,
 	ACCOUNT_UPDATE = 6,
 	ACCOUNT_WHITELIST = 7,
+	ACCOUNT_UPGRADE = 8,
 	ACCOUNT_TRANSFER = 9,
 	CONTRACT_CREATE = 47,
 	CONTRACT_CALL = 48,
@@ -17,6 +20,7 @@ export type Operations = {
 	[OPERATION_ID.ACCOUNT_CREATE]: AccountCreateOperation;
 	[OPERATION_ID.ACCOUNT_UPDATE]: AccountUpdateOperation;
 	[OPERATION_ID.ACCOUNT_TRANSFER]: AccountTransferOperation;
+	[OPERATION_ID.ACCOUNT_UPGRADE]: AccountUpgradeOperation;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: AccountWhitelistOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
@@ -27,6 +31,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ACCOUNT_CREATE]: string;
 	[OPERATION_ID.ACCOUNT_UPDATE]: string;
 	[OPERATION_ID.ACCOUNT_TRANSFER]: string;
+	[OPERATION_ID.ACCOUNT_UPGRADE]: unknown;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: unknown;
@@ -125,6 +130,12 @@ interface AccountWhitelistOperation {
 	account_to_list: string;
 	new_listing: ACCOUNT_WHITELIST;
 	extensions: ExtensionsArr;
+}
+
+interface AccountUpgradeOperation {
+	fee: Fee;
+	account_to_upgrade: AccountId;
+	upgrade_to_lifetime_member: boolean;
 }
 
 interface ContractCreateOperation {
