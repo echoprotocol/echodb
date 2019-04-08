@@ -7,6 +7,7 @@ import { ContractForm, ContractsForm } from '../forms/contract.forms';
 import { Resolver, Query, Args, FieldResolver, Root } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
+import { IAccountDocument } from '../../../interfaces/IAccount';
 
 const paginatedContracts = PaginatedResponse(Contract);
 
@@ -37,9 +38,9 @@ export default class ContractResolver extends AbstractResolver {
 
 	// FIXME: do it in a better way
 	@FieldResolver()
-	registrar(@Root('_registrar') contract: any) {
-		if (isMongoObjectId(contract)) return this.accountRepository.findByMongoId(contract);
-		if (this.accountRepository.isChild(contract)) return contract;
+	registrar(@Root('_registrar') account: IAccountDocument) {
+		if (isMongoObjectId(account)) return this.accountRepository.findByMongoId(account);
+		if (this.accountRepository.isChild(account)) return account;
 	}
 
 }

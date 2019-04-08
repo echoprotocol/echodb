@@ -50,6 +50,11 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			assets: [body.fee.asset_id],
 			contract: contract.id,
 		});
+		return this.validateRelation({
+			from: [body.registrar],
+			assets: [body.fee.asset_id],
+			contract: result,
+		});
 	}
 
 }

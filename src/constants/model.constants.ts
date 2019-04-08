@@ -8,6 +8,7 @@ export const NAME = {
 	TRANSACTION: 'transaction',
 	OPERATION: 'operation',
 	ACCOUNT: 'account',
+	ASSET: 'asset',
 	CONTRACT: 'contract',
 	ERC20_INFO: 'erc20_info',
 	BALANCE: 'balance',

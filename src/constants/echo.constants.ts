@@ -8,6 +8,7 @@ export enum OPERATION_ID {
 	ACCOUNT_UPDATE = 6,
 	ACCOUNT_WHITELIST = 7,
 	ACCOUNT_TRANSFER = 9,
+	ASSET_CREATE = 10,
 	CONTRACT_CREATE = 47,
 	CONTRACT_CALL = 48,
 }
@@ -18,6 +19,7 @@ export type Operations = {
 	[OPERATION_ID.ACCOUNT_UPDATE]: AccountUpdateOperation;
 	[OPERATION_ID.ACCOUNT_TRANSFER]: AccountTransferOperation;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: AccountWhitelistOperation;
+	[OPERATION_ID.ASSET_CREATE]: AssetCreateOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 };
@@ -28,6 +30,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ACCOUNT_UPDATE]: string;
 	[OPERATION_ID.ACCOUNT_TRANSFER]: string;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: unknown;
+	[OPERATION_ID.ASSET_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: unknown;
 };
@@ -36,6 +39,7 @@ export type OPERATION_PROPS = { [x in OPERATION_ID]: Operations[x] };
 export type OPERATION_RESULT = { [x in OPERATION_ID]: OperationsResult[x] };
 
 export type Authority = [number, {}];
+type AssetMarket = unknown[];
 type ExtensionsArr = unknown[];
 type ExtensionsObj = {};
 type Fee = {
@@ -124,6 +128,66 @@ interface AccountWhitelistOperation {
 	authorizing_account: string;
 	account_to_list: string;
 	new_listing: ACCOUNT_WHITELIST;
+	extensions: ExtensionsArr;
+}
+interface AssetPriceSchema {
+	base: {
+		amount: number;
+		asset_id: string;
+	};
+	quote: {
+		amount: number;
+		asset_id: string;
+	};
+}
+export interface AssetOptions {
+	max_supply: string;
+	market_fee_percent: number;
+	max_market_fee: string;
+	issuer_permissions: number;
+	flags: number;
+	core_exchange_rate: AssetPriceSchema;
+	whitelist_authorities: Authority;
+	blacklist_authorities: Authority;
+	whitelist_markets: AssetMarket;
+	blacklist_markets: AssetMarket;
+	description: string;
+	extensions: ExtensionsArr;
+}
+
+export interface BitassetOpts {
+	id: string;
+	current_feed_publication_time: string;
+	force_settled_volume: number;
+	settlement_fund: number;
+	feeds: unknown[];
+	is_prediction_market: boolean;
+	options: {
+		short_backing_asset: string;
+		maximum_force_settlement_volume: number;
+		force_settlement_offset_percent: number;
+		force_settlement_delay_sec: number;
+		feed_lifetime_sec: number;
+		minimum_feeds: number;
+		extensions: unknown[];
+	};
+	current_feed: {
+		maintenance_collateral_ratio: number;
+		maximum_short_squeeze_ratio: number;
+		settlement_price: AssetPriceSchema;
+		core_exchange_rate: AssetPriceSchema;
+	};
+	settlement_price: AssetPriceSchema;
+}
+
+interface AssetCreateOperation {
+	fee: Fee;
+	issuer: string;
+	symbol: string;
+	precision: number;
+	common_options: AssetOptions;
+	bitasset_opts: BitassetOpts;
+	is_prediction_market: boolean;
 	extensions: ExtensionsArr;
 }
 
