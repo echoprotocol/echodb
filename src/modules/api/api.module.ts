@@ -8,11 +8,14 @@ import OperationResolver from './resolvers/operation.resolver';
 import TransactionResolver from './resolvers/transaction.resolver';
 import TokenResolver from './resolvers/token.resolver';
 import RavenHelper from '../../helpers/raven.helper';
+import RedisConnection from '../../connections/redis.connection';
 import RestError from '../../errors/rest.error';
+import PubSubEngine from './pub.sub.engine';
 import FormError from '../../errors/form.error';
+import * as http from 'http';
 import * as config from 'config';
 import * as express from 'express';
-import * as graphqlHTTP from 'express-graphql';
+import { ApolloServer } from 'apollo-server-express';
 import { promisify } from 'util';
 import { getLogger } from 'log4js';
 import { buildSchema } from 'type-graphql';
@@ -21,15 +24,21 @@ import { formatError, GraphQLError } from 'graphql';
 
 const logger = getLogger('api.module');
 
+// FIXME: return to express with apollo-server
 export default class ApiModule extends AbstractModule {
-	private app: express.Express;
+	private expressApp: express.Express;
+	private gqlServer: ApolloServer;
+	private httpServer: http.Server;
 
 	constructor(
 		readonly ravenHelper: RavenHelper,
+		readonly redisConnection: RedisConnection,
+		readonly pubSubEngine: PubSubEngine,
+		// Resolvers
 		readonly accountResolver: AccountResolver,
-		readonly contractResolver: ContractResolver,
 		readonly balanceResolver: BalanceResolver,
 		readonly blockResolver: BlockResolver,
+		readonly contractResolver: ContractResolver,
 		readonly operationResolver: OperationResolver,
 		readonly transactionResolver: TransactionResolver,
 		readonly tokenResolver: TokenResolver,
@@ -38,13 +47,17 @@ export default class ApiModule extends AbstractModule {
 	}
 
 	async init() {
-		this.app = express();
+		this.expressApp = express();
 
-		initMiddleware(this.app);
+		initMiddleware(this.expressApp);
 		await this.initGQL();
 
-		await promisify(this.app.listen.bind(this.app))(config.port);
+		this.httpServer = http.createServer(this.expressApp);
+		this.initGQLSubscriptions();
+		await promisify(this.httpServer.listen.bind(this.httpServer))(config.port);
 		logger.info('API application listens to', config.port, 'port');
+		logger.info('GraphQl path', this.gqlServer.graphqlPath);
+		logger.info('GraphQl subscriptions path', this.gqlServer.subscriptionsPath);
 	}
 
 	async initGQL() {
@@ -56,14 +69,15 @@ export default class ApiModule extends AbstractModule {
 			this.operationResolver,
 			this.transactionResolver,
 		];
-		// TODO: handle errors with middleware
 		const schema = await buildSchema({
 			resolvers,
 			validate: false,
+			pubSub: this.pubSubEngine.engine,
 		});
-		const gqlMiddleware = graphqlHTTP({
+		this.gqlServer = new ApolloServer({
 			schema,
-			graphiql: config.env === 'development',
+			// FIXME: resolve ts-ignore
+			// @ts-ignore
 			formatError: (error: GraphQLError) => {
 				const original = error.originalError;
 				if (!original || original instanceof GraphQLError) return formatError(error);
@@ -74,11 +88,15 @@ export default class ApiModule extends AbstractModule {
 					};
 				}
 				logger.error(error);
-				// TODO: add raven
+				this.ravenHelper.error(error, 'apiModule#gqlError');
 				return { code: 500, message: 'server side error' };
 			},
-		 });
-		this.app.use('/', gqlMiddleware);
+		});
+		this.gqlServer.applyMiddleware({ app: this.expressApp });
+	}
+
+	initGQLSubscriptions() {
+		this.gqlServer.installSubscriptionHandlers(this.httpServer);
 	}
 
 }

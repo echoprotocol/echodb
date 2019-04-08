@@ -6,8 +6,9 @@ import BlockRepository from '../../../repositories/block.repository';
 import PaginatedResponse from '../types/paginated.response.type';
 import TransactionRepository from '../../../repositories/transaction.repository';
 import Transaction from '../types/transaction.type';
+import * as REDIS from '../../../constants/redis.constants';
 import { BlockForm, BlocksForm } from '../forms/block.forms';
-import { Resolver, Query, Args, FieldResolver, Root } from 'type-graphql';
+import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
@@ -53,6 +54,15 @@ export default class BlockResolver extends AbstractResolver {
 	transactions(@Root('_id') id: MongoId) {
 		if (isMongoObjectId(id)) return this.transactionRepository.findByBlockMongoId(id);
 		if (this.blockRepository.isChild(id)) return this.transactionRepository.findByBlockMongoId(id);
+	}
+
+	@Subscription(() => Block, {
+		topics: REDIS.EVENT.NEW_BLOCK,
+	})
+	newBlock(
+		@Root() block: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.NEW_BLOCK],
+	) {
+		return block;
 	}
 
 }

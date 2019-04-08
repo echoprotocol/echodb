@@ -24,11 +24,18 @@
 				"filename": "../logs/blocks.log",
 				"maxLogSize": 10000000,
 				"backups": 1
+			},
+			"pub.sub": {
+				"type": "file",
+				"filename": "../logs/pubsub.log",
+				"maxLogSize": 10000000,
+				"backups": 1
 			}
 		},
 		"categories": {
 			"default": { "appenders": ["console"], "level": "all" },
-			"parser.block": { "appenders": ["blocks.log"], "level": "all" }
+			"parser.block": { "appenders": ["blocks.log"], "level": "all" },
+			"pub.sub": { "appenders": ["pub.sub"], "level": "all" }
 		}
 	},
 	"memory": {

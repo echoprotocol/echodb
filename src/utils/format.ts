@@ -13,3 +13,7 @@ export function ethAddrToEchoId(addr: string) {
 	const id = Number.parseInt(hexId, 16);
 	return `1.${short}.${id}`;
 }
+
+export function inline(str: string, replaceWith = ' ') {
+	return str.replace(/[\r\n\s]+/g, replaceWith);
+}
