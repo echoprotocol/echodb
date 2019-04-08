@@ -1,3 +1,4 @@
+import { AccountId, AssetId } from './../types/echo/index.d';
 export enum ASSET {
 	ECHO = '1.3.0',
 }
@@ -10,6 +11,7 @@ export enum OPERATION_ID {
 	ACCOUNT_TRANSFER = 9,
 	ASSET_CREATE = 10,
 	ASSET_UPDATE = 11,
+	ASSET_ISSUE = 14,
 	CONTRACT_CREATE = 47,
 	CONTRACT_CALL = 48,
 }
@@ -22,6 +24,7 @@ export type Operations = {
 	[OPERATION_ID.ACCOUNT_WHITELIST]: AccountWhitelistOperation;
 	[OPERATION_ID.ASSET_CREATE]: AssetCreateOperation;
 	[OPERATION_ID.ASSET_UPDATE]: AssetUpdateOperation;
+	[OPERATION_ID.ASSET_ISSUE]: AssetIssueOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 };
@@ -34,12 +37,14 @@ export type OperationsResult = {
 	[OPERATION_ID.ACCOUNT_WHITELIST]: unknown;
 	[OPERATION_ID.ASSET_CREATE]: string;
 	[OPERATION_ID.ASSET_UPDATE]: unknown;
+	[OPERATION_ID.ASSET_ISSUE]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: unknown;
 };
 
 export type OPERATION_PROPS = { [x in OPERATION_ID]: Operations[x] };
 export type OPERATION_RESULT = { [x in OPERATION_ID]: OperationsResult[x] };
+// export type OPERATION_RESULT<T extends OPERATION_ID> = Operations[T];
 
 export type Authority = [number, {}];
 type AssetMarket = unknown[];
@@ -200,6 +205,17 @@ interface AssetUpdateOperation {
 	asset_to_update: string;
 	new_issuer: string;
 	new_options: AssetOptions;
+	extensions: ExtensionsArr;
+}
+
+interface AssetIssueOperation {
+	fee: Fee;
+	issuer: AccountId;
+	asset_to_issue: {
+		amount: number;
+		asset_id: AssetId
+	};
+	issue_to_account: AccountId;
 	extensions: ExtensionsArr;
 }
 

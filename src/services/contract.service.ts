@@ -77,7 +77,6 @@ export default class ContractService {
 			// @ts-ignore
 			query[`token_info.${key}`] = tokenInfo[key];
 		}
-		console.log(query);
 		const [items, total] = await Promise.all([
 			this.contractRepository.find(query, null, {
 				limit: count,

@@ -10,7 +10,7 @@ interface IBasicBalance {
 
 export interface IBalanceAssetDocument extends IBalanceAsset, Document {}
 export interface IBalanceAsset extends IBasicBalance {
-	asset: string;
+	_asset: MongoId;
 	type: BALANCE.TYPE.ASSET;
 }
 

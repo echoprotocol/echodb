@@ -2,7 +2,7 @@ import AbstractRepository from './abstract.repository';
 import BalanceModel from '../models/balance.model';
 import RavenHelper from 'helpers/raven.helper';
 import * as BALANCE from '../constants/balance.constants';
-import { IBalance, IBalanceToken, IBalanceTokenDocument } from 'interfaces/IBalance';
+import { IBalance, IBalanceTokenDocument, IBalanceAssetDocument } from 'interfaces/IBalance';
 import { MongoId } from 'types/mongoose';
 
 export default class BalanceRepository extends AbstractRepository<IBalance<BALANCE.TYPE>> {
@@ -13,16 +13,48 @@ export default class BalanceRepository extends AbstractRepository<IBalance<BALAN
 		super(ravenHelper, BalanceModel);
 	}
 
-	async findTokensByAccountAndContract(account: MongoId, contract: MongoId): Promise<IBalanceTokenDocument> {
-		const dBalance = await super.findOne({ _account: account, _contract: contract });
-		if (dBalance) return <IBalanceTokenDocument>dBalance;
-		const balance: IBalanceToken = {
-			_account: account,
+	// Assets
+	findByAccountAndAsset(account: MongoId, asset: MongoId) {
+		return <Promise<IBalanceAssetDocument>>this.findOne({ _account: account, _asset: asset });
+	}
+
+	async updateOrCreateByAccountAndAsset(account: MongoId, asset: MongoId, amount: string) {
+		const dBalance = await this.findByAccountAndAsset(account, asset);
+		if (!dBalance) return this.createByAccountAndAsset(account, asset, amount);
+		dBalance.amount = amount;
+		await dBalance.save();
+		return dBalance;
+	}
+
+	createByAccountAndAsset(accountId: MongoId, assetId: MongoId, amount: string) {
+		return <Promise<IBalanceAssetDocument>>super.create({
+			amount,
+			_account: accountId,
+			_asset: assetId,
+			type: BALANCE.TYPE.ASSET,
+		});
+	}
+
+	// Tokens
+	findByAccountAndContract(accountId: MongoId, contractId: MongoId): Promise<IBalanceTokenDocument> {
+		return <Promise<IBalanceTokenDocument>>super.findOne({ _account: accountId, _contract: contractId });
+	}
+
+	async updateOrCreateByAccountAndContract(accountId: MongoId, contractId: MongoId, amount: string) {
+		const dBalance = await this.findByAccountAndContract(accountId, contractId);
+		if (!dBalance) return this.createByAccountAndContract(accountId, contractId, amount);
+		dBalance.amount = amount;
+		await dBalance.save();
+		return dBalance;
+	}
+
+	createByAccountAndContract(accountId: MongoId, contractId: MongoId, amount: string) {
+		return <Promise<IBalanceTokenDocument>>super.create({
+			amount,
+			_account: accountId,
 			type: BALANCE.TYPE.TOKEN,
-			amount: '0',
-			_contract: contract,
-		};
-		return <IBalanceTokenDocument>await super.create(balance);
+			_contract: contractId,
+		});
 	}
 
 }

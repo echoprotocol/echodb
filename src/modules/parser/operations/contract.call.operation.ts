@@ -76,17 +76,13 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 
 	async updateAccountBalances(dContract: IContractDocument, from: string, to: string) {
 		const [dFrom, dTo] = await this.echoService.checkAccounts([from, to]);
-		const [dFromBalance, dToBalance, fromBalance, toBalance] = await Promise.all([
-			this.balanceRepository.findTokensByAccountAndContract(dFrom, dContract),
-			this.balanceRepository.findTokensByAccountAndContract(dTo, dContract),
+		const [fromBalance, toBalance] = await Promise.all([
 			this.echoRepository.getAccountTokenBalance(dContract.id, from),
 			this.echoRepository.getAccountTokenBalance(dContract.id, to),
 		]);
-		dFromBalance.amount = fromBalance.toString();
-		dToBalance.amount = toBalance.toString();
 		await Promise.all([
-			dFromBalance.save(),
-			dToBalance.save(),
+			this.balanceRepository.updateOrCreateByAccountAndContract(dFrom, dContract, fromBalance.toString()),
+			this.balanceRepository.updateOrCreateByAccountAndContract(dTo, dContract, toBalance.toString()),
 		]);
 	}
 

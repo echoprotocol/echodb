@@ -8,7 +8,7 @@ export default AbstractModel<IBalance<BALANCE.TYPE>>(MODEL.NAME.BALANCE, {
 	_contract: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.CONTRACT },
 	// FIXME: use echo id ?
 	_account: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.ACCOUNT },
-	asset: String,
+	_asset: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.BALANCE },
 	type: { $type: String, enum: Object.values(BALANCE.TYPE) },
 	amount: String,
 }, {
