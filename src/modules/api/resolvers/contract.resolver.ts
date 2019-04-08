@@ -26,8 +26,8 @@ export default class ContractResolver extends AbstractResolver {
 	@handleError({
 		[CONTRACT_SERVICE_ERROR.CONTRACT_NOT_FOUND]: [404],
 	})
-	async getContract (@Args() { id }: ContractForm) {
-		return await this.contractService.getContract(id);
+	getContract (@Args() { id }: ContractForm) {
+		return this.contractService.getContract(id);
 	}
 
 	@Query(() => paginatedContracts)

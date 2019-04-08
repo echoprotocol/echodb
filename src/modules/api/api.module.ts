@@ -31,15 +31,14 @@ export default class ApiModule extends AbstractModule {
 	private httpServer: http.Server;
 
 	constructor(
-		readonly ravenHelper: RavenHelper,
-		readonly redisConnection: RedisConnection,
-		readonly pubSubEngine: PubSubEngine,
-		// Resolvers
 		readonly accountResolver: AccountResolver,
 		readonly balanceResolver: BalanceResolver,
 		readonly blockResolver: BlockResolver,
 		readonly contractResolver: ContractResolver,
 		readonly operationResolver: OperationResolver,
+		readonly ravenHelper: RavenHelper,
+		readonly redisConnection: RedisConnection,
+		readonly pubSubEngine: PubSubEngine,
 		readonly transactionResolver: TransactionResolver,
 		readonly tokenResolver: TokenResolver,
 	) {

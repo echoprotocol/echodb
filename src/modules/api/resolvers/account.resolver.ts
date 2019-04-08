@@ -55,4 +55,13 @@ export default class AccountResolver extends AbstractResolver {
 		return { new: dAccounts[0], old: dAccounts[1] };
 	}
 
+	@Subscription(() => Account, {
+		topics: REDIS.EVENT.NEW_ACCOUNT,
+	})
+	newAccount(
+		@Root() dAccount: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.NEW_ACCOUNT],
+	) {
+		return dAccount;
+	}
+
 }
