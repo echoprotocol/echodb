@@ -63,7 +63,7 @@ export default class ApiModule extends AbstractModule {
 		});
 		const gqlMiddleware = graphqlHTTP({
 			schema,
-			graphiql: config.env === 'development',
+			graphiql: config.graphiql || config.env === 'development',
 			formatError: (error: GraphQLError) => {
 				const original = error.originalError;
 				if (!original || original instanceof GraphQLError) return formatError(error);

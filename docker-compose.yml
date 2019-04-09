@@ -45,6 +45,7 @@ services:
     environment:
       - MODULE=api
       - NODE_ENV=${NODE_ENV}
+      - ENABLE_GRAPHIQL=1
     env_file:
       - .env
       - .envs/variables-${STAGE}.env
