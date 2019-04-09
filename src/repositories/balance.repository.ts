@@ -4,7 +4,7 @@ import RavenHelper from 'helpers/raven.helper';
 import * as BALANCE from '../constants/balance.constants';
 import { IBalance, IBalanceTokenDocument, IBalanceAssetDocument } from 'interfaces/IBalance';
 import { MongoId } from 'types/mongoose';
-
+import { BigNumber as BN } from 'bignumber.js';
 export default class BalanceRepository extends AbstractRepository<IBalance<BALANCE.TYPE>> {
 
 	constructor(
@@ -18,10 +18,11 @@ export default class BalanceRepository extends AbstractRepository<IBalance<BALAN
 		return <Promise<IBalanceAssetDocument>>this.findOne({ _account: account, _asset: asset });
 	}
 
-	async updateOrCreateByAccountAndAsset(account: MongoId, asset: MongoId, amount: string) {
+	async updateOrCreateByAccountAndAsset(account: MongoId, asset: MongoId, amount: string, { append = false }) {
 		const dBalance = await this.findByAccountAndAsset(account, asset);
 		if (!dBalance) return this.createByAccountAndAsset(account, asset, amount);
-		dBalance.amount = amount;
+		if (append) dBalance.amount = new BN(amount).plus(amount).toString();
+		else dBalance.amount = amount;
 		await dBalance.save();
 		return dBalance;
 	}

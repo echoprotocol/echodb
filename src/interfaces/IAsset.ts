@@ -65,7 +65,7 @@ export interface IAsset {
 		core_exchange_rate: IAssetPrice;
 	};
 	bitasset?: IAssetBitasset;
-	dynamic?: IAssetDynamic;
+	dynamic: IAssetDynamic;
 }
 
 // @ts-ignore

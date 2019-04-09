@@ -13,6 +13,7 @@ export enum OPERATION_ID {
 	ASSET_ISSUE = 14,
 	ASSET_RESERVE = 15,
 	ASSET_FUND_FEE_POOL = 16,
+	ASSET_CLAIM_FEES = 43,
 	CONTRACT_CREATE = 47,
 	CONTRACT_CALL = 48,
 }
@@ -28,6 +29,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_ISSUE]: AssetIssueOperation;
 	[OPERATION_ID.ASSET_RESERVE]: AssetReserveOperation;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: AssetFundFeePoolOperation;
+	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 };
@@ -43,6 +45,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ASSET_ISSUE]: unknown;
 	[OPERATION_ID.ASSET_RESERVE]: unknown;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: unknown;
+	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: unknown;
 };
@@ -239,6 +242,15 @@ interface AssetFundFeePoolOperation {
 	from_account: AccountId;
 	asset_id: AssetId;
 	amount: string | number;
+}
+
+interface AssetClaimFeesOperation {
+	fee: Fee;
+	issuer: AccountId;
+	amount_to_claim: {
+		amount: string | number;
+		asset_id: AssetId;
+	};
 }
 
 interface ContractCreateOperation {

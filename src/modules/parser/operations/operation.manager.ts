@@ -4,6 +4,7 @@ import AccountUpdateOperation from './account.update.operation';
 import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import AssetCreateOperation from './asset.create.operation';
+import AssetClaimFeesOperation from './asset.claim.fees.operation';
 import AssetUpdateOperation from './asset.update.operation';
 import AssetIssueOperation from './asset.issue.operation';
 import AssetReserverOperation from './asset.reserve.operation';
@@ -33,6 +34,7 @@ export default class OperationManager {
 		accountTransferOperation: AccountTransferOperation,
 		accountWhitelistOperation: AccountWhitelistOperation,
 		assetCreateOperation: AssetCreateOperation,
+		assetClaimFeesOperation: AssetClaimFeesOperation,
 		assetUpdateOperation: AssetUpdateOperation,
 		assetIssueOperation: AssetIssueOperation,
 		assetReserveOperation: AssetReserverOperation,
@@ -52,6 +54,7 @@ export default class OperationManager {
 			assetIssueOperation,
 			assetReserveOperation,
 			assetFundFeePoolOperation,
+			assetClaimFeesOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
