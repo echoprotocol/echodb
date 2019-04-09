@@ -1,0 +1,57 @@
+version: '3'
+services:
+
+
+  redis:
+    image: redis:5.0.4-alpine
+    container_name: "echodb.redis.${STAGE}"
+
+
+  mongo:
+    image: mongo:latest
+    container_name: "echodb.mongo.${STAGE}"
+    volumes:
+      - ~/.docker-ci/mongo-db/echodb.${STAGE}:/data/db
+    environment:
+      - MONGO_DATA_DIR=/data/mongo-db
+    command: mongod --smallfiles
+    ports:
+      - $MONGODB_PORT:27017
+
+
+  parser:
+    build:
+     context: .
+     dockerfile: Dockerfile
+    command: ["./wait-for-it/wait-for-it.sh", "mongo:27017", "--", "node", "server.js"]
+    environment:
+      - MODULE=parser
+      - NODE_ENV=${NODE_ENV}
+    env_file:
+      - .env
+      - .envs/variables-${STAGE}.env
+    container_name: "echodb.service-parser.${STAGE}"
+    restart: always
+    depends_on:
+      - mongo
+      - redis
+
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["./wait-for-it/wait-for-it.sh", "mongo:27017", "--", "node", "server.js"]
+    environment:
+      - MODULE=api
+      - NODE_ENV=${NODE_ENV}
+    env_file:
+      - .env
+      - .envs/variables-${STAGE}.env
+    container_name: "echodb.service-api.${STAGE}"
+    ports:
+      - $API_PORT:3000
+    restart: always
+    depends_on:
+      - mongo
+      - redis
