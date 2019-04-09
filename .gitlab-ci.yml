@@ -33,7 +33,7 @@ build.develop:
     API_PORT: 16456
     MONGODB_PORT: 16457
   script:
-    - docker-compose up -d --build
+    - docker-compose -p 645.echodb.develop up -d --build
   only:
     - develop
   tags:
@@ -49,7 +49,7 @@ build.master:
     API_PORT: 26456
     MONGODB_PORT: 26457
   script:
-    - docker-compose up -d --build
+    - docker-compose -p 645.echodb.master up -d --build
   only:
     - master
   tags:
