@@ -12,6 +12,14 @@ export interface IAssetPrice {
 	};
 }
 
+export interface IAssetDynamic {
+	id: string;
+	current_supply: string;
+	confidential_supply: string;
+	accumulated_fees: string;
+	fee_pool: string;
+}
+
 export interface IAssetBitasset {
 	id: string;
 	current_feed_publication_time: string;
@@ -56,7 +64,8 @@ export interface IAsset {
 		blacklist_markets: unknown[];
 		core_exchange_rate: IAssetPrice;
 	};
-	bitasset: IAssetBitasset;
+	bitasset?: IAssetBitasset;
+	dynamic?: IAssetDynamic;
 }
 
 // @ts-ignore

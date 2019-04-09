@@ -1,7 +1,6 @@
 import { AccountId, AssetId } from './../types/echo/index.d';
-export enum ASSET {
-	ECHO = '1.3.0',
-}
+
+export const CORE_ASSET = '1.3.0'; // ECHO
 
 export enum OPERATION_ID {
 	TRANSFER = 0,
@@ -13,6 +12,7 @@ export enum OPERATION_ID {
 	ASSET_UPDATE = 11,
 	ASSET_ISSUE = 14,
 	ASSET_RESERVE = 15,
+	ASSET_FUND_FEE_POOL = 16,
 	CONTRACT_CREATE = 47,
 	CONTRACT_CALL = 48,
 }
@@ -27,6 +27,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_UPDATE]: AssetUpdateOperation;
 	[OPERATION_ID.ASSET_ISSUE]: AssetIssueOperation;
 	[OPERATION_ID.ASSET_RESERVE]: AssetReserveOperation;
+	[OPERATION_ID.ASSET_FUND_FEE_POOL]: AssetFundFeePoolOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 };
@@ -41,6 +42,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ASSET_UPDATE]: unknown;
 	[OPERATION_ID.ASSET_ISSUE]: unknown;
 	[OPERATION_ID.ASSET_RESERVE]: unknown;
+	[OPERATION_ID.ASSET_FUND_FEE_POOL]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: unknown;
 };
@@ -230,6 +232,13 @@ interface AssetReserveOperation {
 		asset_id: AssetId;
 	};
 	extensions: ExtensionsArr;
+}
+
+interface AssetFundFeePoolOperation {
+	fee: Fee;
+	from_account: AccountId;
+	asset_id: AssetId;
+	amount: string | number;
 }
 
 interface ContractCreateOperation {

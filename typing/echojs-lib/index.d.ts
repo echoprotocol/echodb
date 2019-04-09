@@ -52,6 +52,10 @@ declare module 'echojs-lib' {
 		top_n_control_flags: number;
 	}
 
+	export interface Asset {
+		dynamic_asset_data_id: string;
+	}
+
 	export interface BlockHeader { // virtual export
 		previous: string;
 		timestamp: string;
@@ -145,6 +149,7 @@ declare module 'echojs-lib' {
 		getDynamicGlobalProperties(): Promise<DynamicGlobalProperties>;
 		getAccounts(ids: string[]): Promise<Account[]>;
 		getContractResult(resultId: string): Promise<[number, ContractResult]>;
+		getAssets(ids: string[]): Promise<Asset[]>;
 		callContractNoChangingState(
 			contractId: string,
 			accountId: string,

@@ -1,6 +1,6 @@
 import AbstractModel, { createSchema } from './abstract.model';
 import * as MODEL from '../constants/model.constants';
-import { IAsset, IAssetPrice, IAssetBitasset } from '../interfaces/IAsset';
+import { IAsset, IAssetPrice, IAssetBitasset, IAssetDynamic } from '../interfaces/IAsset';
 import { Schema } from 'mongoose';
 
 const assetPriceSchema = createSchema<IAssetPrice>({
@@ -12,6 +12,16 @@ const assetPriceSchema = createSchema<IAssetPrice>({
 		amount: Number,
 		asset_id: String,
 	},
+});
+
+const assetDynamicSchema = createSchema<IAssetDynamic>({
+	id: String,
+	current_supply: String,
+	confidential_supply: String,
+	accumulated_fees: String,
+	fee_pool: String,
+}, {
+	_id: false,
 });
 
 const bitassetSchema = createSchema<IAssetBitasset>({
@@ -59,4 +69,5 @@ export default AbstractModel<IAsset>(MODEL.NAME.ASSET, {
 		core_exchange_rate: assetPriceSchema,
 	},
 	bitasset: bitassetSchema,
+	dynamic: assetDynamicSchema,
 });

@@ -3,7 +3,7 @@ import * as ECHO from '../constants/echo.constants';
 import * as ERC20 from '../constants/erc20.constants';
 import { Block } from 'echojs-lib';
 import { encode, decode } from 'echojs-contract';
-import { AccountId, ContractId } from '../types/echo';
+import { AccountId, ContractId, AssetId } from '../types/echo';
 import RavenHelper from 'helpers/raven.helper';
 
 export default class EchoRepository {
@@ -37,7 +37,7 @@ export default class EchoRepository {
 		const hexValue = await this.echoConnection.echo.api.callContractNoChangingState(
 			contractId,
 			address,
-			ECHO.ASSET.ECHO,
+			ECHO.CORE_ASSET,
 			// FIXME: use constant
 			ERC20.METHOD.HASH.BALANCE_OF + encode({ value: address, type: 'address' }),
 		);
@@ -52,7 +52,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.ASSET.ECHO,
+				ECHO.CORE_ASSET,
 				ERC20.METHOD.HASH.TOTAL_SUPPLY,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.TOTAL_SUPPLY).toString();
@@ -68,7 +68,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.ASSET.ECHO,
+				ECHO.CORE_ASSET,
 				ERC20.METHOD.HASH.NAME,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.NAME);
@@ -84,12 +84,22 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.ASSET.ECHO,
+				ECHO.CORE_ASSET,
 				ERC20.METHOD.HASH.SYMBOL,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.SYMBOL);
 		} catch (error) {
 			this.ravenHelper.error(error, 'echoRepository#getTokenSymbol');
+			return null;
+		}
+	}
+
+	async getAssetDynamicDataId(assetId: AssetId) {
+		try {
+			const [assetData] = await this.echoConnection.echo.api.getAssets([assetId]);
+			return assetData.dynamic_asset_data_id;
+		} catch (error) {
+			this.ravenHelper.error(error, 'echoRepository#getAssetDynamicDataId', { assetId });
 			return null;
 		}
 	}
