@@ -14,6 +14,7 @@ async function main() {
 		await initModule(process.env.MODULE);
 	} catch (error) {
 		logger.error(error);
+		process.exit(1);
 	}
 }
 
