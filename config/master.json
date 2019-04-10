@@ -1,0 +1,6 @@
+{
+	"raven": {
+		"enabled": true,
+		"config": "https://d61146de7e5b4246a8d51aeba1eed52f@sentry.pixelplex.by/23"
+	}
+}
