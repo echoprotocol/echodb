@@ -1,8 +1,7 @@
-import * as config from 'config';
-import { getLogger } from 'log4js';
-import * as Raven from 'raven';
-import { promisify } from 'util';
 import AbstractInitableHelper from './abstract.initable.helper';
+import * as config from 'config';
+import * as Raven from 'raven';
+import { getLogger } from 'log4js';
 
 const logger = getLogger('raven.helper');
 
@@ -15,7 +14,7 @@ export default class RavenHelper extends AbstractInitableHelper {
 	}
 
 	async install() {
-		await promisify(Raven.config(config.raven.config).install)();
+		Raven.config(config.raven.config).install();
 		this.installed = true;
 	}
 

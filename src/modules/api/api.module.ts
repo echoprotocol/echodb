@@ -76,7 +76,7 @@ export default class ApiModule extends AbstractModule {
 		});
 		this.gqlServer = new ApolloServer({
 			schema,
-			formatError: this.formatError,
+			formatError: this.formatError.bind(this),
 		});
 		this.gqlServer.applyMiddleware({ app: this.expressApp });
 	}
