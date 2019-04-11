@@ -65,7 +65,7 @@ export default class BalanceResolver extends AbstractResolver {
 
 	@Subscription(() => Balance, {
 		topics: REDIS.EVENT.NEW_BALANCE,
-		filter: this.balanceChangeFilter,
+		filter: BalanceResolver.balanceChangeFilter,
 	})
 	newBalance(
 		@Root() dBalance: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.NEW_BALANCE],
@@ -76,7 +76,7 @@ export default class BalanceResolver extends AbstractResolver {
 
 	@Subscription(() => Balance, {
 		topics: REDIS.EVENT.BALANCE_UPDATED,
-		filter: this.balanceChangeFilter,
+		filter: BalanceResolver.balanceChangeFilter,
 	})
 	balanceUpdated(
 		@Root() dBalance: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.BALANCE_UPDATED],
@@ -85,9 +85,9 @@ export default class BalanceResolver extends AbstractResolver {
 		return dBalance;
 	}
 
-	balanceChangeFilter = (
+	static balanceChangeFilter(
 		{ payload: dBalance, args: { account, type, contract } }: IBalanceSubscriptionFilterArgs,
-	) => {
+	) {
 		if (dBalance._account !== account) return false;
 		if (contract && dBalance.type === BALANCE.TYPE.TOKEN && dBalance._contract === contract) return true;
 		if (type && dBalance.type === type) return true;
