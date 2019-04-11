@@ -7,7 +7,7 @@ import * as ECHO from '../../../constants/echo.constants';
 import { ArgsType, Field, Int } from 'type-graphql';
 
 @ArgsType()
-export default class OperationForms extends AbstractForm {
+export class OperationsForm extends AbstractForm {
 	@Field(() => [AccountId], { nullable: true })
 	from: string[];
 

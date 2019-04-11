@@ -5,22 +5,23 @@ import ContractResolver from './resolvers/contract.resolver';
 import BalanceResolver from './resolvers/balance.resolver';
 import BlockResolver from './resolvers/block.resolver';
 import OperationResolver from './resolvers/operation.resolver';
+import RavenHelper from '../../helpers/raven.helper';
+import RestError from '../../errors/rest.error';
+import FormError from '../../errors/form.error';
+import RedisConnection from '../../connections/redis.connection';
+import PubSubEngine from './pub.sub.engine';
 import TransactionResolver from './resolvers/transaction.resolver';
 import TokenResolver from './resolvers/token.resolver';
-import RavenHelper from '../../helpers/raven.helper';
-import RedisConnection from '../../connections/redis.connection';
-import RestError from '../../errors/rest.error';
-import PubSubEngine from './pub.sub.engine';
-import FormError from '../../errors/form.error';
+import * as HTTP from '../../constants/http.constants';
 import * as http from 'http';
 import * as config from 'config';
 import * as express from 'express';
-import { ApolloServer } from 'apollo-server-express';
 import { promisify } from 'util';
+import { ApolloServer, ApolloError } from 'apollo-server-express';
 import { getLogger } from 'log4js';
 import { buildSchema } from 'type-graphql';
 import { initMiddleware } from './express.middleware';
-import { formatError, GraphQLError } from 'graphql';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 
 const logger = getLogger('api.module');
 
@@ -75,21 +76,7 @@ export default class ApiModule extends AbstractModule {
 		});
 		this.gqlServer = new ApolloServer({
 			schema,
-			// FIXME: resolve ts-ignore
-			// @ts-ignore
-			formatError: (error: GraphQLError) => {
-				const original = error.originalError;
-				if (!original || original instanceof GraphQLError) return formatError(error);
-				if (original instanceof RestError) {
-					return {
-						code: original.code,
-						message: original instanceof FormError ? original.details : original.message,
-					};
-				}
-				logger.error(error);
-				this.ravenHelper.error(error, 'apiModule#gqlError');
-				return { code: 500, message: 'server side error' };
-			},
+			formatError: this.formatError,
 		});
 		this.gqlServer.applyMiddleware({ app: this.expressApp });
 	}
@@ -98,4 +85,32 @@ export default class ApiModule extends AbstractModule {
 		this.gqlServer.installSubscriptionHandlers(this.httpServer);
 	}
 
+	formatError(error: GraphQLError) {
+		const original = error.originalError;
+		if (original instanceof RestError) this.formatRestError(error, original);
+		if (error instanceof ApolloError) return error;
+		return this.handleServerSideError(error, original);
+	}
+
+	formatRestError(parent: GraphQLError, error: RestError) {
+		if (config.env !== 'development') delete parent.extensions.exception;
+		else parent.extensions.exception = { stacktrace: parent.extensions.exception.stacktrace };
+		parent.extensions.code = error.code.toString();
+		if (error instanceof FormError) {
+			parent.extensions.details = error.details;
+		}
+		return error;
+	}
+
+	handleServerSideError(error: GraphQLError, original: Error) {
+		const errToLog = original || error;
+		logger.error(errToLog);
+		this.ravenHelper.error(errToLog, 'apiModule#serverSideError');
+		return <GraphQLFormattedError>{
+			message: HTTP.DEFAULT_MESSAGE[HTTP.CODE.INTERNAL_SERVER_ERROR],
+			extensions: { code: HTTP.CODE.INTERNAL_SERVER_ERROR.toString() },
+			locations: undefined,
+			path: undefined,
+		};
+	}
 }

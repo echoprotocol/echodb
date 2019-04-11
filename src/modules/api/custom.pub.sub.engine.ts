@@ -51,19 +51,13 @@ export class PubSubEngine implements IPubSubEngine {
 		}
 
 		logger.trace(`subscribing finished, id "${id}"`);
-		// console.log('subscribe', id);
 		return id;
 	}
 
 	unsubscribe(id: number): void {
-		// console.log('unsubscribe', id);
 		logger.info(`unsubscribing for id "${id}"`);
 		if (!this.handlers.has(id)) {
 			logger.warn('no subscriptions found, returning');
-			console.log('EXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXIT');
-			console.log('EXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXIT');
-			console.log('EXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXIT');
-			console.log('EXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXITEXIT');
 			shutdown(() => process.exit(0));
 			return;
 		}
@@ -89,13 +83,11 @@ export class PubSubEngine implements IPubSubEngine {
 	async *asyncIterator<T>(events: string | string[]): AsyncIterator<T> {
 		events = events instanceof Array ? events : [events];
 		while (true) {
-			console.log('CYCLE');
 			for (const event of events) {
 				yield new Promise<T>(async (resolve) => {
 					let res: Function = null;
 					const promise = new Promise<T>((res1) => { res = res1; });
 					const id = await this.subscribe(event, (payload: T) => res(payload));
-					console.log('subed', id);
 					const result = await promise;
 					this.unsubscribe(id);
 					resolve(result);
