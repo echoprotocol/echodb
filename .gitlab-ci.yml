@@ -2,7 +2,7 @@ stages:
   - test
   - build
 
-lint:
+test:
   image: node:10.15-alpine
   stage: test
   variables:
@@ -23,45 +23,34 @@ lint:
   tags:
     - docker
 
+
 build.develop:
   stage: build
   variables:
     NODE_APP_INSTANCE: development
     NODE_ENV: development
-  cache:
-    key: $CI_COMMIT_REF_NAME
-    paths:
-      - node_modules
+    STAGE: develop
+    API_PORT: 16456
+    MONGODB_PORT: 16457
   script:
-    - npm config set unsafe-perm true
-    - npm i
-    - npm run migrate
-    - npm run doc
-    - pm2 delete pm2.json
-    - pm2 run pm2.json
+    - docker-compose -p 645.echodb.develop up -d --build
   only:
     - develop
   tags:
-    - develop
-  environment:
-    name: development
+    - pp-shell
+
 
 build.master:
   stage: build
   variables:
-    NODE_APP_INSTANCE: stage
-    NODE_ENV: stage
-  cache:
-    key: $CI_COMMIT_REF_NAME
-    paths:
-      - node_modules
+    NODE_APP_INSTANCE: master
+    NODE_ENV: master
+    STAGE: master
+    API_PORT: 26456
+    MONGODB_PORT: 26457
   script:
-    - npm i
-    - npm delete migrate
-    - pm2 run pm2.json
+    - docker-compose -p 645.echodb.master up -d --build
   only:
     - master
   tags:
-    - master
-  environment:
-    name: stage
+    - pp-shell

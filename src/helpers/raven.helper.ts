@@ -13,7 +13,7 @@ export default class RavenHelper extends AbstractInitableHelper {
 		else await this.install();
 	}
 
-	async install() {
+	install() {
 		Raven.config(config.raven.config).install();
 		this.installed = true;
 	}

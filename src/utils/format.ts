@@ -9,7 +9,7 @@ export function ethAddrToEchoId(addr: string) {
 	ok(addr.length === 40);
 	const short = SHORT_TO_ECHO[addr.substr(0, 2)];
 	if (!short) throw new Error('unknown short type');
-	const hexId = addr.substr(-16).replace(/^0+/, '');
+	const hexId = addr.substr(-16);
 	const id = Number.parseInt(hexId, 16);
 	return `1.${short}.${id}`;
 }

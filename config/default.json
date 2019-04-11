@@ -48,5 +48,6 @@
 		"enabled": false,
 		"config": ""
 	},
-	"sessionSecret": "KB}3S}QBh]"
+	"sessionSecret": "KB}3S}QBh]",
+  "graphiql": false
 }
