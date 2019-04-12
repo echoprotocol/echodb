@@ -1,6 +1,7 @@
 declare module 'config' {
 	export const env: 'development' | 'production';
 	export const cors: boolean;
+	export const graphiql: boolean;
 	export const port: number;
 	export const sessionSecret: string;
 	export const memory: {

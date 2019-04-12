@@ -8,7 +8,9 @@ import * as REDIS from '../constants/redis.constants';
 import ConnectionError from '../errors/connection.error';
 
 const logger = getLogger('redis.connection');
-
+// FIXME: rm declare
+// FIXME: implement unsubscribing
+// FIXME: use maps
 declare interface Message {
 	event: unknown;
 	payload: any;
@@ -97,6 +99,11 @@ export default class RedisConnection extends AbstractConnection {
 	on<T extends REDIS.EVENT>(event: T, cb: Callback<REDIS.EVENT_PAYLOAD_TYPE[T]>) {
 		if (!this.events[event]) this.events[event] = [cb];
 		else this.events[event].push(cb);
+	}
+
+	// @ts-ignore
+	unsubscribe<T extends REDIS.EVENT>(event: T, cb: Callback<REDIS.EVENT_PAYLOAD_TYPE[T]>) {
+		logger.warn('unsubscribing is not implemented');
 	}
 
 	// TODO: make it async (use third parameter(cb) in publish(...))

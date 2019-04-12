@@ -41,7 +41,7 @@ export default class EchoRepository {
 			// FIXME: use constant
 			ERC20.METHOD.HASH.BALANCE_OF + encode({ value: address, type: 'address' }),
 		);
-		return decode(hexValue, ERC20.METHOD.RESULT_TYPE.BALANCE_OF);
+		return decode(hexValue, ERC20.METHOD.RESULT_TYPE.BALANCE_OF).toString();
 	}
 
 	// TODO: concat 3 following method into 1

@@ -1,6 +1,7 @@
 import AbstractOperation from './abstract.operation';
 import RedisConnection from 'connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
+import * as REDIS from '../../../constants/redis.constants';
 import EchoService from '../../../services/echo.service';
 import AccountRepository from 'repositories/account.repository';
 
@@ -19,7 +20,7 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID], result: ECHO.OPERATION_RESULT[OP_ID]) {
 		await this.echoService.checkAccounts([body.registrar, body.referrer]);
-		await this.accountRepository.create({
+		const dAccount = await this.accountRepository.create({
 			id: result,
 			// TODO: set real expire date
 			membership_expiration_date: new Date().toISOString(),
@@ -43,6 +44,7 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 			active_special_authority: body.owner_special_authority,
 			top_n_control_flags: 0,
 		});
+		this.redisConnection.emit(REDIS.EVENT.NEW_ACCOUNT, dAccount);
 		return this.validateRelation({
 			from: [body.registrar],
 			accounts: [result, body.registrar, body.referrer],

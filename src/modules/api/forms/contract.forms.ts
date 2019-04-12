@@ -25,3 +25,9 @@ export class ContractsForm extends AbstractForm {
 	@Field(() => CONTRACT.TYPE, { nullable: true })
 	type?: CONTRACT.TYPE;
 }
+
+@ArgsType()
+export class NewContractSubscribe extends AbstractForm {
+	@Field(() => CONTRACT.TYPE, { nullable: true })
+	contractType: CONTRACT.TYPE;
+}
