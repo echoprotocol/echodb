@@ -1,8 +1,8 @@
 import AbstractForm from '../forms/abstract.form';
 import AbstractJoiLanguage from '../forms/abstract.joi.language';
 import RestError from '../../../errors/rest.error';
-import ProcessingError from '../../../errors/processing.error';
 import FormError from '../../../errors/form.error';
+import ProcessingError from '../../../errors/processing.error';
 import * as Joi from 'joi';
 import { MethodErrorMap } from '../../../types/error.map';
 import { UseMiddleware } from 'type-graphql';

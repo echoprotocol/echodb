@@ -1,11 +1,12 @@
 import AbstractOperation from './abstract.operation';
 import ContractRepository from '../../../repositories/contract.repository';
-import * as ECHO from '../../../constants/echo.constants';
-import * as CONTRACT from '../../../constants/contract.constants';
-import EchoService from '../../../services/echo.service';
-import AccountRepository from '../../../repositories/account.repository';
-import ContractService from '../../../services/contract.service';
 import EchoRepository from '../../../repositories/echo.repository';
+import EchoService from '../../../services/echo.service';
+import RedisConnection from '../../../connections/redis.connection';
+import * as CONTRACT from '../../../constants/contract.constants';
+import * as ECHO from '../../../constants/echo.constants';
+import * as REDIS from '../../../constants/redis.constants';
+import ContractService from '../../../services/contract.service';
 import { ethAddrToEchoId } from '../../../utils/format';
 import { IContract } from '../../../interfaces/IContract';
 
@@ -15,11 +16,11 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.CONTRACT_CREATE;
 
 	constructor(
-		readonly accountRepository: AccountRepository,
 		readonly contractRepository: ContractRepository,
 		readonly contractService: ContractService,
 		readonly echoService: EchoService,
 		readonly echoRepository: EchoRepository,
+		readonly redisConnection: RedisConnection,
 	) {
 		super();
 	}
@@ -44,7 +45,8 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 				name, symbol, total_supply: totalSupply,
 			};
 		}
-		await this.contractRepository.create(contract);
+		const dContract = await this.contractRepository.create(contract);
+		this.redisConnection.emit(REDIS.EVENT.NEW_CONTRACT, dContract);
 		return this.validateRelation({
 			from: [body.registrar],
 			assets: [body.fee.asset_id],

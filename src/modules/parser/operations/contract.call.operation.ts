@@ -81,8 +81,8 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 			this.echoRepository.getAccountTokenBalance(dContract.id, to),
 		]);
 		await Promise.all([
-			this.balanceRepository.updateOrCreateByAccountAndContract(dFrom, dContract, fromBalance.toString()),
-			this.balanceRepository.updateOrCreateByAccountAndContract(dTo, dContract, toBalance.toString()),
+			this.balanceRepository.updateOrCreateByAccountAndContract(dFrom, dContract, fromBalance),
+			this.balanceRepository.updateOrCreateByAccountAndContract(dTo, dContract, toBalance),
 		]);
 	}
 

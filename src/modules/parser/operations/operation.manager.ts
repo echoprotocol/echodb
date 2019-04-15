@@ -1,4 +1,5 @@
 import AbstractOperation from './abstract.operation';
+import AccountUpgradeOperation from './account.upgrade.operation';
 import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
 import AccountTransferOperation from './account.transfer.operation';
@@ -39,6 +40,7 @@ export default class OperationManager {
 		assetIssueOperation: AssetIssueOperation,
 		assetReserveOperation: AssetReserverOperation,
 		assetFundFeePoolOperation: AssetFundFeePoolOperation,
+		accountUpgradeOperation: AccountUpgradeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 	) {
@@ -55,6 +57,7 @@ export default class OperationManager {
 			assetReserveOperation,
 			assetFundFeePoolOperation,
 			assetClaimFeesOperation,
+			accountUpgradeOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

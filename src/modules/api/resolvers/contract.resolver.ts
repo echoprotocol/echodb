@@ -3,13 +3,19 @@ import AbstractResolver, { handleError } from './abstract.resolver';
 import Contract from '../types/contract.type';
 import ContractService, { ERROR as CONTRACT_SERVICE_ERROR } from '../../../services/contract.service';
 import PaginatedResponse from '../types/paginated.response.type';
-import { ContractForm, ContractsForm } from '../forms/contract.forms';
-import { Resolver, Query, Args, FieldResolver, Root } from 'type-graphql';
+import * as REDIS from '../../../constants/redis.constants';
+import { ContractForm, ContractsForm, NewContractSubscribe } from '../forms/contract.forms';
+import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
-import { IAccountDocument } from '../../../interfaces/IAccount';
+import { MongoId } from '../../../types/mongoose';
 
 const paginatedContracts = PaginatedResponse(Contract);
+
+interface INewContractSubscriptionFilterArgs {
+	payload: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.NEW_CONTRACT];
+	args: NewContractSubscribe;
+}
 
 @Resolver(Contract)
 export default class ContractResolver extends AbstractResolver {
@@ -27,8 +33,8 @@ export default class ContractResolver extends AbstractResolver {
 	@handleError({
 		[CONTRACT_SERVICE_ERROR.CONTRACT_NOT_FOUND]: [404],
 	})
-	async getContract (@Args() { id }: ContractForm) {
-		return await this.contractService.getContract(id);
+	getContract (@Args() { id }: ContractForm) {
+		return this.contractService.getContract(id);
 	}
 
 	@Query(() => paginatedContracts)
@@ -36,11 +42,29 @@ export default class ContractResolver extends AbstractResolver {
 		return this.contractService.getContracts(count, offset, { registrars, type });
 	}
 
+	@Subscription(() => Contract, {
+		topics: REDIS.EVENT.NEW_CONTRACT,
+		filter: ({
+			payload: dContract,
+			args: { contractType },
+		}: INewContractSubscriptionFilterArgs) => {
+			return !contractType || dContract.type === contractType;
+		},
+	})
+	newContract(
+		@Root() dContract: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.NEW_CONTRACT],
+		// variable needed to be declared to appear in graphQl schema defenition, it's used in the subscription filter
+
+		@Args() _: NewContractSubscribe,
+	) {
+		return dContract;
+	}
+
 	// FIXME: do it in a better way
 	@FieldResolver()
-	registrar(@Root('_registrar') dAccount: IAccountDocument) {
-		if (isMongoObjectId(dAccount)) return this.accountRepository.findByMongoId(dAccount);
-		if (this.accountRepository.isChild(dAccount)) return dAccount;
+	registrar(@Root('_registrar') registrar: MongoId) {
+		if (isMongoObjectId(registrar)) return this.accountRepository.findByMongoId(registrar);
+		if (this.accountRepository.isChild(registrar)) return registrar;
 	}
 
 }

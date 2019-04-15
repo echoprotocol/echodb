@@ -15,7 +15,7 @@ export default class Contract {
 	id: string;
 
 	_registrar: IAccountDocument;
-	@Field()
+	@Field(() => Account)
 	registrar: Account;
 
 	@Field()

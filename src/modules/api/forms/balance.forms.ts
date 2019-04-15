@@ -28,3 +28,15 @@ export class BalancesForm extends AbstractForm {
 	@Field(() => BALANCE.TYPE, { nullable: true, description: 'balance type' })
 	type: BALANCE.TYPE;
 }
+
+@ArgsType()
+export class BalanceSubscribe extends AbstractForm {
+	@Field(() => AccountId, { nullable: false })
+	account: string;
+
+	@Field(() => BALANCE.TYPE, { nullable: true, description: 'balance type' })
+	type: BALANCE.TYPE;
+
+	@Field(() => ContractId, { nullable: true })
+	contract: string;
+}

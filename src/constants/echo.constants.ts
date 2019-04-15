@@ -7,6 +7,7 @@ export enum OPERATION_ID {
 	ACCOUNT_CREATE = 5,
 	ACCOUNT_UPDATE = 6,
 	ACCOUNT_WHITELIST = 7,
+	ACCOUNT_UPGRADE = 8,
 	ACCOUNT_TRANSFER = 9,
 	ASSET_CREATE = 10,
 	ASSET_UPDATE = 11,
@@ -23,6 +24,7 @@ export type Operations = {
 	[OPERATION_ID.ACCOUNT_CREATE]: AccountCreateOperation;
 	[OPERATION_ID.ACCOUNT_UPDATE]: AccountUpdateOperation;
 	[OPERATION_ID.ACCOUNT_TRANSFER]: AccountTransferOperation;
+	[OPERATION_ID.ACCOUNT_UPGRADE]: AccountUpgradeOperation;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: AccountWhitelistOperation;
 	[OPERATION_ID.ASSET_CREATE]: AssetCreateOperation;
 	[OPERATION_ID.ASSET_UPDATE]: AssetUpdateOperation;
@@ -39,6 +41,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ACCOUNT_CREATE]: string;
 	[OPERATION_ID.ACCOUNT_UPDATE]: string;
 	[OPERATION_ID.ACCOUNT_TRANSFER]: string;
+	[OPERATION_ID.ACCOUNT_UPGRADE]: unknown;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: unknown;
 	[OPERATION_ID.ASSET_CREATE]: string;
 	[OPERATION_ID.ASSET_UPDATE]: unknown;
@@ -251,6 +254,12 @@ interface AssetClaimFeesOperation {
 		amount: string | number;
 		asset_id: AssetId;
 	};
+}
+
+interface AccountUpgradeOperation {
+	fee: Fee;
+	account_to_upgrade: AccountId;
+	upgrade_to_lifetime_member: boolean;
 }
 
 interface ContractCreateOperation {
