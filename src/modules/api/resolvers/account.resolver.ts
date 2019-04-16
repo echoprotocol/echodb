@@ -1,43 +1,68 @@
-import AbstractResolver, { handleError } from './abstract.resolver';
+import AbstractResolver, { handleError, validateArgs } from './abstract.resolver';
 import Account from '../types/account.type';
 import AccountOwnerChangedSubscription from '../types/account.owner.changed.subscription';
 import AccountService, { ERROR as ACCOUNT_SERVICE_ERROR } from '../../../services/account.service';
+import AccountRepository from '../../../repositories/account.repository';
 import PaginatedResponse from '../types/paginated.response.type';
+import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
-import { AccountForm, AccountsForm } from '../forms/account.forms';
-import { Resolver, Query, Args, Subscription, Root } from 'type-graphql';
+import { GetAccountForm, GetAccountsForm } from '../forms/account.forms';
+import { Resolver, Query, Args, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
+import { Payload } from '../../../types/graphql';
 
 const paginatedAccounts = PaginatedResponse(Account);
 
 @Resolver(Account)
 export default class AccountResolver extends AbstractResolver {
 	@inject static accountService: AccountService;
+	@inject static accountRepository: AccountRepository;
 
 	constructor(
 		private accountService: AccountService,
+		private accountRepository: AccountRepository,
 	) {
 		super();
 	}
 
-	@Query(() => Account)
+	// Query
+	@Query(() => Account, { description: GetAccountForm.description })
 	@handleError({
-		[ACCOUNT_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [404],
+		[ACCOUNT_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
 	})
-	getAccount(@Args() { id, name }: AccountForm) {
+	@validateArgs(GetAccountForm)
+	getAccount(@Args() { id, name }: GetAccountForm) {
 		return this.accountService.getAccount(id, name);
 	}
 
+	@validateArgs(GetAccountsForm)
 	@Query(() => paginatedAccounts)
-	getAccounts(@Args() { count, offset }: AccountsForm) {
+	getAccounts(@Args() { count, offset }: GetAccountsForm) {
 		return this.accountService.getAccounts(count, offset);
 	}
 
+	// FieldResolver
+	@FieldResolver(() => Account)
+	registrar(@Root('registrar') id: string) {
+		return this.accountRepository.findById(id);
+	}
+
+	@FieldResolver(() => Account)
+	referrer(@Root('referrer') id: string) {
+		return this.accountRepository.findById(id);
+	}
+
+	@FieldResolver(() => Account)
+	lifetime_referrer(@Root('lifetime_referrer') id: string) {
+		return this.accountRepository.findById(id);
+	}
+
+	// Subscription
 	@Subscription(() => Account, {
 		topics: REDIS.EVENT.ACCOUNT_UPDATED,
 	})
 	accountUpdated(
-		@Root() accountId: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.ACCOUNT_UPDATED],
+		@Root() accountId: Payload<REDIS.EVENT.ACCOUNT_UPDATED>,
 	) {
 		return this.accountService.getAccount(accountId);
 	}
@@ -46,7 +71,7 @@ export default class AccountResolver extends AbstractResolver {
 		topics: REDIS.EVENT.ACCOUNT_OWNER_CHANGED,
 	})
 	async accountOwnerChanged(
-		@Root() owners: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.ACCOUNT_OWNER_CHANGED],
+		@Root() owners: Payload<REDIS.EVENT.ACCOUNT_OWNER_CHANGED>,
 	) {
 		const dAccounts = await Promise.all([
 			this.accountService.getAccount(owners.new),
@@ -59,7 +84,7 @@ export default class AccountResolver extends AbstractResolver {
 		topics: REDIS.EVENT.NEW_ACCOUNT,
 	})
 	newAccount(
-		@Root() dAccount: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.NEW_ACCOUNT],
+		@Root() dAccount: Payload<REDIS.EVENT.NEW_ACCOUNT>,
 	) {
 		return dAccount;
 	}

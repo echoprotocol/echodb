@@ -1,26 +1,25 @@
-import AbstractForm from './abstract.form';
 import AccountId from '../types/account.id.type';
-import * as API from '../../../constants/api.constants';
+import PaginationForm from './pagination.form';
+import * as Joi from 'joi';
 import * as TOKEN from '../../../constants/token.constants';
-import { ArgsType, Field, Int } from 'type-graphql';
+import { rule } from './abstract.form';
+import { ArgsType, Field } from 'type-graphql';
 
 @ArgsType()
-export class TokensForm extends AbstractForm {
-	@Field(() => Int, { defaultValue: API.PAGINATION.DEFAULT_COUNT })
-	count: number;
-
-	@Field(() => Int, { defaultValue: 0 })
-	offset: number;
-
+export class GetTokensForm extends PaginationForm {
+	@rule(Joi.string())
 	@Field(() => AccountId, { nullable: true })
 	registrar?: string;
 
+	@rule(Joi.string())
 	@Field(() => TOKEN.TYPE, { nullable: true })
 	type?: TOKEN.TYPE;
 
-	@Field({ nullable: true, description: 'you can use regex here' })
-	name: string;
+	@rule(Joi.string())
+	@Field({ nullable: true, description: 'partial matching' })
+	name?: string;
 
+	@rule(Joi.string())
 	@Field({ nullable: true })
 	symbol?: string;
 }

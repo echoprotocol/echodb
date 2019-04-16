@@ -1,7 +1,8 @@
 import Account from './account.type';
 import ContractId from './contract.id.type';
 import * as CONTRACT from '../../../constants/contract.constants';
-import { IAccountDocument } from '../../../interfaces/IAccount';
+import { IAccount } from '../../../interfaces/IAccount';
+import { TDoc } from '../../../types/mongoose';
 import { ObjectType, Field, registerEnumType } from 'type-graphql';
 
 registerEnumType(CONTRACT.TYPE, {
@@ -14,7 +15,7 @@ export default class Contract {
 	@Field(() => ContractId)
 	id: string;
 
-	_registrar: IAccountDocument;
+	_registrar: TDoc<IAccount>;
 	@Field(() => Account)
 	registrar: Account;
 

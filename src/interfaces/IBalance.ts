@@ -1,29 +1,46 @@
 import * as BALANCE from '../constants/balance.constants';
-import { Document } from 'mongoose';
-import { MongoId } from '../types/mongoose';
+import { MongoId, TDoc } from '../types/mongoose';
+import { IAccount } from './IAccount';
+import { IContract } from './IContract';
 
-interface IBasicBalance {
+// common
+interface IBasic {
 	_account: MongoId;
 	type: BALANCE.TYPE;
 	amount: string;
 }
 
-export interface IBalanceAssetDocument extends IBalanceAsset, Document {}
-export interface IBalanceAsset extends IBasicBalance {
+// asset
+export interface IBalanceAsset extends IBasic {
 	asset: string;
 	type: BALANCE.TYPE.ASSET;
 }
 
-export interface IBalanceTokenDocument extends IBalanceToken, Document {}
-export interface IBalanceToken extends IBasicBalance {
+export interface IBalanceAssetExtended extends IBalanceAsset {
+	_account: TDoc<IAccount>;
+}
+
+// tokens
+export interface IBalanceToken extends IBasic {
 	_contract: MongoId;
 	type: BALANCE.TYPE.TOKEN;
 }
 
+export interface IBalanceTokenExtended extends IBalanceToken {
+	_account: TDoc<IAccount>;
+	_contract: TDoc<IContract>;
+}
+
+// common
 type Balance = {
 	[BALANCE.TYPE.ASSET]: IBalanceAsset;
 	[BALANCE.TYPE.TOKEN]: IBalanceToken;
 };
+export type IBalance<T extends BALANCE.TYPE = BALANCE.TYPE> = Balance[T];
 
-export type IBalance<T extends BALANCE.TYPE> = Balance[T];
-export type IBalanceDocument = IBalanceAssetDocument | IBalanceTokenDocument;
+type Extended = {
+	[BALANCE.TYPE.ASSET]: IBalanceAssetExtended;
+	[BALANCE.TYPE.TOKEN]: IBalanceTokenExtended;
+};
+
+export type IBalanceExtended<T extends BALANCE.TYPE = BALANCE.TYPE> = Extended[T];

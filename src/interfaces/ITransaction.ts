@@ -1,4 +1,3 @@
-import { Document } from 'mongoose';
 import { MongoId } from '../types/mongoose';
 
 export interface ITransaction {
@@ -9,5 +8,3 @@ export interface ITransaction {
 	extensions: unknown;
 	signatures: string[];
 }
-
-export interface ITransactionDocument extends ITransaction, Document {}

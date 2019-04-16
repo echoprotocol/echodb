@@ -4,10 +4,10 @@ import ContractRepository from '../repositories/contract.repository';
 import ProcessingError from '../errors/processing.error';
 import * as BALANCE from '../constants/balance.constants';
 import { MongoId } from '../types/mongoose';
-import { IBalanceTokenDocument } from 'interfaces/IBalance';
 
 export const ERROR = {
 	ACCOUNT_NOT_FOUND: 'account not found',
+	BALANCE_NOT_FOUND: 'balance not found',
 	CONTRACT_NOT_FOUND: 'contract not found',
 };
 
@@ -37,16 +37,16 @@ export default class BalanceService {
 
 	async getBalanceIn(account: string, contract: string) {
 		const [dAccount, dContract] = await Promise.all([
-			this.contractRepository.findById(contract),
 			this.accountRepository.findById(account),
+			this.contractRepository.findById(contract),
 		]);
 		if (!dAccount) throw new ProcessingError(ERROR.ACCOUNT_NOT_FOUND);
 		if (!dContract) throw new ProcessingError(ERROR.CONTRACT_NOT_FOUND);
-		const balance =
-			<IBalanceTokenDocument>await this.balanceRepository.findOne({ _account: dAccount, _contract: dContract });
-		balance._account = dAccount;
-		balance._contract = dContract;
-		return balance;
+		const dBalance = await this.balanceRepository.findByAccountAndContract(dAccount._id, dContract._id);
+		if (!dBalance) throw new ProcessingError(ERROR.BALANCE_NOT_FOUND);
+		dBalance._account = dAccount;
+		dBalance._contract = dContract;
+		return dBalance;
 	}
 
 }

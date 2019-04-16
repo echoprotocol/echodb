@@ -1,7 +1,8 @@
-import { removeDuplicates } from '../utils/common';
 import AccountRepository from '../repositories/account.repository';
 import EchoConnection from '../connections/echo.connection';
-import { IAccountDocument } from 'interfaces/IAccount';
+import { IAccount } from '../interfaces/IAccount';
+import { TDoc } from '../types/mongoose';
+import { removeDuplicates } from '../utils/common';
 
 export default class EchoService {
 
@@ -10,9 +11,9 @@ export default class EchoService {
 		readonly echoConnection: EchoConnection,
 	) {}
 
-	async checkAccounts(toCheck: string[]): Promise<IAccountDocument[]> {
+	async checkAccounts(toCheck: string[]): Promise<TDoc<IAccount>[]> {
 		const toFetch: string[] = [];
-		const dAccountsMap: Map<string, IAccountDocument> = new Map();
+		const dAccountsMap: Map<string, TDoc<IAccount>> = new Map();
 		await Promise.all(removeDuplicates(toCheck).map(async (accoundId) => {
 			const dAccount = await this.accountRepository.findById(accoundId);
 			if (dAccount) dAccountsMap.set(accoundId, dAccount);

@@ -1,11 +1,12 @@
-import * as ECHO from './echo.constants';
-import { AccountId } from 'types/echo';
-import { IAccountDocument } from '../interfaces/IAccount';
-import { IBalanceTokenDocument } from 'interfaces/IBalance';
-import { IBlockDocument } from '../interfaces/IBlock';
-import { IContractDocument } from '../interfaces/IContract';
-import { IOperationDocument } from '../interfaces/IOperation';
-import { ITransactionDocument } from '../interfaces/ITransaction';
+import * as BALANCE from '../constants/balance.constants';
+import { AccountId } from '../types/echo';
+import { TDoc } from '../types/mongoose';
+import { IAccount } from '../interfaces/IAccount';
+import { IBalance } from 'interfaces/IBalance';
+import { IBlock } from '../interfaces/IBlock';
+import { IContract } from '../interfaces/IContract';
+import { IOperation } from '../interfaces/IOperation';
+import { ITransaction } from '../interfaces/ITransaction';
 
 export enum EVENT {
 	NEW_ACCOUNT = 'new_account',
@@ -22,16 +23,16 @@ export enum EVENT {
 export const EVENT_LIST = Object.values(EVENT);
 
 // FIXME: use IBlock ?
-export type EVENT_PAYLOAD_TYPE = {
-	[EVENT.NEW_BLOCK]: IBlockDocument;
-	[EVENT.NEW_TRANSACTION]: ITransactionDocument;
-	[EVENT.NEW_OPERATION]: IOperationDocument<ECHO.OPERATION_ID>;
-	[EVENT.NEW_ACCOUNT]: IAccountDocument;
-	[EVENT.NEW_BALANCE]: IBalanceTokenDocument;
-	[EVENT.NEW_CONTRACT]: IContractDocument;
+export type EVENT_PAYLOAD = {
+	[EVENT.NEW_BLOCK]: TDoc<IBlock>;
+	[EVENT.NEW_TRANSACTION]: TDoc<ITransaction>;
+	[EVENT.NEW_OPERATION]: TDoc<IOperation>;
+	[EVENT.NEW_ACCOUNT]: TDoc<IAccount>;
+	[EVENT.NEW_BALANCE]: TDoc<IBalance<BALANCE.TYPE>>;
+	[EVENT.NEW_CONTRACT]: TDoc<IContract>;
 	[EVENT.ACCOUNT_UPDATED]: AccountId;
 	[EVENT.ACCOUNT_OWNER_CHANGED]: { old: AccountId, new: AccountId };
-	[EVENT.BALANCE_UPDATED]: IBalanceTokenDocument;
+	[EVENT.BALANCE_UPDATED]: TDoc<IBalance<BALANCE.TYPE>>;
 };
 
 export enum KEY {

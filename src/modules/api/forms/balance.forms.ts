@@ -1,12 +1,13 @@
-import AbstractForm from './abstract.form';
-import ContractId from '../types/contract.id.type';
+import AbstractForm, { rule } from './abstract.form';
 import AccountId from '../types/account.id.type';
-import * as API from '../../../constants/api.constants';
+import ContractId from '../types/contract.id.type';
+import PaginationForm from './pagination.form';
 import * as BALANCE from '../../../constants/balance.constants';
-import { ArgsType, Field, Int } from 'type-graphql';
+import * as Joi from 'joi';
+import { ArgsType, Field } from 'type-graphql';
 
 @ArgsType()
-export class BalanceInForm extends AbstractForm {
+export class GetBalanceInForm extends AbstractForm {
 	@Field(() => AccountId, { nullable: false })
 	account: string;
 
@@ -15,22 +16,18 @@ export class BalanceInForm extends AbstractForm {
 }
 
 @ArgsType()
-export class BalancesForm extends AbstractForm {
-	@Field(() => Int, { defaultValue: API.PAGINATION.DEFAULT_COUNT })
-	count: number;
-
-	@Field(() => Int, { defaultValue: 0 })
-	offset: number;
-
+export class GetBalancesForm extends PaginationForm {
+	@rule(Joi.string())
 	@Field(() => AccountId, { nullable: false })
 	account: string;
 
+	@rule(Joi.string())
 	@Field(() => BALANCE.TYPE, { nullable: true, description: 'balance type' })
 	type: BALANCE.TYPE;
 }
 
 @ArgsType()
-export class BalanceSubscribe extends AbstractForm {
+export class BalanceSubscribeForm extends AbstractForm {
 	@Field(() => AccountId, { nullable: false })
 	account: string;
 

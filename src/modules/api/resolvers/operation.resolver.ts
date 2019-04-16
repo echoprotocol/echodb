@@ -2,10 +2,11 @@ import AbstractResolver, { validateArgs } from './abstract.resolver';
 import Operation from '../types/operation.type';
 import OperationService from '../../../services/operation.service';
 import PaginatedResponse from '../types/paginated.response.type';
-import { OperationsForm } from '../forms/operation.forms';
+import { GetOperationsHistoryForm } from '../forms/operation.forms';
 import * as REDIS from '../../../constants/redis.constants';
 import { Args, Resolver, Query, Subscription, Root } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
+import { Payload } from '../../../types/graphql';
 
 const paginatedBlocks = PaginatedResponse(Operation);
 
@@ -21,9 +22,12 @@ export default class OperationResolver extends AbstractResolver {
 		super();
 	}
 
+	// Query
 	@Query(() => paginatedBlocks)
-	@validateArgs(OperationsForm)
-	getHistory(@Args() { count, offset, from, to, accounts, contracts, assets, tokens, operations }: OperationsForm) {
+	@validateArgs(GetOperationsHistoryForm)
+	getHistory(
+		@Args() { count, offset, from, to, accounts, contracts, assets, tokens, operations }: GetOperationsHistoryForm,
+	) {
 		return this.operationService.getHistory(
 			count,
 			offset,
@@ -31,11 +35,12 @@ export default class OperationResolver extends AbstractResolver {
 		);
 	}
 
+	// Subscription
 	@Subscription(() => Operation, {
 		topics: REDIS.EVENT.NEW_OPERATION,
 	})
 	newOperation(
-		@Root() dOperation: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.NEW_OPERATION],
+		@Root() dOperation: Payload<REDIS.EVENT.NEW_OPERATION>,
 	) {
 		return dOperation;
 	}

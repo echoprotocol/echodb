@@ -8,7 +8,8 @@ import * as ECHO from '../../../constants/echo.constants';
 import * as CONTRACT from '../../../constants/contract.constants';
 import * as ERC20 from '../../../constants/erc20.constants';
 import { decode } from 'echojs-contract';
-import { IContractDocument } from '../../../interfaces/IContract';
+import { IContract } from '../../../interfaces/IContract';
+import { TDoc } from '../../../types/mongoose';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CALL;
 
@@ -40,7 +41,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	}
 
 	// FIXME: refactor ?
-	private async handleERC20(dContract: IContractDocument, body: ECHO.OPERATION_PROPS[OP_ID]) {
+	private async handleERC20(dContract: TDoc<IContract>, body: ECHO.OPERATION_PROPS[OP_ID]) {
 		const method = ERC20.METHOD.MAP[body.code.substring(0, 8)];
 		if (!method) return;
 		const [name, parameters] = method;
@@ -74,7 +75,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		}
 	}
 
-	async updateAccountBalances(dContract: IContractDocument, from: string, to: string) {
+	async updateAccountBalances(dContract: TDoc<IContract>, from: string, to: string) {
 		const [dFrom, dTo] = await this.echoService.checkAccounts([from, to]);
 		const [fromBalance, toBalance] = await Promise.all([
 			this.echoRepository.getAccountTokenBalance(dContract.id, from),

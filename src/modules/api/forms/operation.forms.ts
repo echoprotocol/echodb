@@ -1,39 +1,40 @@
-import * as Joi from 'joi';
-import AbstractForm, { rule }  from './abstract.form';
-import ContractId from '../types/contract.id.type';
+import { rule }  from './abstract.form';
 import AccountId from '../types/account.id.type';
-import * as API from '../../../constants/api.constants';
+import ContractId from '../types/contract.id.type';
+import PaginationForm from './pagination.form';
 import * as ECHO from '../../../constants/echo.constants';
-import { ArgsType, Field, Int } from 'type-graphql';
+import * as Joi from 'joi';
+import { ArgsType, Field } from 'type-graphql';
+
+const stringsArraySchema = Joi.array().items(Joi.string());
 
 @ArgsType()
-export class OperationsForm extends AbstractForm {
+export class GetOperationsHistoryForm extends PaginationForm {
+	@rule(stringsArraySchema)
 	@Field(() => [AccountId], { nullable: true })
 	from: string[];
 
+	@rule(stringsArraySchema)
 	@Field(() => [AccountId], { nullable: true })
 	to: string[];
 
+	@rule(stringsArraySchema)
 	@Field(() => [AccountId], { nullable: true })
 	accounts: string[];
 
+	@rule(stringsArraySchema)
 	@Field(() => [ContractId], { nullable: true })
 	contracts: string[];
 
+	@rule(stringsArraySchema)
 	@Field(() => [String], { nullable: true })
 	assets: string[];
 
+	@rule(stringsArraySchema)
 	@Field(() => [ContractId], { nullable: true })
 	tokens: string[];
 
+	@rule(Joi.array().items(Joi.number()))
 	@Field(() => [ECHO.OPERATION_ID], { nullable: true })
 	operations: ECHO.OPERATION_ID[];
-
-	@Field(() => Int, { defaultValue: API.PAGINATION.DEFAULT_COUNT })
-	@rule(Joi.number().max(API.PAGINATION.MAX_COUNT))
-	count: number;
-
-	@Field(() => Int, { defaultValue: 0 })
-	@rule(Joi.number())
-	offset: number;
 }

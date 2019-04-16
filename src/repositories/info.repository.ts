@@ -1,9 +1,10 @@
 import InfoModel from '../models/info.model';
 import * as INFO from '../constants/info.constants';
-import { IInfoDocument } from 'interfaces/IInfo';
+import { IInfo } from '../interfaces/IInfo';
+import { TDoc } from '../types/mongoose';
 
 export default class InfoRepository {
-	private cache: { [x in INFO.KEY]?: IInfoDocument} = {};
+	private cache: { [x in INFO.KEY]?: TDoc<IInfo>} = {};
 
 	async get<T extends INFO.KEY>(key: T): Promise<INFO.KEY_TYPE[T]> {
 		if (!this.cache[key]) {

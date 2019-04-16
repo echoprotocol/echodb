@@ -1,13 +1,20 @@
+import AbstractRepository from 'repositories/abstract.repository';
 import AbstractForm from '../forms/abstract.form';
 import AbstractJoiLanguage from '../forms/abstract.joi.language';
 import RestError from '../../../errors/rest.error';
 import FormError from '../../../errors/form.error';
 import ProcessingError from '../../../errors/processing.error';
 import * as Joi from 'joi';
-import { MethodErrorMap } from '../../../types/error.map';
+import { MethodErrorMap } from '../../../types';
+import { MongoId } from '../../../types/mongoose';
 import { UseMiddleware } from 'type-graphql';
+import { isMongoObjectId } from '../../../utils/validators';
 
 export default abstract class AbstractResolver {
+
+	resolveMongoField(value: MongoId, repository: AbstractRepository) {
+		return isMongoObjectId(value) ? repository.findByMongoId(value) : value;
+	}
 
 	parseError(errorMap: MethodErrorMap, error: Error) {
 		if (!(error instanceof ProcessingError)) throw error;

@@ -87,8 +87,8 @@ export default class ApiModule extends AbstractModule {
 
 	formatError(error: GraphQLError) {
 		const original = error.originalError;
-		if (original instanceof RestError) this.formatRestError(error, original);
-		if (error instanceof ApolloError) return error;
+		if (original instanceof RestError) return this.formatRestError(error, original);
+		if (error instanceof ApolloError || error instanceof GraphQLError) return error;
 		return this.handleServerSideError(error, original);
 	}
 
@@ -99,7 +99,7 @@ export default class ApiModule extends AbstractModule {
 		if (error instanceof FormError) {
 			parent.extensions.details = error.details;
 		}
-		return error;
+		return parent;
 	}
 
 	handleServerSideError(error: GraphQLError, original: Error) {

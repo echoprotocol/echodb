@@ -2,7 +2,6 @@ import AbstractRepository from './abstract.repository';
 import ContractModel from '../models/contract.model';
 import RavenHelper from '../helpers/raven.helper';
 import { IContract } from 'interfaces/IContract';
-import { MongoId } from 'types/mongoose';
 
 export default class ContractRepository extends AbstractRepository<IContract> {
 	constructor(
@@ -15,7 +14,4 @@ export default class ContractRepository extends AbstractRepository<IContract> {
 		return super.findOne({ id });
 	}
 
-	findByMongoId(id: MongoId) {
-		return super.findById(id);
-	}
 }

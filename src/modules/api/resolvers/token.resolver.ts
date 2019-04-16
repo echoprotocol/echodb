@@ -1,13 +1,14 @@
-import Token from '../types/token.type';
-import { TokensForm } from '../forms/token.forms';
-
 import AccountRepository from '../../../repositories/account.repository';
-import AbstractResolver from './abstract.resolver';
-import ContractService from '../../../services/contract.service';
+import AbstractResolver, { validateArgs, handleError } from './abstract.resolver';
+import ContractService, { ERROR as CONTRACT_SERVICE_ERROR } from '../../../services/contract.service';
+import Token from '../types/token.type';
 import PaginatedResponse from '../types/paginated.response.type';
+import * as HTTP from '../../../constants/http.constants';
 import { Resolver, Query, Args, FieldResolver, Root } from 'type-graphql';
+import { GetTokensForm } from '../forms/token.forms';
 import { inject } from '../../../utils/graphql';
-import { IContractDocument } from '../../../interfaces/IContract';
+import { IContract } from '../../../interfaces/IContract';
+import { TDoc } from '../../../types/mongoose';
 
 const paginatedTokens = PaginatedResponse(Token);
 
@@ -23,38 +24,43 @@ export default class ContractResolver extends AbstractResolver {
 		super();
 	}
 
+	// Query
 	@Query(() => paginatedTokens)
-	getTokens (@Args() form: TokensForm) {
+	@validateArgs(GetTokensForm)
+	@handleError({
+		[CONTRACT_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
+	})
+	getTokens (@Args() form: GetTokensForm) {
 		return this.contractService.getTokens(form.count, form.offset, form);
 	}
 
+	// FieldResolver
 	@FieldResolver()
-	type(@Root() dContract: IContractDocument) {
+	type(@Root() dContract: TDoc<IContract>) {
 		return dContract.type;
 	}
 
 	@FieldResolver()
-	symbol(@Root() dContract: IContractDocument) {
+	symbol(@Root() dContract: TDoc<IContract>) {
 		return dContract.token_info.symbol;
 	}
 
 	@FieldResolver()
-	name(@Root() dContract: IContractDocument) {
+	name(@Root() dContract: TDoc<IContract>) {
 		return dContract.token_info.name;
 	}
 
 	@FieldResolver()
-	total_supply(@Root() dContract: IContractDocument) {
+	total_supply(@Root() dContract: TDoc<IContract>) {
 		return dContract.token_info.total_supply;
 	}
 	@FieldResolver()
-	registrar(@Root() dContract: IContractDocument) {
-		if (this.accountRepository.isChild(dContract._registrar)) return dContract._registrar;
-		return this.accountRepository.findByMongoId(dContract._registrar);
+	registrar(@Root() dContract: TDoc<IContract>) {
+		return this.resolveMongoField(dContract._registrar, this.accountRepository);
 	}
 
 	@FieldResolver()
-	contract(@Root() dContract: IContractDocument) {
+	contract(@Root() dContract: TDoc<IContract>) {
 		return dContract;
 	}
 
