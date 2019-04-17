@@ -1,10 +1,9 @@
-import AbstractResolver, { handleError } from './abstract.resolver';
+import AbstractResolver, { handleError, validateArgs } from './abstract.resolver';
 import AccountRepository from '../../../repositories/account.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import Balance from '../types/balance.type';
 import BalanceService, { ERROR as BALANCE_SERVICE_ERROR } from '../../../services/balance.service';
 import PaginatedResponse from '../types/paginated.response.type';
-import * as BALANCE from '../../../constants/balance.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import { BalanceInForm, BalancesForm, BalanceSubscribe } from '../forms/balance.forms';
 import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
@@ -33,11 +32,12 @@ export default class BalanceResolver extends AbstractResolver {
 	}
 
 	@Query(() => paginatedBalances)
+	@validateArgs(BalancesForm)
 	@handleError({
 		[BALANCE_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [404, 'account not found'],
 	})
-	getBalances(@Args() { count, offset, account, type }: BalancesForm) {
-		return this.balanceService.getBalance(count, offset, account, type);
+	getBalances(@Args() { count, offset, accounts, type }: BalancesForm) {
+		return this.balanceService.getBalance(count, offset, accounts, type);
 	}
 
 	@Query(() => Balance)
@@ -66,6 +66,7 @@ export default class BalanceResolver extends AbstractResolver {
 	@Subscription(() => Balance, {
 		topics: REDIS.EVENT.NEW_BALANCE,
 		filter: BalanceResolver.balanceChangeFilter,
+		description: 'Filters by accounts and contract expected in 0.2.0',
 	})
 	newBalance(
 		@Root() dBalance: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.NEW_BALANCE],
@@ -77,6 +78,7 @@ export default class BalanceResolver extends AbstractResolver {
 	@Subscription(() => Balance, {
 		topics: REDIS.EVENT.BALANCE_UPDATED,
 		filter: BalanceResolver.balanceChangeFilter,
+		description: 'Filters by accounts and contract expected in 0.2.0',
 	})
 	balanceUpdated(
 		@Root() dBalance: REDIS.EVENT_PAYLOAD_TYPE[REDIS.EVENT.BALANCE_UPDATED],
@@ -86,10 +88,9 @@ export default class BalanceResolver extends AbstractResolver {
 	}
 
 	static balanceChangeFilter(
-		{ payload: dBalance, args: { account, type, contract } }: IBalanceSubscriptionFilterArgs,
+		{ payload: dBalance, args: { type } }: IBalanceSubscriptionFilterArgs,
 	) {
-		if (dBalance._account !== account) return false;
-		if (contract && dBalance.type === BALANCE.TYPE.TOKEN && dBalance._contract === contract) return true;
+		// TODO: Fix filter with EDB-80
 		if (type && dBalance.type === type) return true;
 		return false;
 	}
