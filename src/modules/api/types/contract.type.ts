@@ -1,5 +1,6 @@
 import Account from './account.type';
 import ContractId from './contract.id.type';
+import Token from './token.type';
 import * as CONTRACT from '../../../constants/contract.constants';
 import { IAccountDocument } from '../../../interfaces/IAccount';
 import { ObjectType, Field, registerEnumType } from 'type-graphql';
@@ -26,4 +27,7 @@ export default class Contract {
 
 	@Field()
 	type: CONTRACT.TYPE;
+
+	@Field(() => Token, { nullable: true })
+	token: Token;
 }

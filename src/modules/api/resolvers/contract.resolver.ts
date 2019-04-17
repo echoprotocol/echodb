@@ -4,11 +4,13 @@ import Contract from '../types/contract.type';
 import ContractService, { ERROR as CONTRACT_SERVICE_ERROR } from '../../../services/contract.service';
 import PaginatedResponse from '../types/paginated.response.type';
 import * as REDIS from '../../../constants/redis.constants';
+import * as TOKEN from '../../../constants/token.constants';
 import { ContractForm, ContractsForm, NewContractSubscribe } from '../forms/contract.forms';
 import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
+import { IContractDocument } from 'interfaces/IContract';
 
 const paginatedContracts = PaginatedResponse(Contract);
 
@@ -40,6 +42,11 @@ export default class ContractResolver extends AbstractResolver {
 	@Query(() => paginatedContracts)
 	getContracts(@Args() { count, offset, registrars, type }: ContractsForm) {
 		return this.contractService.getContracts(count, offset, { registrars, type });
+	}
+
+	@FieldResolver()
+	token(@Root('type') type: Contract['type'], @Root() body: IContractDocument) {
+		return (TOKEN.TYPE_LIST.includes(type)) ? body : null;
 	}
 
 	@Subscription(() => Contract, {
