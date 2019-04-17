@@ -50,6 +50,7 @@ export default class ContractResolver extends AbstractResolver {
 		return dContract.token_info.name;
 	}
 
+	@FieldResolver()
 	decimals(@Root() dContract: TDoc<IContract>) {
 		return dContract.token_info.decimals;
 	}
