@@ -94,6 +94,22 @@ export default class EchoRepository {
 		}
 	}
 
+	async getTokenDecimals(contractId: ContractId) {
+		try {
+			const hex = await this.echoConnection.echo.api.callContractNoChangingState(
+				contractId,
+				// FIXME: needed to use any accountId here
+				'1.2.1',
+				ECHO.ASSET.ECHO,
+				ERC20.METHOD.HASH.DECIMALS,
+			);
+			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.DECIMALS).toString();
+		} catch (error) {
+			this.ravenHelper.error(error, 'echoRepository#getTokenDecimals');
+			return null;
+		}
+	}
+
 	subscribeToBlockApply(cb: (block: Block) => void) {
 		this.echoConnection.echo.subscriber.setBlockApplySubscribe(cb);
 	}

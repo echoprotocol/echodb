@@ -36,13 +36,14 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			type: this.contractService.getTypeByCode(body.code),
 		};
 		if (contract.type === CONTRACT.TYPE.ERC20) {
-			const [totalSupply, name, symbol] = await Promise.all([
+			const [totalSupply, name, symbol, decimals] = await Promise.all([
 				this.echoRepository.getTokenTotalSupply(contract.id),
 				this.echoRepository.getTokenName(contract.id),
 				this.echoRepository.getTokenSymbol(contract.id),
+				this.echoRepository.getTokenDecimals(contract.id),
 			]);
 			contract.token_info = {
-				name, symbol, total_supply: totalSupply,
+				name, symbol, decimals, total_supply: totalSupply,
 			};
 		}
 		const dContract = await this.contractRepository.create(contract);

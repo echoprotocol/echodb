@@ -8,6 +8,7 @@ const erc20infoSchema = createSchema<ITokenInfo>({
 	total_supply: String,
 	name: String,
 	symbol: String,
+	decimals: String,
 });
 
 export default AbstractModel<IContract>(MODEL.NAME.CONTRACT, {

@@ -44,6 +44,11 @@ export default class ContractResolver extends AbstractResolver {
 	}
 
 	@FieldResolver()
+	decimals(@Root() dContract: IContractDocument) {
+		return dContract.token_info.decimals;
+	}
+
+	@FieldResolver()
 	total_supply(@Root() dContract: IContractDocument) {
 		return dContract.token_info.total_supply;
 	}

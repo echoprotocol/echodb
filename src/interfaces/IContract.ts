@@ -6,6 +6,7 @@ export interface ITokenInfo {
 	total_supply: string;
 	name: string;
 	symbol: string;
+	decimals: string;
 }
 
 export interface IContract {
