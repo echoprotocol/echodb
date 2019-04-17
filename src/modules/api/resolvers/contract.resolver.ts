@@ -62,7 +62,6 @@ export default class ContractResolver extends AbstractResolver {
 	newContract(
 		@Root() dContract: Payload<REDIS.EVENT.NEW_CONTRACT>,
 		// variable needed to be declared to appear in graphQl schema defenition, it's used in the subscription filter
-
 		@Args() _: NewContractSubscribe,
 	) {
 		return dContract;

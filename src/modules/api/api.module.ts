@@ -54,8 +54,8 @@ export default class ApiModule extends AbstractModule {
 
 		this.httpServer = http.createServer(this.expressApp);
 		this.initGQLSubscriptions();
-		await promisify(this.httpServer.listen.bind(this.httpServer))(config.port);
-		logger.info('API application listens to', config.port, 'port');
+		await promisify(this.httpServer.listen.bind(this.httpServer))(config.api.port);
+		logger.info('API application listens to', config.api.port, 'port');
 		logger.info('GraphQl path', this.gqlServer.graphqlPath);
 		logger.info('GraphQl subscriptions path', this.gqlServer.subscriptionsPath);
 	}
@@ -77,6 +77,8 @@ export default class ApiModule extends AbstractModule {
 		this.gqlServer = new ApolloServer({
 			schema,
 			formatError: this.formatError.bind(this),
+			introspection: config.api.introspection,
+			playground: config.api.playground,
 		});
 		this.gqlServer.applyMiddleware({ app: this.expressApp });
 	}

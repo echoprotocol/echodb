@@ -98,6 +98,15 @@ export default class EchoRepository {
 		this.echoConnection.echo.subscriber.setBlockApplySubscribe(cb);
 	}
 
+	// FIXME: refactor
+	subscribeToNewBlock(cb: (num: number) => void) {
+		this.echoConnection.echo.subscriber.setGlobalSubscribe((data: any) => {
+			if (!data || !data[0] || data[0].id !== '2.1.0') return;
+			cb(data[0].last_irreversible_block_num);
+		});
+		this.echoConnection.echo.api.getObject('2.1.0');
+	}
+
 	getContractResult(resultId: string) {
 		return this.echoConnection.echo.api.getContractResult(resultId);
 	}

@@ -9,13 +9,13 @@ export default class MemoryHelper extends AbstractInitableHelper{
 	private interval: NodeJS.Timeout | null = null;
 
 	init() {
-		if (!config.memory.enabled) logger.warn('Memory helper is disabled');
+		if (!config.memoryLogger.enabled) logger.warn('Memory helper is disabled');
 		else this.start();
 	}
 
-	start(logOnStart = config.memory.logOnStart) {
-		if (logOnStart) this.logMemoryUsage();
-		this.interval = setInterval(() => this.logMemoryUsage(), config.memory.delay);
+	start() {
+		this.logMemoryUsage();
+		this.interval = setInterval(() => this.logMemoryUsage(), config.memoryLogger.delay);
 	}
 
 	stop() {
