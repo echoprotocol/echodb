@@ -26,7 +26,7 @@ export default class MemoryHelper extends AbstractInitableHelper{
 		const mbs = this.memoryUsage;
 		const text = `${prefix !== null ? `${prefix} - ` : ''}Memory usage ${mbs.toFixed(3)} mbs`;
 		if (mbs > 1000) logger.warn(text);
-		else logger.info(text);
+		else logger.trace(text);
 	}
 
 	get memoryUsage() {
