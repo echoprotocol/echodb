@@ -1,5 +1,6 @@
 import Account from './account.type';
 import ContractId from './contract.id.type';
+import Token from './token.type';
 import * as CONTRACT from '../../../constants/contract.constants';
 import { IAccount } from '../../../interfaces/IAccount';
 import { TDoc } from '../../../types/mongoose';
@@ -27,4 +28,7 @@ export default class Contract {
 
 	@Field()
 	type: CONTRACT.TYPE;
+
+	@Field(() => Token, { nullable: true })
+	token: Token;
 }

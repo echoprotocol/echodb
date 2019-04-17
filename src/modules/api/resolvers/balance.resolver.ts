@@ -39,8 +39,8 @@ export default class BalanceResolver extends AbstractResolver {
 		[BALANCE_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
 	})
 	@validateArgs(GetBalancesForm)
-	getBalances(@Args() { count, offset, account, type }: GetBalancesForm) {
-		return this.balanceService.getBalance(count, offset, account, type);
+	getBalances(@Args() { count, offset, accounts, type }: GetBalancesForm) {
+		return this.balanceService.getBalance(count, offset, accounts, type);
 	}
 
 	@Query(() => Balance)
@@ -69,6 +69,7 @@ export default class BalanceResolver extends AbstractResolver {
 	@Subscription(() => Balance, {
 		topics: REDIS.EVENT.NEW_BALANCE,
 		filter: BalanceResolver.balanceChangeFilter,
+		description: 'Filters by accounts and contract expected in 0.2.0',
 	})
 	newBalance(
 		@Root() dBalance: Payload<REDIS.EVENT.NEW_BALANCE>,
@@ -80,6 +81,7 @@ export default class BalanceResolver extends AbstractResolver {
 	@Subscription(() => Balance, {
 		topics: REDIS.EVENT.BALANCE_UPDATED,
 		filter: BalanceResolver.balanceChangeFilter,
+		description: 'Filters by accounts and contract expected in 0.2.0',
 	})
 	balanceUpdated(
 		@Root() dBalance: Payload<REDIS.EVENT.BALANCE_UPDATED>,
@@ -89,9 +91,9 @@ export default class BalanceResolver extends AbstractResolver {
 	}
 
 	static async balanceChangeFilter(
-		{ payload: dBalance, args: { account, type, contract } }: IBalanceSubscriptionFilterArgs,
+		{ payload: dBalance, args: { accounts, type, contract } }: IBalanceSubscriptionFilterArgs,
 	) {
-		if (dBalance._account.id !== account) return false;
+		if (!accounts.includes(dBalance._account.id)) return false;
 		if (contract) {
 			if (dBalance.type === BALANCE.TYPE.TOKEN) {
 				return dBalance._contract.id === contract;

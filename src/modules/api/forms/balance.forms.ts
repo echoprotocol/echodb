@@ -17,23 +17,27 @@ export class GetBalanceInForm extends AbstractForm {
 
 @ArgsType()
 export class GetBalancesForm extends PaginationForm {
-	@rule(Joi.string())
-	@Field(() => AccountId, { nullable: false })
-	account: string;
+	@Field(() => [AccountId], { nullable: false })
+	@rule(Joi.array().max(100))
+	accounts: string[];
 
 	@rule(Joi.string())
 	@Field(() => BALANCE.TYPE, { nullable: true, description: 'balance type' })
+	@rule(Joi.string())
 	type: BALANCE.TYPE;
 }
 
 @ArgsType()
 export class BalanceSubscribeForm extends AbstractForm {
-	@Field(() => AccountId, { nullable: false })
-	account: string;
+	@rule(Joi.array().max(100))
+	@Field(() => [AccountId], { nullable: false })
+	accounts: string[];
 
+	@rule(Joi.string())
 	@Field(() => BALANCE.TYPE, { nullable: true, description: 'balance type' })
 	type: BALANCE.TYPE;
 
+	@rule(Joi.string())
 	@Field(() => ContractId, { nullable: true })
 	contract: string;
 }
