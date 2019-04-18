@@ -1,6 +1,7 @@
-import AccountRepository from 'repositories/account.repository';
 import AbstractOperation from './abstract.operation';
-import BalanceRepository from 'repositories/balance.repository';
+import AccountRepository from '../../../repositories/account.repository';
+import BalanceRepository from '../../../repositories/balance.repository';
+import ContractBalanceRepository from '../../../repositories/contract.balance.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import ContractService from 'services/contract.service';
 import EchoRepository from '../../../repositories/echo.repository';
@@ -22,6 +23,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	constructor(
 		readonly accountRepository: AccountRepository,
 		readonly balanceRepository: BalanceRepository,
+		readonly contractBalanceRepository: ContractBalanceRepository,
 		readonly contractRepository: ContractRepository,
 		readonly contractService: ContractService,
 		readonly echoRepository: EchoRepository,
@@ -32,6 +34,12 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
 		const dContract = await this.contractRepository.findById(body.callee);
 		if (dContract) {
+			await this.contractBalanceRepository.updateOrCreate(
+				dContract,
+				body.value.asset_id,
+				body.value.amount.toString(),
+				{ append: true },
+			);
 			if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body);
 		} else {
 			logger.warn('contract not found, can not parse call');

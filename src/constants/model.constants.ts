@@ -9,6 +9,6 @@ export const NAME = {
 	OPERATION: 'operation',
 	ACCOUNT: 'account',
 	CONTRACT: 'contract',
-	ERC20_INFO: 'erc20_info',
+	CONTRACT_BALANCE: 'contract_balance',
 	BALANCE: 'balance',
 };

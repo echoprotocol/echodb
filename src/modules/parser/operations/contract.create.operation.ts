@@ -1,5 +1,6 @@
 import AbstractOperation from './abstract.operation';
 import AccountRepository from 'repositories/account.repository';
+import ContractBalanceRepository from '../../../repositories/contract.balance.repository';
 import ContractService from '../../../services/contract.service';
 import ContractRepository from '../../../repositories/contract.repository';
 import EchoRepository from '../../../repositories/echo.repository';
@@ -17,6 +18,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 
 	constructor(
 		readonly accountRepository: AccountRepository,
+		readonly contractBalanceRepository: ContractBalanceRepository,
 		readonly contractRepository: ContractRepository,
 		readonly contractService: ContractService,
 		readonly echoRepository: EchoRepository,
@@ -47,6 +49,11 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			};
 		}
 		const dContract = await this.contractRepository.create(contract);
+		await this.contractBalanceRepository.fastCreate(
+			dContract,
+			body.value.asset_id,
+			body.value.amount.toString(),
+		);
 		this.redisConnection.emit(REDIS.EVENT.NEW_CONTRACT, dContract);
 		return this.validateRelation({
 			from: [body.registrar],
