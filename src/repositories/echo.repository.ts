@@ -24,7 +24,7 @@ export default class EchoRepository {
 
 	async getLastBlockNum(): Promise<number> {
 		try {
-			const { last_irreversible_block_num: lastBlockNum } =
+			const { head_block_number: lastBlockNum } =
 				await this.echoConnection.echo.api.getDynamicGlobalProperties();
 			return lastBlockNum;
 		} catch (error) {
@@ -118,7 +118,7 @@ export default class EchoRepository {
 	subscribeToNewBlock(cb: (num: number) => void) {
 		this.echoConnection.echo.subscriber.setGlobalSubscribe((data: any) => {
 			if (!data || !data[0] || data[0].id !== '2.1.0') return;
-			cb(data[0].last_irreversible_block_num);
+			cb(data[0].head_block_number);
 		});
 		this.echoConnection.echo.api.getObject('2.1.0');
 	}
