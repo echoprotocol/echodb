@@ -21,7 +21,7 @@ export default class AccountRepository extends AbstractRepository<IAccount> {
 	async findManyByIds(ids: AccountId[]) {
 		const dAccountsMap = new Map<AccountId, TDoc<IAccount>>();
 		await Promise.all(removeDuplicates(ids).map(async (id) => {
-			const dAccount = await super.findById(id);
+			const dAccount = await this.findById(id);
 			dAccountsMap.set(id, dAccount);
 		}));
 		return ids.map((id) => dAccountsMap.get(id));

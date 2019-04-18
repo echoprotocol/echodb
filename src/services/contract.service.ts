@@ -80,7 +80,7 @@ export default class ContractService {
 		else query.type = { $in: Object.values(TOKEN.TYPE) };
 		if (symbol) tokenInfo.symbol = symbol;
 		// TODO: limit regex abilities
-		if (name) tokenInfo.name = new RegExp(escapeRegExp(name));
+		if (name) tokenInfo.name = new RegExp(escapeRegExp(name), 'i');
 		for (const key of Object.keys(tokenInfo)) {
 			// @ts-ignore
 			query[`token_info.${key}`] = tokenInfo[key];
