@@ -10,8 +10,11 @@ import * as ERC20 from '../../../constants/erc20.constants';
 import { decode } from 'echojs-contract';
 import { IContract } from '../../../interfaces/IContract';
 import { TDoc } from '../../../types/mongoose';
+import { getLogger } from 'log4js';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CALL;
+
+const logger = getLogger('contract.call');
 
 export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.CONTRACT_CALL;
@@ -28,11 +31,12 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
 		const dContract = await this.contractRepository.findById(body.callee);
-		if (!dContract) {
+		if (dContract) {
+			if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body);
+		} else {
 			await this.echoService.checkAccounts([body.registrar]);
-			return;
+			logger.warn('contract not found, can not parse call');
 		}
-		if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body);
 		return this.validateRelation({
 			from: [body.registrar],
 			assets: [body.fee.asset_id],
