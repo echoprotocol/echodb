@@ -144,6 +144,7 @@ declare module 'echojs-lib' {
 		getBlock(blockNum: number, force: boolean = false): Promise<Block>;
 		getDynamicGlobalProperties(): Promise<DynamicGlobalProperties>;
 		getAccounts(ids: string[]): Promise<Account[]>;
+		getAccountCount(): Promise<number>;
 		getContractResult(resultId: string): Promise<[number, ContractResult]>;
 		callContractNoChangingState(
 			contractId: string,

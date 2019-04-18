@@ -1,19 +1,19 @@
 import AbstractOperation from './abstract.operation';
+import AccountRepository from 'repositories/account.repository';
 import * as ECHO from '../../../constants/echo.constants';
-import EchoService from '../../../services/echo.service';
 
 type OP_ID = ECHO.OPERATION_ID.ACCOUNT_UPGRADE;
 export default class AccountUpgradeOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.ACCOUNT_UPGRADE;
 
 	constructor(
-		private echoService: EchoService,
+		private accountRepository: AccountRepository,
 	) {
 		super();
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
-		const [dAccount] = await this.echoService.checkAccounts([body.account_to_upgrade]);
+		const dAccount = await this.accountRepository.findById(body.account_to_upgrade);
 		dAccount.registrar = body.account_to_upgrade;
 		dAccount.referrer = body.account_to_upgrade;
 		dAccount.lifetime_referrer = body.account_to_upgrade;

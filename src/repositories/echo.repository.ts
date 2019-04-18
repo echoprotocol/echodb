@@ -127,4 +127,20 @@ export default class EchoRepository {
 		return this.echoConnection.echo.api.getContractResult(resultId);
 	}
 
+	async getAccountCount() {
+		try {
+			return await this.echoConnection.echo.api.getAccountCount();
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getAccountCount');
+		}
+	}
+
+	async getAccounts(ids: AccountId[]) {
+		try {
+			return await this.echoConnection.echo.api.getAccounts(ids);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'parseModule#getAccountBatch', { ids });
+		}
+	}
+
 }

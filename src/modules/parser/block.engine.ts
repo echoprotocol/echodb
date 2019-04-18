@@ -55,8 +55,10 @@ export default class BlockEngine extends EventEmitter {
 		await this.infoRepository.set(INFO.KEY.BLOCK_TO_PARSE_NUMBER, this.current);
 	}
 
-	public async *start(): AsyncIterableIterator<Block> {
-		this.current = await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
+	public async *start(current?: number): AsyncIterableIterator<Block> {
+		this.current = (current || current === 0)
+			? current
+			: await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
 		this.last = await this.echoRepository.getLastBlockNum(); // Not needed
 		this.subscribeToNewBlock();
 

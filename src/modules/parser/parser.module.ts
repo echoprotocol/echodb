@@ -1,12 +1,14 @@
+import AccountRepository from '../../repositories/account.repository';
 import AbstractModule from '../abstract.module';
 import BlockEngine from './block.engine';
 import BlockRepository from '../../repositories/block.repository';
-import EchoService from '../../services/echo.service';
 import EchoRepository from '../../repositories/echo.repository';
 import MemoryHelper from '../../helpers/memory.helper';
+import InfoRepository from '../../repositories/info.repository';
 import OperationManager from './operations/operation.manager';
 import RedisConnection from '../../connections/redis.connection';
 import TransactionRepository from '../../repositories/transaction.repository';
+import * as INFO from '../../constants/info.constants';
 import * as REDIS from '../../constants/redis.constants';
 import { Block } from 'echojs-lib';
 import { getLogger } from 'log4js';
@@ -16,20 +18,23 @@ const logger = getLogger('parser.module');
 export default class ParserModule extends AbstractModule {
 
 	constructor(
+		readonly accountRepository: AccountRepository,
 		readonly blockEngine: BlockEngine,
 		readonly redisConnection: RedisConnection,
 		readonly echoRepository: EchoRepository,
-		readonly echoService: EchoService,
 		readonly blockRepository: BlockRepository,
 		readonly transactionRepository: TransactionRepository,
 		readonly memoryHelper: MemoryHelper,
+		readonly infoRepository: InfoRepository,
 		readonly operationManager: OperationManager,
 	) {
 		super();
 	}
 
 	async init() {
-		for await (const block of this.blockEngine.start()) {
+		const from = await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
+		if (from === 1) await this.syncAllAccounts();
+		for await (const block of this.blockEngine.start(from)) {
 			try {
 				await this.parseBlock(block);
 				await this.blockEngine.finished();
@@ -41,10 +46,7 @@ export default class ParserModule extends AbstractModule {
 	}
 
 	async parseBlock(block: Block) {
-		const [dBlock] = await Promise.all([
-			this.blockRepository.create(block),
-			this.echoService.checkAccounts([block.account]),
-		]);
+		const dBlock = await this.blockRepository.create(block);
 		for (const tx of block.transactions) {
 			logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
 			const dTx = await this.transactionRepository.create({ ...tx, _block: dBlock });
@@ -54,6 +56,34 @@ export default class ParserModule extends AbstractModule {
 			this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 		}
 		this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
+	}
+
+	async syncAllAccounts() { // use request limiter to retry failed
+		logger.info('Parsing first block. Synchronizing all accounts');
+		const batchSize = 1000;
+		const total = await this.echoRepository.getAccountCount();
+		const lastBatchSize = total % batchSize;
+		const batchCount = (total - lastBatchSize) / batchSize + (lastBatchSize ? 1 : 0);
+		const promises = [];
+		for (let i = 0; i < batchCount; i += 1) {
+			promises.push(this.fetchAccounts(i * batchSize, i === batchCount - 1 ? lastBatchSize : batchSize));
+		}
+		await Promise.all(promises);
+	}
+
+	async fetchAccounts(from: number, batchSize: number) { // TODO: what to do on erorr?
+		try {
+			const ids = [];
+			for (let i = from; i < from + batchSize; i += 1) {
+				ids.push(`1.2.${i}`);
+			}
+			const accounts = await this.echoRepository.getAccounts(ids);
+			await this.accountRepository.create(accounts);
+			logger.trace(`accounts from 1.2.${from} to 1.2.${from + batchSize} are syncronized`);
+		} catch (error) {
+			logger.error(error);
+			return;
+		}
 	}
 
 }
