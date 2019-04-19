@@ -39,5 +39,12 @@
 		"port": "PORT",
 		"playground": "ENABLE_GRAPHIQL",
 		"introspection": "API_INTROSPECTION"
+	},
+	"logger": {
+		"categories": {
+			"default": {
+				"level": "LOGGER_LEVEL"
+			}
+		}
 	}
 }
