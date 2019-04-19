@@ -64,7 +64,7 @@ export default class BlockEngine extends EventEmitter {
 
 		this.stage = STAGE.HISTORY;
 		this.enableSpeedo();
-		while (this.current <= this.last) {
+		while (this.current < this.last) {
 			this.caching(this.current);
 			yield this.get(this.current);
 		}
@@ -79,15 +79,18 @@ export default class BlockEngine extends EventEmitter {
 	}
 
 	private lastCached: number;
-	private async caching(num: number) {
-		if (!this.lastCached) this.lastCached = num;
-		const toCacheCount = num + this.maxCacheSize - this.lastCached;
+	private caching(num: number) {
+		if (!this.lastCached) this.lastCached = num - 1;
+		let toCacheCount = num + this.maxCacheSize - this.lastCached;
 		if (toCacheCount <= 0) return;
+		if (this.lastCached + toCacheCount + 1 > this.last) {
+			toCacheCount = this.last - this.lastCached;
+		}
 		const lastBatchSize = toCacheCount % BATCH_SIZE;
 		const batchCount = (toCacheCount - lastBatchSize) / BATCH_SIZE + (lastBatchSize ? 1 : 0);
 		for (let batchIndex = 0; batchIndex < batchCount; batchIndex += 1) {
 			const startFrom = this.lastCached + 1 + BATCH_SIZE * batchIndex;
-			const until = batchIndex === batchCount ? toCacheCount % BATCH_SIZE : BATCH_SIZE;
+			const until = (batchIndex + 1) === batchCount ? lastBatchSize : BATCH_SIZE;
 			for (let blockNumAdder = 0; blockNumAdder < until; blockNumAdder += 1) {
 				this.cacheBlock(startFrom + blockNumAdder);
 				this.lastCached += 1;
@@ -96,7 +99,7 @@ export default class BlockEngine extends EventEmitter {
 	}
 
 	private cacheBlock(num: number): void {
-		if (!this.cache.has(num)) this.cache.set(num, this.echoRepository.getBlock(num));
+		if (num <= this.last && !this.cache.has(num)) this.cache.set(num, this.echoRepository.getBlock(num));
 	}
 
 	private get(num: number): Promise<Block> {

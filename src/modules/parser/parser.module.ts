@@ -6,6 +6,7 @@ import EchoRepository from '../../repositories/echo.repository';
 import MemoryHelper from '../../helpers/memory.helper';
 import InfoRepository from '../../repositories/info.repository';
 import OperationManager from './operations/operation.manager';
+import RavenHelper from 'helpers/raven.helper';
 import RedisConnection from '../../connections/redis.connection';
 import TransactionRepository from '../../repositories/transaction.repository';
 import * as INFO from '../../constants/info.constants';
@@ -20,6 +21,7 @@ export default class ParserModule extends AbstractModule {
 	constructor(
 		readonly accountRepository: AccountRepository,
 		readonly blockEngine: BlockEngine,
+		readonly ravenHelper: RavenHelper,
 		readonly redisConnection: RedisConnection,
 		readonly echoRepository: EchoRepository,
 		readonly blockRepository: BlockRepository,
@@ -40,6 +42,7 @@ export default class ParserModule extends AbstractModule {
 				await this.blockEngine.finished();
 			} catch (error) {
 				logger.error(error);
+				this.ravenHelper.error(error, 'blockEngine#init');
 				process.exit(1);
 			}
 		}
