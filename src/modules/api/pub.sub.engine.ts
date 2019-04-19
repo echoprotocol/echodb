@@ -12,6 +12,7 @@ import { IBalance, IBalanceExtended } from '../../interfaces/IBalance';
 import { TDoc } from '../../types/mongoose';
 import { Payload as RedisPayload } from '../../types/redis';
 import { Payload as GqlPayload } from '../../types/graphql';
+import { IContractBalance, IContractBalanceExtended } from 'interfaces/IContractBalance';
 
 const logger = getLogger('pub.sub');
 
@@ -53,7 +54,12 @@ export default class PubSubEngine extends EventEmitter {
 			case REDIS.EVENT.NEW_BALANCE:
 			case REDIS.EVENT.BALANCE_UPDATED:
 				return this.transformBalance(
-					<RedisPayload<REDIS.EVENT.NEW_BALANCE|REDIS.EVENT.BALANCE_UPDATED>>payload,
+					<RedisPayload<REDIS.EVENT.NEW_BALANCE | REDIS.EVENT.BALANCE_UPDATED>>payload,
+				);
+			case REDIS.EVENT.NEW_CONTRACT_BALANCE:
+			case REDIS.EVENT.CONTRACT_BALANCE_UPDATED:
+				return this.transformContractBalance(
+					<RedisPayload<REDIS.EVENT.NEW_CONTRACT_BALANCE | REDIS.EVENT.CONTRACT_BALANCE_UPDATED>>payload,
 				);
 			default:
 				return <GqlPayload>payload;
@@ -70,6 +76,13 @@ export default class PubSubEngine extends EventEmitter {
 			}
 		}
 		return <TDoc<IBalanceExtended>>dBalance;
+	}
+
+	private async transformContractBalance(dBalance: TDoc<IContractBalance>): Promise<TDoc<IContractBalanceExtended>> {
+		if (isMongoObjectId(dBalance._contract)) {
+			dBalance._contract = await this.contractRepository.findByMongoId(dBalance._contract);
+		}
+		return <TDoc<IContractBalanceExtended>>dBalance;
 	}
 
 }

@@ -43,21 +43,37 @@ export function handleError(errorMap: MethodErrorMap) {
 	};
 }
 
+function validate(args: {}, joiSchema: Joi.Schema) {
+	return Joi.validate(args, joiSchema, { language: AbstractJoiLanguage });
+}
+
+function throwJoiError(error: Joi.ValidationError) {
+	const formError = new FormError();
+	for (const { message, path, context } of error.details) {
+		const field = path.join('.');
+		const matches = message.match(/(?<={!{0,2})\w+(?=})/g);
+		const variables = matches.reduce((obj, label) => {
+			if (!context || !context.hasOwnProperty(label)) throw new Error('error has no needed property');
+			obj[label] = context[label];
+			return obj;
+		}, <{ [key: string]: string }>{});
+		formError.add(field, message, variables);
+	}
+	throw formError;
+}
+
 export function validateArgs({ joiSchema }: typeof AbstractForm) {
 	return UseMiddleware(async ({ args }, next) => {
-		const { error } = Joi.validate(args, joiSchema, { language: AbstractJoiLanguage });
+		const { error } = validate(args, joiSchema);
 		if (!error) return next();
-		const formError = new FormError();
-		for (const { message, path, context } of error.details) {
-			const field = path.join('.');
-			const matches = message.match(/(?<={!{0,2})\w+(?=})/g);
-			const variables = matches.reduce((obj, label) => {
-				if (!context || !context.hasOwnProperty(label)) throw new Error('error has no needed property');
-				obj[label] = context[label];
-				return obj;
-			}, <{ [key: string]: string }>{});
-			formError.add(field, message, variables);
-		}
-		throw formError;
+		throwJoiError(error);
 	});
+}
+
+export function validateSubscriptionArgs(topics: string | string[], { joiSchema }: typeof AbstractForm) {
+	return ({ args }: any) => {
+		const { error } = validate(args, joiSchema);
+		if (error) throwJoiError(error);
+		return topics;
+	};
 }

@@ -7,10 +7,10 @@ import PaginatedResponse from '../types/paginated.response.type';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
-import { GetBalanceInForm, GetBalancesForm, BalanceSubscribeForm } from '../forms/balance.forms';
 import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
+import { GetBalanceInForm, GetBalancesForm, BalanceSubscribeForm } from '../forms/balance.forms';
 
 const paginatedBalances = PaginatedResponse(Balance);
 

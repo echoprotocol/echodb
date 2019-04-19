@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import AccountResolver from './resolvers/account.resolver';
 import AbstractModule from '../abstract.module';
+import ContractBalanceResolver from './resolvers/contract.balance.resolver';
 import ContractResolver from './resolvers/contract.resolver';
 import BalanceResolver from './resolvers/balance.resolver';
 import BlockResolver from './resolvers/block.resolver';
@@ -32,16 +33,17 @@ export default class ApiModule extends AbstractModule {
 	private httpServer: http.Server;
 
 	constructor(
+		readonly ravenHelper: RavenHelper,
+		readonly redisConnection: RedisConnection,
+		readonly pubSubEngine: PubSubEngine,
 		readonly accountResolver: AccountResolver,
 		readonly balanceResolver: BalanceResolver,
 		readonly blockResolver: BlockResolver,
 		readonly contractResolver: ContractResolver,
 		readonly operationResolver: OperationResolver,
-		readonly ravenHelper: RavenHelper,
-		readonly redisConnection: RedisConnection,
-		readonly pubSubEngine: PubSubEngine,
 		readonly transactionResolver: TransactionResolver,
 		readonly tokenResolver: TokenResolver,
+		readonly contractBalanceResolver: ContractBalanceResolver,
 	) {
 		super();
 	}
@@ -63,6 +65,7 @@ export default class ApiModule extends AbstractModule {
 	async initGQL() {
 		const resolvers: any[] = [
 			this.accountResolver,
+			this.contractBalanceResolver,
 			this.contractResolver,
 			this.balanceResolver,
 			this.blockResolver,

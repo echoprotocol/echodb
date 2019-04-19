@@ -1,10 +1,13 @@
 import AccountRepository from '../repositories/account.repository';
 import BalanceRepository from '../repositories/balance.repository';
+import ContractBalanceRepository from '../repositories/contract.balance.repository';
 import ContractRepository from '../repositories/contract.repository';
 import ProcessingError from '../errors/processing.error';
 import * as BALANCE from '../constants/balance.constants';
 import { TDoc } from '../types/mongoose';
 import { IAccount } from '../interfaces/IAccount';
+import { ContractId } from 'types/echo';
+import { IContract } from 'interfaces/IContract';
 
 export const ERROR = {
 	ACCOUNT_NOT_FOUND: 'account not found',
@@ -17,6 +20,7 @@ export default class BalanceService {
 	constructor(
 		readonly accountRepository: AccountRepository,
 		readonly balanceRepository: BalanceRepository,
+		readonly contractBalanceRepository: ContractBalanceRepository,
 		readonly contractRepository: ContractRepository,
 	) {}
 
@@ -50,6 +54,21 @@ export default class BalanceService {
 		dBalance._account = dAccount;
 		dBalance._contract = dContract;
 		return dBalance;
+	}
+
+	async getContractBalances(count: number, offset: number, contracts: ContractId[]) {
+		const dContracts = await this.contractRepository.find({ id: { $in: contracts } });
+		const query = { _contract: { $in: dContracts } };
+		const [items, total] = await Promise.all([
+			this.contractBalanceRepository.find(query, null, { limit: count, skip: offset }),
+			this.contractBalanceRepository.count(query),
+		]);
+		const dContractsMap = new Map(dContracts.map((dContract) =>
+			<[string, TDoc<IContract>]>[dContract._id.toString(), dContract]));
+		for (const dBalance of items) {
+			dBalance._contract = dContractsMap.get(dBalance._contract.toString());
+		}
+		return { items, total };
 	}
 
 }
