@@ -9,7 +9,7 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 	abstract parse<Y extends ECHO.OPERATION_ID>(
 		body: ECHO.OPERATION_PROPS[Y],
 		result: ECHO.OPERATION_RESULT[Y],
-	): Promise<IOperationRelation>;
+	): IOperationRelation | Promise<IOperationRelation>;
 
 	validateRelation(params: RelationParameters) {
 		return relationResponse(params);

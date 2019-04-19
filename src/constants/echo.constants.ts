@@ -11,6 +11,7 @@ export enum OPERATION_ID {
 	ACCOUNT_TRANSFER = 9,
 	ASSET_CREATE = 10,
 	ASSET_UPDATE = 11,
+	ASSET_UPDATE_FEED_PRODUCERS = 13,
 	ASSET_ISSUE = 14,
 	ASSET_RESERVE = 15,
 	ASSET_FUND_FEE_POOL = 16,
@@ -32,6 +33,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_RESERVE]: AssetReserveOperation;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: AssetFundFeePoolOperation;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
+	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 };
@@ -49,6 +51,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ASSET_RESERVE]: unknown;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: unknown;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
+	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: unknown;
 };
@@ -254,6 +257,13 @@ interface AssetClaimFeesOperation {
 		amount: string | number;
 		asset_id: AssetId;
 	};
+}
+
+interface AssetUpdateFeedProducers {
+	fee: Fee;
+	issuer: AccountId;
+	asset_to_update: AssetId;
+	new_feed_producers: AccountId[];
 }
 
 interface AccountUpgradeOperation {
