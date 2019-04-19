@@ -1,7 +1,6 @@
 import AbstractForm, { rule } from './abstract.form';
 import AccountId from '../types/account.id.type';
 import ContractId from '../types/contract.id.type';
-import PaginationForm from './pagination.form';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as Joi from 'joi';
 import { ArgsType, Field } from 'type-graphql';
@@ -16,7 +15,7 @@ export class GetBalanceInForm extends AbstractForm {
 }
 
 @ArgsType()
-export class GetBalancesForm extends PaginationForm {
+export class GetBalancesForm extends AbstractForm {
 	@Field(() => [AccountId], { nullable: false })
 	@rule(Joi.array().max(100))
 	accounts: string[];

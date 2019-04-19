@@ -24,22 +24,18 @@ export default class BalanceService {
 		readonly contractRepository: ContractRepository,
 	) {}
 
-	// TODO: refactor coz of type
-	async getBalance(count: number, offset: number, accounts: string[], type?: BALANCE.TYPE) {
+	async getBalances(accounts: string[], type?: BALANCE.TYPE) {
 		const dAccounts = await this.accountRepository.find({ id: { $in: accounts } });
 		if (!dAccounts || !dAccounts.length) throw new ProcessingError(ERROR.ACCOUNT_NOT_FOUND);
 		const query: { _account: Object, type?: string } = { _account: { $in: dAccounts } };
 		if (type) query.type = type;
-		const [items, total] = await Promise.all([
-			this.balanceRepository.find(query, null, { limit: count, skip: offset }),
-			this.balanceRepository.count(query),
-		]);
+		const dBalances = await this.balanceRepository.find(query);
 		const dAccountsMap = new Map<string, TDoc<IAccount>>(dAccounts.map((dAccount) =>
 			<[string, TDoc<IAccount>]>[dAccount._id.toString(), dAccount]));
-		for (const dBalance of items) {
+		for (const dBalance of dBalances) {
 			dBalance._account = dAccountsMap.get(dBalance._account.toString());
 		}
-		return { items, total };
+		return dBalances;
 	}
 
 	async getBalanceIn(account: string, contract: string) {

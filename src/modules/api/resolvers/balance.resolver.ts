@@ -3,7 +3,6 @@ import AccountRepository from '../../../repositories/account.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import Balance from '../types/balance.type';
 import BalanceService, { ERROR as BALANCE_SERVICE_ERROR } from '../../../services/balance.service';
-import PaginatedResponse from '../types/paginated.response.type';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
@@ -11,8 +10,6 @@ import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-g
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
 import { GetBalanceInForm, GetBalancesForm, BalanceSubscribeForm } from '../forms/balance.forms';
-
-const paginatedBalances = PaginatedResponse(Balance);
 
 interface IBalanceSubscriptionFilterArgs {
 	payload: Payload<REDIS.EVENT.NEW_BALANCE> | Payload<REDIS.EVENT.BALANCE_UPDATED>;
@@ -34,13 +31,13 @@ export default class BalanceResolver extends AbstractResolver {
 	}
 
 	// Query
-	@Query(() => paginatedBalances)
+	@Query(() => [Balance])
 	@handleError({
 		[BALANCE_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
 	})
 	@validateArgs(GetBalancesForm)
-	getBalances(@Args() { count, offset, accounts, type }: GetBalancesForm) {
-		return this.balanceService.getBalance(count, offset, accounts, type);
+	getBalances(@Args() { accounts, type }: GetBalancesForm) {
+		return this.balanceService.getBalances(accounts, type);
 	}
 
 	@Query(() => Balance)
