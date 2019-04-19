@@ -1,4 +1,4 @@
-import { AccountId, AssetId } from './../types/echo/index.d';
+import { AccountId, AssetId } from '../types/echo';
 
 export const CORE_ASSET = '1.3.0'; // ECHO
 
@@ -15,6 +15,7 @@ export enum OPERATION_ID {
 	ASSET_ISSUE = 14,
 	ASSET_RESERVE = 15,
 	ASSET_FUND_FEE_POOL = 16,
+	ASSET_PUBLISH_FEED = 19,
 	ASSET_CLAIM_FEES = 43,
 	CONTRACT_CREATE = 47,
 	CONTRACT_CALL = 48,
@@ -32,6 +33,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_ISSUE]: AssetIssueOperation;
 	[OPERATION_ID.ASSET_RESERVE]: AssetReserveOperation;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: AssetFundFeePoolOperation;
+	[OPERATION_ID.ASSET_PUBLISH_FEED]: AssetPublishFeed;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
@@ -50,6 +52,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ASSET_ISSUE]: unknown;
 	[OPERATION_ID.ASSET_RESERVE]: unknown;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: unknown;
+	[OPERATION_ID.ASSET_PUBLISH_FEED]: unknown;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
@@ -64,19 +67,17 @@ export type Authority = [number, {}];
 type AssetMarket = unknown[];
 type ExtensionsArr = unknown[];
 type ExtensionsObj = {};
-type Fee = {
-	amount: number,
-	asset_id: string,
-};
+
+interface IAmount {
+	amount: number;
+	asset_id: string;
+}
 
 interface TranfserOperation {
-	fee: Fee;
+	fee: IAmount;
 	from: string;
 	to: string;
-	amount: {
-		amount: number,
-		asset_id: string,
-	};
+	amount: IAmount;
 	extensions: ExtensionsArr;
 	memo?: {
 		from: string;
@@ -104,7 +105,7 @@ export interface AccountOptions {
 }
 
 interface AccountCreateOperation {
-	fee: Fee;
+	fee: IAmount;
 	registrar: string;
 	referrer: string;
 	referrer_percent: number;
@@ -120,7 +121,7 @@ interface AccountCreateOperation {
 }
 
 interface AccountUpdateOperation {
-	fee: Fee;
+	fee: IAmount;
 	account: string;
 	owner?: AccountPerson;
 	active?: AccountPerson;
@@ -132,7 +133,7 @@ interface AccountUpdateOperation {
 }
 
 interface AccountTransferOperation {
-	fee: Fee;
+	fee: IAmount;
 	account_id: string;
 	new_owner: string;
 	extensions: ExtensionsArr;
@@ -146,21 +147,15 @@ export enum ACCOUNT_WHITELIST {
 }
 
 interface AccountWhitelistOperation {
-	fee: Fee;
+	fee: IAmount;
 	authorizing_account: string;
 	account_to_list: string;
 	new_listing: ACCOUNT_WHITELIST;
 	extensions: ExtensionsArr;
 }
 interface AssetPriceSchema {
-	base: {
-		amount: number;
-		asset_id: string;
-	};
-	quote: {
-		amount: number;
-		asset_id: string;
-	};
+	base: IAmount;
+	quote: IAmount;
 }
 export interface AssetOptions {
 	max_supply: string;
@@ -203,7 +198,7 @@ export interface BitassetOpts {
 }
 
 interface AssetCreateOperation {
-	fee: Fee;
+	fee: IAmount;
 	issuer: string;
 	symbol: string;
 	precision: number;
@@ -214,7 +209,7 @@ interface AssetCreateOperation {
 }
 
 interface AssetUpdateOperation {
-	fee: Fee;
+	fee: IAmount;
 	issuer: string;
 	asset_to_update: string;
 	new_issuer: string;
@@ -223,74 +218,72 @@ interface AssetUpdateOperation {
 }
 
 interface AssetIssueOperation {
-	fee: Fee;
+	fee: IAmount;
 	issuer: AccountId;
-	asset_to_issue: {
-		amount: number;
-		asset_id: AssetId
-	};
+	asset_to_issue: IAmount;
 	issue_to_account: AccountId;
 	extensions: ExtensionsArr;
 }
 
 interface AssetReserveOperation {
-	fee: Fee;
+	fee: IAmount;
 	payer: AccountId;
-	amount_to_reserve: {
-		amount: string | number,
-		asset_id: AssetId;
-	};
+	amount_to_reserve: IAmount;
 	extensions: ExtensionsArr;
 }
 
 interface AssetFundFeePoolOperation {
-	fee: Fee;
+	fee: IAmount;
 	from_account: AccountId;
 	asset_id: AssetId;
 	amount: string | number;
 }
 
-interface AssetClaimFeesOperation {
-	fee: Fee;
-	issuer: AccountId;
-	amount_to_claim: {
-		amount: string | number;
-		asset_id: AssetId;
+interface AssetPublishFeed {
+	fee: IAmount;
+	publisher: AccountId;
+	asset_id: AssetId;
+	feed: {
+		settlement_price: AssetPriceSchema;
+		maintenance_collateral_ratio: number | string;
+		maximum_short_squeeze_ratio: number | string;
+		core_exchange_rate: AssetPriceSchema;
 	};
+	extensions: ExtensionsArr;
+}
+
+interface AssetClaimFeesOperation {
+	fee: IAmount;
+	issuer: AccountId;
+	amount_to_claim: IAmount;
 }
 
 interface AssetUpdateFeedProducers {
-	fee: Fee;
+	fee: IAmount;
 	issuer: AccountId;
 	asset_to_update: AssetId;
 	new_feed_producers: AccountId[];
 }
 
 interface AccountUpgradeOperation {
-	fee: Fee;
+	fee: IAmount;
 	account_to_upgrade: AccountId;
 	upgrade_to_lifetime_member: boolean;
 }
 
 interface ContractCreateOperation {
-	fee: Fee;
+	fee: IAmount;
 	registrar: string;
-	value: {
-		amount: number;
-		asset_id: string;
-	};
+	value: IAmount;
 	code: string;
 	supported_asset_id?: string;
 	eth_accuracy: true;
 }
 
 interface ContractCallOperation {
-	fee: Fee;
+	fee: IAmount;
 	registrar: string;
-	value: {
-		amount: number,
-		asset_id: string,
-	};
+	value: IAmount;
 	code: string;
 	callee: string;
 }

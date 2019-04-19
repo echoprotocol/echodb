@@ -10,6 +10,7 @@ import AssetUpdateOperation from './asset.update.operation';
 import AssetIssueOperation from './asset.issue.operation';
 import AssetReserverOperation from './asset.reserve.operation';
 import AssetFundFeePoolOperation from './asset.fund.fee.pool.operation';
+import AssetPublishFeedOperation from './asset.publish.feed.operation';
 import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
@@ -41,6 +42,7 @@ export default class OperationManager {
 		assetIssueOperation: AssetIssueOperation,
 		assetReserveOperation: AssetReserverOperation,
 		assetFundFeePoolOperation: AssetFundFeePoolOperation,
+		assetPublishFeedOperation: AssetPublishFeedOperation,
 		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
 		accountUpgradeOperation: AccountUpgradeOperation,
 		contractCreateOperation: ContractCreateOperation,
@@ -58,6 +60,7 @@ export default class OperationManager {
 			assetIssueOperation,
 			assetReserveOperation,
 			assetFundFeePoolOperation,
+			assetPublishFeedOperation,
 			assetClaimFeesOperation,
 			assetUpdateFeedProducersOperation,
 			accountUpgradeOperation,
