@@ -12,6 +12,8 @@ const assetPriceSchema = createSchema<IAssetPrice>({
 		amount: Number,
 		asset_id: String,
 	},
+}, {
+	_id: false,
 });
 
 const assetDynamicSchema = createSchema<IAssetDynamic>({
@@ -26,7 +28,7 @@ const assetDynamicSchema = createSchema<IAssetDynamic>({
 
 const bitassetSchema = createSchema<IAssetBitasset>({
 	id: String,
-	current_feed_publication_time: String,
+	current_feed_publication_time: Date,
 	force_settled_volume: Number,
 	settlement_fund: Number,
 	feeds: [Schema.Types.Mixed],
@@ -38,7 +40,6 @@ const bitassetSchema = createSchema<IAssetBitasset>({
 		force_settlement_delay_sec: Number,
 		feed_lifetime_sec: Number,
 		minimum_feeds: Number,
-		extensions: [Schema.Types.Mixed],
 	},
 	current_feed: {
 		maintenance_collateral_ratio: Number,
@@ -47,6 +48,8 @@ const bitassetSchema = createSchema<IAssetBitasset>({
 		core_exchange_rate: assetPriceSchema,
 	},
 	settlement_price: assetPriceSchema,
+}, {
+	_id: false,
 });
 
 export default AbstractModel<IAsset>(MODEL.NAME.ASSET, {
@@ -61,7 +64,6 @@ export default AbstractModel<IAsset>(MODEL.NAME.ASSET, {
 		max_market_fee: Number,
 		max_supply: String,
 		description: String,
-		extensions: [Schema.Types.Mixed],
 		whitelist_authorities: [Schema.Types.Mixed],
 		blacklist_authorities: [Schema.Types.Mixed],
 		whitelist_markets: [Schema.Types.Mixed],
@@ -69,5 +71,6 @@ export default AbstractModel<IAsset>(MODEL.NAME.ASSET, {
 		core_exchange_rate: assetPriceSchema,
 	},
 	bitasset: bitassetSchema,
+	bitasset_data_id: String,
 	dynamic: assetDynamicSchema,
 });

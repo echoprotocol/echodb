@@ -7,6 +7,7 @@ import AccountWhitelistOperation from './account.whitelist.operation';
 import AssetCreateOperation from './asset.create.operation';
 import AssetClaimFeesOperation from './asset.claim.fees.operation';
 import AssetUpdateOperation from './asset.update.operation';
+import AssetBitassetUpdateOperation from './asset.bitasset.update.operation';
 import AssetIssueOperation from './asset.issue.operation';
 import AssetReserverOperation from './asset.reserve.operation';
 import AssetFundFeePoolOperation from './asset.fund.fee.pool.operation';
@@ -40,6 +41,7 @@ export default class OperationManager {
 		assetCreateOperation: AssetCreateOperation,
 		assetClaimFeesOperation: AssetClaimFeesOperation,
 		assetUpdateOperation: AssetUpdateOperation,
+		assetBitassetUpdateOperation: AssetBitassetUpdateOperation,
 		assetIssueOperation: AssetIssueOperation,
 		assetReserveOperation: AssetReserverOperation,
 		assetSettleOperation: AssetSettleOperation,
@@ -57,6 +59,7 @@ export default class OperationManager {
 			accountWhitelistOperation,
 			assetCreateOperation,
 			assetUpdateOperation,
+			assetBitassetUpdateOperation,
 			contractCreateOperation,
 			contractCallOperation,
 			assetIssueOperation,

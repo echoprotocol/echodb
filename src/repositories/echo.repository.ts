@@ -5,6 +5,7 @@ import { Block } from 'echojs-lib';
 import { encode, decode } from 'echojs-contract';
 import { AccountId, ContractId, AssetId } from '../types/echo';
 import RavenHelper from 'helpers/raven.helper';
+import ProcessingError from '../errors/processing.error';
 
 export default class EchoRepository {
 
@@ -94,13 +95,13 @@ export default class EchoRepository {
 		}
 	}
 
-	async getAssetDynamicDataId(assetId: AssetId) {
+	async getAsset(assetId: AssetId) {
 		try {
 			const [assetData] = await this.echoConnection.echo.api.getAssets([assetId]);
-			return assetData.dynamic_asset_data_id;
+			return assetData;
 		} catch (error) {
-			this.ravenHelper.error(error, 'echoRepository#getAssetDynamicDataId', { assetId });
-			return null;
+			this.ravenHelper.error(error, 'echoRepository#getAsset', { assetId });
+			throw new ProcessingError(error);
 		}
 	}
 

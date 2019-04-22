@@ -12,7 +12,7 @@ export default class AccountWhitelistOperation extends AbstractOperation<OP_ID> 
 	id = ECHO.OPERATION_ID.ACCOUNT_WHITELIST;
 
 	constructor(
-		readonly redisConnection: RedisConnection,
+		private redisConnection: RedisConnection,
 		readonly accountRepository: AccountRepository,
 		readonly echoService: EchoService,
 	) {

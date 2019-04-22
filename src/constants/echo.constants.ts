@@ -11,6 +11,7 @@ export enum OPERATION_ID {
 	ACCOUNT_TRANSFER = 9,
 	ASSET_CREATE = 10,
 	ASSET_UPDATE = 11,
+	ASSET_BITASSET_UPDATE = 12,
 	ASSET_UPDATE_FEED_PRODUCERS = 13,
 	ASSET_ISSUE = 14,
 	ASSET_RESERVE = 15,
@@ -31,6 +32,7 @@ export type Operations = {
 	[OPERATION_ID.ACCOUNT_WHITELIST]: AccountWhitelistOperation;
 	[OPERATION_ID.ASSET_CREATE]: AssetCreateOperation;
 	[OPERATION_ID.ASSET_UPDATE]: AssetUpdateOperation;
+	[OPERATION_ID.ASSET_BITASSET_UPDATE]: AssetBitAssetUpdateOperation;
 	[OPERATION_ID.ASSET_ISSUE]: AssetIssueOperation;
 	[OPERATION_ID.ASSET_RESERVE]: AssetReserveOperation;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: AssetFundFeePoolOperation;
@@ -51,6 +53,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ACCOUNT_WHITELIST]: unknown;
 	[OPERATION_ID.ASSET_CREATE]: string;
 	[OPERATION_ID.ASSET_UPDATE]: unknown;
+	[OPERATION_ID.ASSET_BITASSET_UPDATE]: unknown;
 	[OPERATION_ID.ASSET_ISSUE]: unknown;
 	[OPERATION_ID.ASSET_RESERVE]: unknown;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: unknown;
@@ -71,9 +74,9 @@ type AssetMarket = unknown[];
 type ExtensionsArr = unknown[];
 type ExtensionsObj = {};
 
-interface IAmount {
-	amount: number;
-	asset_id: string;
+export interface IAmount {
+	amount: number | string;
+	asset_id: AssetId;
 }
 
 interface TranfserOperation {
@@ -183,28 +186,12 @@ export interface AssetOptions {
 }
 
 export interface BitassetOpts {
-	id: string;
-	current_feed_publication_time: string;
-	force_settled_volume: number;
-	settlement_fund: number;
-	feeds: unknown[];
-	is_prediction_market: boolean;
-	options: {
-		short_backing_asset: string;
-		maximum_force_settlement_volume: number;
-		force_settlement_offset_percent: number;
-		force_settlement_delay_sec: number;
-		feed_lifetime_sec: number;
-		minimum_feeds: number;
-		extensions: unknown[];
-	};
-	current_feed: {
-		maintenance_collateral_ratio: number;
-		maximum_short_squeeze_ratio: number;
-		settlement_price: AssetPriceSchema;
-		core_exchange_rate: AssetPriceSchema;
-	};
-	settlement_price: AssetPriceSchema;
+	short_backing_asset: string;
+	maximum_force_settlement_volume: number;
+	force_settlement_offset_percent: number;
+	force_settlement_delay_sec: number;
+	feed_lifetime_sec: number;
+	minimum_feeds: number;
 }
 
 interface AssetCreateOperation {
@@ -225,6 +212,13 @@ interface AssetUpdateOperation {
 	new_issuer: string;
 	new_options: AssetOptions;
 	extensions: ExtensionsArr;
+}
+
+interface AssetBitAssetUpdateOperation {
+	fee: IAmount;
+	issuer: string;
+	asset_to_update: string;
+	new_options: BitassetOpts;
 }
 
 interface AssetIssueOperation {

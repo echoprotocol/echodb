@@ -54,6 +54,11 @@ declare module 'echojs-lib' {
 
 	export interface Asset {
 		dynamic_asset_data_id: string;
+		bitasset: {
+			id: string;
+			current_feed_publication_time: string;
+		};
+		bitasset_data_id: string;
 	}
 
 	export interface BlockHeader { // virtual export
