@@ -18,6 +18,7 @@ export enum OPERATION_ID {
 	ASSET_FUND_FEE_POOL = 16,
 	ASSET_SETTLE = 17,
 	ASSET_PUBLISH_FEED = 19,
+	ASSET_SETTLE_CANCEL = 42,
 	ASSET_CLAIM_FEES = 43,
 	CONTRACT_CREATE = 47,
 	CONTRACT_CALL = 48,
@@ -38,6 +39,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: AssetFundFeePoolOperation;
 	[OPERATION_ID.ASSET_SETTLE]: AssetSettleOperation;
 	[OPERATION_ID.ASSET_PUBLISH_FEED]: AssetPublishFeed;
+	[OPERATION_ID.ASSET_SETTLE_CANCEL]: AssetSettleCancelOperation;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
@@ -59,6 +61,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: unknown;
 	[OPERATION_ID.ASSET_SETTLE]: unknown;
 	[OPERATION_ID.ASSET_PUBLISH_FEED]: unknown;
+	[OPERATION_ID.ASSET_SETTLE_CANCEL]: unknown;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
@@ -254,6 +257,13 @@ interface AssetPublishFeed {
 		core_exchange_rate: AssetPriceSchema;
 	};
 	extensions: ExtensionsArr;
+}
+
+interface AssetSettleCancelOperation {
+	fee: IAmount;
+	settlement: string;
+	account: AccountId;
+	amount: IAmount;
 }
 
 interface AssetClaimFeesOperation {
