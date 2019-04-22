@@ -24,7 +24,7 @@ interface GetHistoryParameters {
 	[KEY.OPERATIONS]?: ECHO.OPERATION_ID[];
 }
 
-export default class EchoService {
+export default class OperationService {
 
 	constructor(
 		readonly operationRepository: OperationRepository,

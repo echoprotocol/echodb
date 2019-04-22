@@ -2,7 +2,6 @@ import { asClass, asValue, createContainer, InjectionMode, Lifetime, listModules
 import * as config from 'config';
 import { getLogger } from 'log4js';
 import AbstractConnection from './connections/abstract.connection';
-import { ERROR } from './errors/startup.error';
 import AbstractInitableHelper from './helpers/abstract.initable.helper';
 import AbstractModule from './modules/abstract.module';
 import { dotsCaseToCamelCase } from './utils/common';
@@ -28,19 +27,24 @@ container.register({
 });
 
 export async function initModule(name: string) {
-	const scope = container.createScope();
-	scope.loadModules([
-		`modules/${name}/${name}.module.js`,
-		`modules/${name}/**/*.js`,
-	], {
-		formatName: 'camelCase',
-		resolverOptions: {
-			injectionMode: InjectionMode.CLASSIC,
-			lifetime: Lifetime.SCOPED,
-		},
-	});
-	const module = scope.resolve<AbstractModule>(`${name}Module`);
-	await module.init();
+	try {
+		const scope = container.createScope();
+		scope.loadModules([
+			`modules/${name}/${name}.module.js`,
+			`modules/${name}/**/*.js`,
+		], {
+			formatName: 'camelCase',
+			resolverOptions: {
+				injectionMode: InjectionMode.CLASSIC,
+				lifetime: Lifetime.SCOPED,
+			},
+		});
+		const module = scope.resolve<AbstractModule>(`${name}Module`);
+		await module.init();
+	} catch (error) {
+		logger.error(`${name} module inition error`);
+		throw error;
+	}
 }
 
 export async function initConnections() {
@@ -51,7 +55,7 @@ export async function initConnections() {
 			const connection = container.resolve<AbstractConnection>(dotsCaseToCamelCase(name));
 			await connection.connect();
 		} catch (error) {
-			logger.error(ERROR.CONNECTION_ERROR);
+			logger.error(`${name} connection error`);
 			throw error;
 		}
 	}));
@@ -65,7 +69,7 @@ export async function initInitableHelpers() {
 			const helper = container.resolve<Object | AbstractInitableHelper>(dotsCaseToCamelCase(name));
 			if (helper instanceof AbstractInitableHelper) await helper.init();
 		} catch (error) {
-			logger.error(ERROR.CONNECTION_ERROR);
+			logger.error(`${name} helper inition error`);
 			throw error;
 		}
 	}));

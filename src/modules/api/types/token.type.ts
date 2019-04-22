@@ -14,6 +14,7 @@ export default class TokenType {
 	@Field() symbol: string;
 	@Field() name: string;
 	@Field() total_supply: string;
+	@Field() decimals: string;
 	@Field() registrar: Account;
 
 	@Field(() => Contract)

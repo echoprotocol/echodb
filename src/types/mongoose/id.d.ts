@@ -1,3 +1,4 @@
 import { Types, Document } from 'mongoose';
+import { TDocument } from './tdocument';
 
-export declare type MongoId = Types.ObjectId | string | Document;
+export type MongoId = Types.ObjectId | TDocument;

@@ -17,3 +17,7 @@ export function ethAddrToEchoId(addr: string) {
 export function inline(str: string, replaceWith = ' ') {
 	return str.replace(/[\r\n\s]+/g, replaceWith);
 }
+
+export function escapeRegExp(str: string) {
+	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

@@ -11,7 +11,8 @@ import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import { IOperation } from 'interfaces/IOperation';
-import { ITransactionDocument } from 'interfaces/ITransaction';
+import { ITransaction } from '../../../interfaces/ITransaction';
+import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
@@ -52,7 +53,7 @@ export default class OperationManager {
 	async parse<T extends ECHO.OPERATION_ID>(
 		[id, body]: [T, ECHO.OPERATION_PROPS[T]],
 		[_, result]: [unknown, ECHO.OPERATION_RESULT[T]],
-		dTx: ITransactionDocument,
+		dTx: TDoc<ITransaction>,
 	) {
 		const operation: IOperation<T> = {
 			id,

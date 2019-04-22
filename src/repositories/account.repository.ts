@@ -1,8 +1,10 @@
 import AbstractRepository from './abstract.repository';
-import RavenHelper from 'helpers/raven.helper';
 import AccountModel from '../models/account.model';
+import RavenHelper from '../helpers/raven.helper';
 import { IAccount } from '../interfaces/IAccount';
-import { MongoId } from 'types/mongoose';
+import { AccountId } from '../types/echo';
+import { removeDuplicates } from '../utils/common';
+import { TDoc } from '../types/mongoose';
 
 export default class AccountRepository extends AbstractRepository<IAccount> {
 
@@ -16,8 +18,13 @@ export default class AccountRepository extends AbstractRepository<IAccount> {
 		return super.findOne({ id });
 	}
 
-	findByMongoId(id: MongoId) {
-		return super.findById(id);
+	async findManyByIds(ids: AccountId[]) {
+		const dAccountsMap = new Map<AccountId, TDoc<IAccount>>();
+		await Promise.all(removeDuplicates(ids).map(async (id) => {
+			const dAccount = await this.findById(id);
+			dAccountsMap.set(id, dAccount);
+		}));
+		return ids.map((id) => dAccountsMap.get(id));
 	}
 
 }

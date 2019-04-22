@@ -1,5 +1,3 @@
-import { Document } from 'mongoose';
-
 export interface IAccount {
 	id: string;
 	membership_expiration_date: string;
@@ -41,6 +39,3 @@ export interface IAccount {
 	active_special_authority: [number, {}];
 	top_n_control_flags: number;
 }
-
-// @ts-ignore
-export interface IAccountDocument extends IAccount, Document {}

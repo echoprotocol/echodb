@@ -7,9 +7,9 @@ import { ObjectType, Field } from 'type-graphql';
 export default class Account {
 	@Field(() => AccountId) id: string;
 	@Field() membership_expiration_date: string;
-	@Field() registrar: Account;
-	@Field() referrer: Account;
-	@Field() lifetime_referrer: Account;
+	@Field(() => Account) registrar: string;
+	@Field(() => Account) referrer: string;
+	@Field(() => Account) lifetime_referrer: string;
 	@Field() network_fee_percentage: number;
 	@Field() lifetime_referrer_fee_percentage: number;
 	@Field() referrer_rewards_percentage: number;

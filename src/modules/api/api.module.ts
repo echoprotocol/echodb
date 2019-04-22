@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import AccountResolver from './resolvers/account.resolver';
 import AbstractModule from '../abstract.module';
+import ContractBalanceResolver from './resolvers/contract.balance.resolver';
 import ContractResolver from './resolvers/contract.resolver';
 import BalanceResolver from './resolvers/balance.resolver';
 import BlockResolver from './resolvers/block.resolver';
@@ -32,16 +33,17 @@ export default class ApiModule extends AbstractModule {
 	private httpServer: http.Server;
 
 	constructor(
+		readonly ravenHelper: RavenHelper,
+		readonly redisConnection: RedisConnection,
+		readonly pubSubEngine: PubSubEngine,
 		readonly accountResolver: AccountResolver,
 		readonly balanceResolver: BalanceResolver,
 		readonly blockResolver: BlockResolver,
 		readonly contractResolver: ContractResolver,
 		readonly operationResolver: OperationResolver,
-		readonly ravenHelper: RavenHelper,
-		readonly redisConnection: RedisConnection,
-		readonly pubSubEngine: PubSubEngine,
 		readonly transactionResolver: TransactionResolver,
 		readonly tokenResolver: TokenResolver,
+		readonly contractBalanceResolver: ContractBalanceResolver,
 	) {
 		super();
 	}
@@ -54,8 +56,8 @@ export default class ApiModule extends AbstractModule {
 
 		this.httpServer = http.createServer(this.expressApp);
 		this.initGQLSubscriptions();
-		await promisify(this.httpServer.listen.bind(this.httpServer))(config.port);
-		logger.info('API application listens to', config.port, 'port');
+		await promisify(this.httpServer.listen.bind(this.httpServer))(config.api.port);
+		logger.info('API application listens to', config.api.port, 'port');
 		logger.info('GraphQl path', this.gqlServer.graphqlPath);
 		logger.info('GraphQl subscriptions path', this.gqlServer.subscriptionsPath);
 	}
@@ -63,6 +65,7 @@ export default class ApiModule extends AbstractModule {
 	async initGQL() {
 		const resolvers: any[] = [
 			this.accountResolver,
+			this.contractBalanceResolver,
 			this.contractResolver,
 			this.balanceResolver,
 			this.blockResolver,
@@ -77,6 +80,8 @@ export default class ApiModule extends AbstractModule {
 		this.gqlServer = new ApolloServer({
 			schema,
 			formatError: this.formatError.bind(this),
+			introspection: config.api.introspection,
+			playground: config.api.playground,
 		});
 		this.gqlServer.applyMiddleware({ app: this.expressApp });
 	}
@@ -87,8 +92,8 @@ export default class ApiModule extends AbstractModule {
 
 	formatError(error: GraphQLError) {
 		const original = error.originalError;
-		if (original instanceof RestError) this.formatRestError(error, original);
-		if (error instanceof ApolloError) return error;
+		if (original instanceof RestError) return this.formatRestError(error, original);
+		if (error instanceof ApolloError || error instanceof GraphQLError) return error;
 		return this.handleServerSideError(error, original);
 	}
 
@@ -99,7 +104,7 @@ export default class ApiModule extends AbstractModule {
 		if (error instanceof FormError) {
 			parent.extensions.details = error.details;
 		}
-		return error;
+		return parent;
 	}
 
 	handleServerSideError(error: GraphQLError, original: Error) {

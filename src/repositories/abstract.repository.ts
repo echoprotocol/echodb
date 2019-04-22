@@ -1,28 +1,35 @@
 import RavenHelper from '../helpers/raven.helper';
-import { SomeOf } from '../types/some.of';
 import { Document, Model, ModelPopulateOptions } from 'mongoose';
-import { QueryOptions, MongoId } from '../types/mongoose';
+import { QueryOptions, MongoId, TDoc } from '../types/mongoose';
 
 // TODO: use mongoose Query<T>
 // TODO: do no send private info to raven ???
 
 // TODO: add more words like $set
-type Update<T extends {}> = { $set: SomeOf<T> } | SomeOf<T>;
-type TDocument<T extends {}> = T & Document;
+type Update<T extends {}> = { $set: Partial<T> } | Partial<T>;
 
 export default abstract class AbstractRepository<T = object> {
-	constructor(private ravenHelper: RavenHelper, private model: Model<TDocument<T>>) {
+	constructor(private ravenHelper: RavenHelper, private model: Model<TDoc<T>>) {
 		model.init(() => {
 			// @ts-ignore
 			model.createCollection();
 		});
 	}
 
-	async findById(id: MongoId, projection = {}, options: QueryOptions['FindById'] = {}) {
+	// FIXME: refactor copy-paste
+	async findById(id: MongoId | string, projection = {}, options: QueryOptions['FindById'] = {}) {
 		try {
 			return await this.model.findById(id, projection, options);
 		} catch (error) {
 			throw this.ravenHelper.error(error, 'model#findById', { id, projection, options });
+		}
+	}
+
+	async findByMongoId(id: MongoId | string, projection = {}, options: QueryOptions['FindById'] = {}) {
+		try {
+			return await this.model.findById(id, projection, options);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'model#findByMongoId', { id, projection, options });
 		}
 	}
 
@@ -41,9 +48,9 @@ export default abstract class AbstractRepository<T = object> {
 			throw this.ravenHelper.error(error, 'model#find', { query, projection, options });
 		}
 	}
-	async create(document: T): Promise<TDocument<T>>;
-	async create(document: T[]): Promise<TDocument<T>[]>;
-	async create(document: T | T[]): Promise<T & Document| TDocument<T>[]> {
+	async create(document: T): Promise<TDoc<T>>;
+	async create(document: T[]): Promise<TDoc<T>[]>;
+	async create(document: T | T[]): Promise<T & Document| TDoc<T>[]> {
 		try {
 			return await this.model.create(document);
 		} catch (error) {

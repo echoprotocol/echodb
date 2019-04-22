@@ -14,7 +14,7 @@ export default class AccountService {
 	async getAccount(id?: string, name?: string) {
 		let dAccount;
 		if (id) dAccount = await this.accountRepository.findById(id);
-		if (name) dAccount = await this.accountRepository.findOne({ name });
+		else if (name) dAccount = await this.accountRepository.findOne({ name });
 		if (!dAccount) throw new ProcessingError(ERROR.ACCOUNT_NOT_FOUND);
 		return dAccount;
 	}

@@ -1,5 +1,3 @@
-import { Document } from 'mongoose';
-
 export interface IBlock {
 	previous: string;
 	timestamp: string;
@@ -26,5 +24,3 @@ export interface IBlock {
 		}[];
 	};
 }
-
-export interface IBlockDocument extends IBlock, Document {}

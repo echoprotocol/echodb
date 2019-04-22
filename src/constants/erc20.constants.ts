@@ -7,6 +7,7 @@ export enum METHOD_NAME {
 	APPROVE = 'approve',
 	NAME = 'name',
 	SYMBOL = 'symbol',
+	DECIMALS = 'decimals',
 }
 
 export enum METHOD_HASH {
@@ -18,6 +19,7 @@ export enum METHOD_HASH {
 	APPROVE = '095ea7b3',
 	NAME = '06fdde03',
 	SYMBOL = '95d89b41',
+	DECIMALS = '313ce567',
 }
 
 export const METHOD_RESULT_TYPE = {
@@ -25,6 +27,7 @@ export const METHOD_RESULT_TYPE = {
 	TOTAL_SUPPLY: ['uint256'],
 	NAME: ['string'],
 	SYMBOL: ['string'],
+	DECIMALS: ['uint8'],
 };
 
 export const METHOD_MAP: { [x: string]: null | [METHOD_NAME, string[]] } = {

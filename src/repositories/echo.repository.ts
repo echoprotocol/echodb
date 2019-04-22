@@ -24,7 +24,7 @@ export default class EchoRepository {
 
 	async getLastBlockNum(): Promise<number> {
 		try {
-			const { last_irreversible_block_num: lastBlockNum } =
+			const { head_block_number: lastBlockNum } =
 				await this.echoConnection.echo.api.getDynamicGlobalProperties();
 			return lastBlockNum;
 		} catch (error) {
@@ -94,12 +94,53 @@ export default class EchoRepository {
 		}
 	}
 
+	async getTokenDecimals(contractId: ContractId) {
+		try {
+			const hex = await this.echoConnection.echo.api.callContractNoChangingState(
+				contractId,
+				// FIXME: needed to use any accountId here
+				'1.2.1',
+				ECHO.ASSET.ECHO,
+				ERC20.METHOD.HASH.DECIMALS,
+			);
+			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.DECIMALS).toString();
+		} catch (error) {
+			this.ravenHelper.error(error, 'echoRepository#getTokenDecimals');
+			return null;
+		}
+	}
+
 	subscribeToBlockApply(cb: (block: Block) => void) {
 		this.echoConnection.echo.subscriber.setBlockApplySubscribe(cb);
 	}
 
+	// FIXME: refactor
+	subscribeToNewBlock(cb: (num: number) => void) {
+		this.echoConnection.echo.subscriber.setGlobalSubscribe((data: any) => {
+			if (!data || !data[0] || data[0].id !== '2.1.0') return;
+			cb(data[0].head_block_number);
+		});
+		this.echoConnection.echo.api.getObject('2.1.0');
+	}
+
 	getContractResult(resultId: string) {
 		return this.echoConnection.echo.api.getContractResult(resultId);
+	}
+
+	async getAccountCount() {
+		try {
+			return await this.echoConnection.echo.api.getAccountCount();
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getAccountCount');
+		}
+	}
+
+	async getAccounts(ids: AccountId[]) {
+		try {
+			return await this.echoConnection.echo.api.getAccounts(ids);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'parseModule#getAccountBatch', { ids });
+		}
 	}
 
 }
