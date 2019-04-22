@@ -13,7 +13,7 @@ async function main() {
 		logger.trace(`${moduleName} module initializing`);
 		await initModule(process.env.MODULE);
 	} catch (error) {
-		logger.error(error);
+		logger.fatal(error);
 		process.exit(1);
 	}
 }

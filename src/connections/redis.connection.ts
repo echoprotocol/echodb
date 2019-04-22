@@ -1,12 +1,12 @@
+import AbstractConnection from './abstract.connection';
+import ConnectionError from '../errors/connection.error';
+import RavenHelper from '../helpers/raven.helper';
 import * as config from 'config';
 import * as redis from 'redis';
-import { promisify } from 'util';
-import { getLogger } from 'log4js';
-import AbstractConnection from './abstract.connection';
-import RavenHelper from '../helpers/raven.helper';
 import * as REDIS from '../constants/redis.constants';
-import ConnectionError from '../errors/connection.error';
 import { Payload } from '../types/redis';
+import { getLogger } from 'log4js';
+import { promisify } from 'util';
 
 const logger = getLogger('redis.connection');
 // FIXME: rm declare
@@ -74,6 +74,7 @@ export default class RedisConnection extends AbstractConnection {
 	}
 
 	private handleClientError(clientId: REDIS.CLIENT_ID, error: Error) {
+		logger.error(error);
 		this.ravenHelper.error(
 			error,
 			'redis#handleClientError',
