@@ -15,6 +15,7 @@ export enum OPERATION_ID {
 	ASSET_ISSUE = 14,
 	ASSET_RESERVE = 15,
 	ASSET_FUND_FEE_POOL = 16,
+	ASSET_SETTLE = 17,
 	ASSET_PUBLISH_FEED = 19,
 	ASSET_CLAIM_FEES = 43,
 	CONTRACT_CREATE = 47,
@@ -33,6 +34,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_ISSUE]: AssetIssueOperation;
 	[OPERATION_ID.ASSET_RESERVE]: AssetReserveOperation;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: AssetFundFeePoolOperation;
+	[OPERATION_ID.ASSET_SETTLE]: AssetSettleOperation;
 	[OPERATION_ID.ASSET_PUBLISH_FEED]: AssetPublishFeed;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
@@ -52,6 +54,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ASSET_ISSUE]: unknown;
 	[OPERATION_ID.ASSET_RESERVE]: unknown;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: unknown;
+	[OPERATION_ID.ASSET_SETTLE]: unknown;
 	[OPERATION_ID.ASSET_PUBLISH_FEED]: unknown;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
@@ -153,6 +156,13 @@ interface AccountWhitelistOperation {
 	new_listing: ACCOUNT_WHITELIST;
 	extensions: ExtensionsArr;
 }
+
+interface AccountUpgradeOperation {
+	fee: IAmount;
+	account_to_upgrade: AccountId;
+	upgrade_to_lifetime_member: boolean;
+}
+
 interface AssetPriceSchema {
 	base: IAmount;
 	quote: IAmount;
@@ -263,6 +273,13 @@ interface AssetUpdateFeedProducers {
 	issuer: AccountId;
 	asset_to_update: AssetId;
 	new_feed_producers: AccountId[];
+}
+
+interface AssetSettleOperation {
+	fee: IAmount;
+	account: AccountId;
+	amount: IAmount;
+	extensions: ExtensionsArr;
 }
 
 interface AccountUpgradeOperation {
