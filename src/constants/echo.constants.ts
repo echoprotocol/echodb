@@ -55,7 +55,7 @@ export enum OPERATION_ID {
 }
 
 export type Operations = {
-	[OPERATION_ID.TRANSFER]: TranfserOperation;
+	[OPERATION_ID.TRANSFER]: TransferOperation;
 	[OPERATION_ID.ACCOUNT_CREATE]: AccountCreateOperation;
 	[OPERATION_ID.ACCOUNT_UPDATE]: AccountUpdateOperation;
 	[OPERATION_ID.ACCOUNT_TRANSFER]: AccountTransferOperation;
@@ -96,7 +96,7 @@ export type Fee = {
 	asset_id: string,
 };
 
-interface TranfserOperation {
+interface TransferOperation {
 	fee: Fee;
 	from: string;
 	to: string;

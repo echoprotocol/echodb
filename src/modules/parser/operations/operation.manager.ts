@@ -6,6 +6,7 @@ import AccountUpdateOperation from './account.update.operation';
 import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import AssetCreateOperation from './asset.create.operation';
+import TransferOperation from './transfer.operation';
 import AssetUpdateOperation from './asset.update.operation';
 import AssetIssueOperation from './asset.issue.operation';
 import ContractCreateOperation from './contract.create.operation';
@@ -31,6 +32,7 @@ export default class OperationManager {
 		readonly operationRepository: OperationRepository,
 		readonly balanceService: BalanceService,
 		readonly redisConnection: RedisConnection,
+		transferOperation: TransferOperation,
 		accountCreateOperation: AccountCreateOperation,
 		accountUpdateOperation: AccountUpdateOperation,
 		accountTransferOperation: AccountTransferOperation,
@@ -53,6 +55,7 @@ export default class OperationManager {
 			contractCallOperation,
 			accountUpgradeOperation,
 			assetIssueOperation,
+			transferOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

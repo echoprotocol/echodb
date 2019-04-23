@@ -15,7 +15,6 @@ interface IBalanceSubscriptionFilterArgs {
 	payload: Payload<REDIS.EVENT.NEW_BALANCE> | Payload<REDIS.EVENT.BALANCE_UPDATED>;
 	args: BalanceSubscribeForm;
 }
-
 @Resolver(Balance)
 export default class BalanceResolver extends AbstractResolver {
 	@inject static accountRepository: AccountRepository;

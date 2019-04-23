@@ -6,9 +6,8 @@ import { Schema } from 'mongoose';
 
 export default AbstractModel<IBalance<BALANCE.TYPE>>(MODEL.NAME.BALANCE, {
 	_contract: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.CONTRACT },
-	// FIXME: use echo id ?
 	_account: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.ACCOUNT },
-	_asset: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.BALANCE },
+	_asset: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.ASSET },
 	type: { $type: String, enum: Object.values(BALANCE.TYPE) },
 	amount: String,
 }, {

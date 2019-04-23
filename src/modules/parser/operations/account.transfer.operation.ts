@@ -1,6 +1,6 @@
 import AbstractOperation from './abstract.operation';
-import AccountRepository from 'repositories/account.repository';
-import RedisConnection from 'connections/redis.connection';
+import AccountRepository from '../../../repositories/account.repository';
+import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 
