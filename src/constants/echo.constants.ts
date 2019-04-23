@@ -201,7 +201,6 @@ export interface AssetOptions {
 	whitelist_markets: Market;
 	blacklist_markets: Market;
 	description: string;
-	extensions: ExtensionsArr;
 }
 
 export interface BitassetOpts {
@@ -218,7 +217,6 @@ export interface BitassetOpts {
 		force_settlement_delay_sec: number;
 		feed_lifetime_sec: number;
 		minimum_feeds: number;
-		extensions: unknown[];
 	};
 	current_feed: {
 		maintenance_collateral_ratio: number;
@@ -237,7 +235,6 @@ interface AssetCreateOperation {
 	common_options: AssetOptions;
 	bitasset_opts: BitassetOpts;
 	is_prediction_market: boolean;
-	extensions: ExtensionsArr;
 }
 
 interface AssetUpdateOperation {
@@ -246,7 +243,6 @@ interface AssetUpdateOperation {
 	asset_to_update: string;
 	new_issuer: string;
 	new_options: AssetOptions;
-	extensions: ExtensionsArr;
 }
 
 interface AssetIssueOperation {
@@ -257,7 +253,6 @@ interface AssetIssueOperation {
 		asset_id: AssetId
 	};
 	issue_to_account: AccountId;
-	extensions: ExtensionsArr;
 }
 
 interface AccountUpgradeOperation {

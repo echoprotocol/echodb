@@ -8,6 +8,7 @@ import { IAsset } from '../interfaces/IAsset';
 import { IContract } from '../interfaces/IContract';
 import { IOperation } from '../interfaces/IOperation';
 import { ITransaction } from '../interfaces/ITransaction';
+import { ITransfer } from '../interfaces/ITransfer';
 
 export enum EVENT {
 	NEW_ASSET = 'new_asset',
@@ -16,6 +17,7 @@ export enum EVENT {
 	NEW_BALANCE = 'new_balance',
 	NEW_CONTRACT_BALANCE = 'new_contract_balance',
 	NEW_TRANSACTION = 'new_transaction',
+	NEW_TRANSFER = 'new_transfer',
 	NEW_OPERATION = 'new_operation',
 	NEW_CONTRACT = 'new_contract',
 	ACCOUNT_UPDATED = 'account_updated',
@@ -37,6 +39,7 @@ export type EVENT_PAYLOAD = {
 	[EVENT.NEW_BALANCE]: TDoc<IBalance>;
 	[EVENT.NEW_CONTRACT_BALANCE]: TDoc<IContractBalance>;
 	[EVENT.NEW_CONTRACT]: TDoc<IContract>;
+	[EVENT.NEW_TRANSFER]: TDoc<ITransfer>;
 	[EVENT.ACCOUNT_UPDATED]: AccountId;
 	[EVENT.ACCOUNT_OWNER_CHANGED]: { old: AccountId, new: AccountId };
 	[EVENT.ASSET_UPDATED]: string;

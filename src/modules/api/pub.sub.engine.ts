@@ -1,5 +1,6 @@
 import AccountRepository from '../../repositories/account.repository';
 import ContractRepository from 'repositories/contract.repository';
+import AssetRepository from 'repositories/asset.repository';
 import RedisConnection from '../../connections/redis.connection';
 import * as REDIS from '../../constants/redis.constants';
 import * as BALANCE from '../../constants/balance.constants';
@@ -12,6 +13,7 @@ import { IBalance, IBalanceExtended } from '../../interfaces/IBalance';
 import { TDoc } from '../../types/mongoose';
 import { Payload as RedisPayload } from '../../types/redis';
 import { Payload as GqlPayload } from '../../types/graphql';
+import { ITransfer, ITransferExtended } from 'interfaces/ITransfer';
 import { IContractBalance, IContractBalanceExtended } from 'interfaces/IContractBalance';
 
 const logger = getLogger('pub.sub');
@@ -26,6 +28,7 @@ export default class PubSubEngine extends EventEmitter {
 	constructor(
 		private accountRepository: AccountRepository,
 		private contractRepository: ContractRepository,
+		private assetRepository: AssetRepository,
 		private redisConnection: RedisConnection,
 	) {
 		super();
@@ -61,6 +64,10 @@ export default class PubSubEngine extends EventEmitter {
 				return this.transformContractBalance(
 					<RedisPayload<REDIS.EVENT.NEW_CONTRACT_BALANCE | REDIS.EVENT.CONTRACT_BALANCE_UPDATED>>payload,
 				);
+			case REDIS.EVENT.NEW_TRANSFER:
+				return this.transformTransfer(
+					<RedisPayload<REDIS.EVENT.NEW_TRANSFER>>payload,
+				);
 			default:
 				return <GqlPayload>payload;
 		}
@@ -78,6 +85,25 @@ export default class PubSubEngine extends EventEmitter {
 		return <TDoc<IBalanceExtended>>dBalance;
 	}
 
+	private async transformTransfer(dTransfer: TDoc<ITransfer>): Promise<TDoc<ITransferExtended>> {
+		if (isMongoObjectId(dTransfer._from)) {
+			dTransfer._from = await this.accountRepository.findByMongoId(dTransfer._from);
+		}
+		if (isMongoObjectId(dTransfer._to)) {
+			dTransfer._to = await this.accountRepository.findByMongoId(dTransfer._to);
+		}
+		if (dTransfer.type === BALANCE.TYPE.TOKEN) {
+			if (isMongoObjectId(dTransfer._contract)) {
+				dTransfer._contract = await this.contractRepository.findByMongoId(dTransfer._contract);
+			}
+		}
+		if (dTransfer.type === BALANCE.TYPE.ASSET) {
+			if (isMongoObjectId(dTransfer._asset)) {
+				dTransfer._asset = await this.assetRepository.findByMongoId(dTransfer._asset);
+			}
+		}
+		return <TDoc<ITransferExtended>>dTransfer;
+	}
 	private async transformContractBalance(dBalance: TDoc<IContractBalance>): Promise<TDoc<IContractBalanceExtended>> {
 		if (isMongoObjectId(dBalance._contract)) {
 			dBalance._contract = await this.contractRepository.findByMongoId(dBalance._contract);

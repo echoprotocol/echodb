@@ -25,7 +25,6 @@ export interface IAssetBitasset {
 		force_settlement_delay_sec: number;
 		feed_lifetime_sec: number;
 		minimum_feeds: number;
-		extensions: unknown[];
 	};
 	current_feed: {
 		maintenance_collateral_ratio: number;
@@ -48,7 +47,6 @@ export interface IAsset {
 		max_market_fee: string;
 		max_supply: string;
 		description: string;
-		extensions: unknown[];
 		whitelist_authorities: unknown[];
 		blacklist_authorities: unknown[];
 		whitelist_markets: unknown[];

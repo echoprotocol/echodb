@@ -28,7 +28,6 @@ const bitassetSchema = createSchema<IAssetBitasset>({
 		force_settlement_delay_sec: Number,
 		feed_lifetime_sec: Number,
 		minimum_feeds: Number,
-		extensions: [Schema.Types.Mixed],
 	},
 	current_feed: {
 		maintenance_collateral_ratio: Number,
@@ -42,10 +41,7 @@ const bitassetSchema = createSchema<IAssetBitasset>({
 export default AbstractModel<IAsset>(MODEL.NAME.ASSET, {
 	id: String,
 	_account: { ref: MODEL.NAME.ACCOUNT, type: Schema.Types.ObjectId },
-
 	symbol: String,
-	// bitasset_data_id: String,
-	// dynamic_asset_data_id: String,
 	precision: Number,
 	options: {
 		flags: Number,
@@ -54,7 +50,6 @@ export default AbstractModel<IAsset>(MODEL.NAME.ASSET, {
 		max_market_fee: Number,
 		max_supply: String,
 		description: String,
-		extensions: [Schema.Types.Mixed],
 		whitelist_authorities: [Schema.Types.Mixed],
 		blacklist_authorities: [Schema.Types.Mixed],
 		whitelist_markets: [Schema.Types.Mixed],
@@ -62,11 +57,4 @@ export default AbstractModel<IAsset>(MODEL.NAME.ASSET, {
 		core_exchange_rate: assetPriceSchema,
 	},
 	bitasset: bitassetSchema,
-	// dynamic: {
-	// 	id: String,
-	// 	current_supply: Number,
-	// 	confidential_supply: Number,
-	// 	accumulated_fees: Number,
-	// 	fee_pool: Number,
-	// },
 });

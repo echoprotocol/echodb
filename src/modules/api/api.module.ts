@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import AccountResolver from './resolvers/account.resolver';
 import AbstractModule from '../abstract.module';
+import AssetResolver from './resolvers/asset.resolver';
 import ContractBalanceResolver from './resolvers/contract.balance.resolver';
 import ContractResolver from './resolvers/contract.resolver';
 import BalanceResolver from './resolvers/balance.resolver';
@@ -18,7 +19,7 @@ import * as http from 'http';
 import * as config from 'config';
 import * as express from 'express';
 import { promisify } from 'util';
-import { ApolloServer, ApolloError } from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
 import { getLogger } from 'log4js';
 import { buildSchema } from 'type-graphql';
 import { initMiddleware } from './express.middleware';
@@ -43,6 +44,7 @@ export default class ApiModule extends AbstractModule {
 		readonly operationResolver: OperationResolver,
 		readonly transactionResolver: TransactionResolver,
 		readonly tokenResolver: TokenResolver,
+		readonly assetResolver: AssetResolver,
 		readonly contractBalanceResolver: ContractBalanceResolver,
 	) {
 		super();
@@ -71,6 +73,7 @@ export default class ApiModule extends AbstractModule {
 			this.blockResolver,
 			this.operationResolver,
 			this.transactionResolver,
+			this.assetResolver,
 		];
 		const schema = await buildSchema({
 			resolvers,
@@ -93,7 +96,7 @@ export default class ApiModule extends AbstractModule {
 	formatError(error: GraphQLError) {
 		const original = error.originalError;
 		if (original instanceof RestError) return this.formatRestError(error, original);
-		if (error instanceof ApolloError || error instanceof GraphQLError) return error;
+		if (original instanceof GraphQLError) return error;
 		return this.handleServerSideError(error, original);
 	}
 

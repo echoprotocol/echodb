@@ -17,7 +17,7 @@ export default class FormError extends RestError {
 	add(field: FormErrorDetail['field'], message: FormErrorDetail['message'], context: FormErrorDetail['context']) {
 		// FIXME: remove checking when adding from joi?
 		const keys = Object.keys(context);
-		const findResult = message.match(new RegExp(`(${keys.join('|')})`, 'g'));
+		const findResult = message.match(new RegExp(`\\b(${keys.join('|')})\\b`, 'g'));
 		// FIXME: error message
 		if (!findResult || findResult.length !== keys.length) throw new Error('not all variables used');
 		this.pDetails.push({ field, message, context });

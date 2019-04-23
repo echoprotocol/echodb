@@ -2,9 +2,9 @@ import AbstractOperation from './abstract.operation';
 import AssetRepository from '../../../repositories/asset.repository';
 import AccountRepository from '../../../repositories/account.repository';
 import BalanceRepository from 'repositories/balance.repository';
+import BN from 'bignumber.js';
 import EchoService from '../../../services/echo.service';
 import * as ECHO from '../../../constants/echo.constants';
-import { BigNumber as BN } from 'bignumber.js';
 
 type OP_ID = ECHO.OPERATION_ID.ASSET_ISSUE;
 export default class AssetIssueOperation extends AbstractOperation<OP_ID> {

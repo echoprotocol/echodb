@@ -1,5 +1,8 @@
 import * as BALANCE from '../constants/balance.constants';
-import { MongoId } from '../types/mongoose';
+import { MongoId, TDoc } from '../types/mongoose';
+import { IAccount } from './IAccount';
+import { IContract } from './IContract';
+import { IAsset } from './IAsset';
 
 export interface IMemo {
 	from: string;
@@ -21,14 +24,34 @@ export interface ITransferAsset extends IBasicTransfer {
 	type: BALANCE.TYPE.ASSET;
 }
 
+export interface ITransferAssetExtended extends ITransferAsset {
+	_from: TDoc<IAccount>;
+	_to: TDoc<IAccount>;
+	_asset: TDoc<IAsset>;
+}
+
+// tokens
 export interface ITransferToken extends IBasicTransfer {
 	_contract: MongoId;
 	type: BALANCE.TYPE.TOKEN;
 }
 
+export interface ITransferTokenExtended extends ITransferToken {
+	_from: TDoc<IAccount>;
+	_to: TDoc<IAccount>;
+	_contract: TDoc<IContract>;
+}
+
+// common
 type Transfer = {
 	[BALANCE.TYPE.ASSET]: ITransferAsset;
 	[BALANCE.TYPE.TOKEN]: ITransferToken;
 };
 
+type Extended = {
+	[BALANCE.TYPE.ASSET]: ITransferAssetExtended;
+	[BALANCE.TYPE.TOKEN]: ITransferTokenExtended;
+};
+
 export type ITransfer<T extends BALANCE.TYPE = BALANCE.TYPE> = Transfer[T];
+export type ITransferExtended<T extends BALANCE.TYPE = BALANCE.TYPE> = Extended[T];
