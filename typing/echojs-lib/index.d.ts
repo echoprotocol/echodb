@@ -113,7 +113,6 @@ declare module 'echojs-lib' {
 			force_settlement_delay_sec: number;
 			feed_lifetime_sec: number;
 			minimum_feeds: number;
-			extensions: unknown[];
 		};
 		current_feed: {
 			maintenance_collateral_ratio: number;
@@ -149,7 +148,6 @@ declare module 'echojs-lib' {
 			whitelist_markets: unknown[];
 			blacklist_markets: unknown[];
 			description: string;
-			extensions: unknown[];
 		};
 		dynamic_asset_data_id: string;
 		dynamic: object;

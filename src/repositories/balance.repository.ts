@@ -18,8 +18,8 @@ export default class BalanceRepository extends AbstractRepository<IBalance<BALAN
 	}
 
 	// Assets
-	findByAccountAndAsset(account: MongoId, asset: MongoId) {
-		return <Promise<TDoc<IBalanceAsset>>>this.findOne({ _account: account, _asset: asset });
+	findByAccountAndAsset(accountId: MongoId, assetId: MongoId) {
+		return <Promise<TDoc<IBalanceAsset>>>this.findOne({ _account: accountId, _asset: assetId });
 	}
 
 	async updateOrCreateByAccountAndAsset(

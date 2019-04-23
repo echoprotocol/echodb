@@ -11,7 +11,7 @@ export interface IMemo {
 	message: string;
 }
 
-interface IBasicTransfer {
+interface IBasic {
 	_from: MongoId;
 	_to: MongoId;
 	type: BALANCE.TYPE;
@@ -19,7 +19,8 @@ interface IBasicTransfer {
 	memo?: IMemo;
 }
 
-export interface ITransferAsset extends IBasicTransfer {
+// asset
+export interface ITransferAsset extends IBasic {
 	_asset: MongoId;
 	type: BALANCE.TYPE.ASSET;
 }
@@ -31,7 +32,7 @@ export interface ITransferAssetExtended extends ITransferAsset {
 }
 
 // tokens
-export interface ITransferToken extends IBasicTransfer {
+export interface ITransferToken extends IBasic {
 	_contract: MongoId;
 	type: BALANCE.TYPE.TOKEN;
 }
