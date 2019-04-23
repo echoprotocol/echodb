@@ -1,11 +1,12 @@
+import AbstractConnection from './abstract.connection';
+import ConnectionError from '../errors/connection.error';
+import RavenHelper from '../helpers/raven.helper';
 import * as config from 'config';
 import * as redis from 'redis';
-import { promisify } from 'util';
-import { getLogger } from 'log4js';
-import AbstractConnection from './abstract.connection';
-import RavenHelper from '../helpers/raven.helper';
 import * as REDIS from '../constants/redis.constants';
-import ConnectionError from '../errors/connection.error';
+import { Payload } from '../types/redis';
+import { getLogger } from 'log4js';
+import { promisify } from 'util';
 
 const logger = getLogger('redis.connection');
 // FIXME: rm declare
@@ -17,7 +18,7 @@ declare interface Message {
 }
 export declare type Callback<T> = (payload: T) => void | Promise<void>;
 declare type EventsMap = {
-	[x in REDIS.EVENT]?: Callback<REDIS.EVENT_PAYLOAD_TYPE[x]>[];
+	[x in REDIS.EVENT]?: Callback<Payload<x>>[];
 };
 
 const ERROR = {
@@ -73,6 +74,7 @@ export default class RedisConnection extends AbstractConnection {
 	}
 
 	private handleClientError(clientId: REDIS.CLIENT_ID, error: Error) {
+		logger.error(error);
 		this.ravenHelper.error(
 			error,
 			'redis#handleClientError',
@@ -96,18 +98,18 @@ export default class RedisConnection extends AbstractConnection {
 		});
 	}
 
-	on<T extends REDIS.EVENT>(event: T, cb: Callback<REDIS.EVENT_PAYLOAD_TYPE[T]>) {
+	on<T extends REDIS.EVENT>(event: T, cb: Callback<Payload<T>>) {
 		if (!this.events[event]) this.events[event] = [cb];
 		else this.events[event].push(cb);
 	}
 
 	// @ts-ignore
-	unsubscribe<T extends REDIS.EVENT>(event: T, cb: Callback<REDIS.EVENT_PAYLOAD_TYPE[T]>) {
+	unsubscribe<T extends REDIS.EVENT>(event: T, cb: Callback<Payload<T>>) {
 		logger.warn('unsubscribing is not implemented');
 	}
 
 	// TODO: make it async (use third parameter(cb) in publish(...))
-	async emit<T extends REDIS.EVENT>(event: T, payload: REDIS.EVENT_PAYLOAD_TYPE[T]) {
+	async emit<T extends REDIS.EVENT>(event: T, payload: Payload<T>) {
 		const result = await promisify((cb) =>
 			this.pubClient.publish(this.channelName, JSON.stringify({ event, payload }), cb))();
 		if (!result) throw new ConnectionError(ERROR.CAN_NOT_EMIT);

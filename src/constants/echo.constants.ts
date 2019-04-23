@@ -16,6 +16,7 @@ export enum OPERATION_ID {
 	ASSET_ISSUE = 14,
 	ASSET_RESERVE = 15,
 	ASSET_FUND_FEE_POOL = 16,
+	ASSET_GLOBAL_SETTLE = 18,
 	ASSET_SETTLE = 17,
 	ASSET_PUBLISH_FEED = 19,
 	ASSET_SETTLE_CANCEL = 42,
@@ -39,6 +40,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: AssetFundFeePoolOperation;
 	[OPERATION_ID.ASSET_SETTLE]: AssetSettleOperation;
 	[OPERATION_ID.ASSET_PUBLISH_FEED]: AssetPublishFeed;
+	[OPERATION_ID.ASSET_GLOBAL_SETTLE]: AssetGlobalSettle;
 	[OPERATION_ID.ASSET_SETTLE_CANCEL]: AssetSettleCancelOperation;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
@@ -59,6 +61,7 @@ export type OperationsResult = {
 	[OPERATION_ID.ASSET_ISSUE]: unknown;
 	[OPERATION_ID.ASSET_RESERVE]: unknown;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: unknown;
+	[OPERATION_ID.ASSET_GLOBAL_SETTLE]: unknown;
 	[OPERATION_ID.ASSET_SETTLE]: unknown;
 	[OPERATION_ID.ASSET_PUBLISH_FEED]: unknown;
 	[OPERATION_ID.ASSET_SETTLE_CANCEL]: unknown;
@@ -169,17 +172,18 @@ interface AccountUpgradeOperation {
 	upgrade_to_lifetime_member: boolean;
 }
 
-interface AssetPriceSchema {
+export interface IAssetPrice {
 	base: IAmount;
 	quote: IAmount;
 }
+
 export interface AssetOptions {
 	max_supply: string;
 	market_fee_percent: number;
 	max_market_fee: string;
 	issuer_permissions: number;
 	flags: number;
-	core_exchange_rate: AssetPriceSchema;
+	core_exchange_rate: IAssetPrice;
 	whitelist_authorities: Authority;
 	blacklist_authorities: Authority;
 	whitelist_markets: AssetMarket;
@@ -251,10 +255,10 @@ interface AssetPublishFeed {
 	publisher: AccountId;
 	asset_id: AssetId;
 	feed: {
-		settlement_price: AssetPriceSchema;
+		settlement_price: IAssetPrice;
 		maintenance_collateral_ratio: number | string;
 		maximum_short_squeeze_ratio: number | string;
-		core_exchange_rate: AssetPriceSchema;
+		core_exchange_rate: IAssetPrice;
 	};
 	extensions: ExtensionsArr;
 }
@@ -277,6 +281,13 @@ interface AssetUpdateFeedProducers {
 	issuer: AccountId;
 	asset_to_update: AssetId;
 	new_feed_producers: AccountId[];
+}
+
+interface AssetGlobalSettle {
+	fee: IAmount;
+	issuer: AccountId;
+	asset_to_settle: AssetId;
+	settle_price: IAssetPrice;
 }
 
 interface AssetSettleOperation {

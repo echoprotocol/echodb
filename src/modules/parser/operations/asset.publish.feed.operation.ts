@@ -1,5 +1,4 @@
 import AbstractOperation from './abstract.operation';
-import EchoService from '../../../services/echo.service';
 import * as ECHO from '../../../constants/echo.constants';
 
 type OP_ID = ECHO.OPERATION_ID.ASSET_PUBLISH_FEED;
@@ -7,14 +6,7 @@ type OP_ID = ECHO.OPERATION_ID.ASSET_PUBLISH_FEED;
 export default class AssetPublishFeedOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.ASSET_PUBLISH_FEED;
 
-	constructor(
-		private echoService: EchoService,
-	) {
-		super();
-	}
-
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
-		await this.echoService.checkAccounts([body.publisher]);
 		return this.validateRelation({
 			from: [body.publisher],
 			assets: [

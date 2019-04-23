@@ -1,13 +1,13 @@
 import * as HTTP from '../constants/http.constants';
 
-export declare type Code = HTTP.CODE;
-export declare type CodeAndDefaultMessage = [HTTP.CODE];
-export declare type CodeAndMessage = [HTTP.CODE, string];
+export type Code = HTTP.CODE;
+export type CodeAndDefaultMessage = [HTTP.CODE];
+export type CodeAndMessage = [HTTP.CODE, string];
 
-export declare interface MethodErrorMap {
+export interface MethodErrorMap {
 	[key: string]: Code | CodeAndMessage | CodeAndDefaultMessage;
 }
 
-export declare interface ErrorMap {
+export interface ErrorMap {
 	[key: string]: MethodErrorMap;
 }

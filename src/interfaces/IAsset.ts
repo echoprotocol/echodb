@@ -1,5 +1,4 @@
 import * as ECHO from '../constants/echo.constants';
-import { Document } from 'mongoose';
 import { MongoId } from '../types/mongoose';
 import { AssetId, BitassetDataId, BitassetId } from '../types/echo';
 
@@ -65,6 +64,3 @@ export interface IAsset {
 	bitasset_data_id?: BitassetDataId;
 	dynamic: IAssetDynamic;
 }
-
-// @ts-ignore
-export interface IAssetDocument extends IAsset, Document {}

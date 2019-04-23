@@ -15,6 +15,7 @@ import AssetSettleOperation from './asset.settle.operation';
 import AssetPublishFeedOperation from './asset.publish.feed.operation';
 import AssetSettleCancelOperation from './asset.settle.cancel.operation';
 import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
+import AssetGlobalSettleOperation from './asset.global.settle.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import OperationRepository from '../../../repositories/operation.repository';
@@ -22,7 +23,8 @@ import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import { IOperation } from 'interfaces/IOperation';
-import { ITransactionDocument } from 'interfaces/ITransaction';
+import { ITransaction } from '../../../interfaces/ITransaction';
+import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
@@ -50,6 +52,7 @@ export default class OperationManager {
 		assetPublishFeedOperation: AssetPublishFeedOperation,
 		assetSettleCancelOperation: AssetSettleCancelOperation,
 		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
+		assetGlobalSettleOperation: AssetGlobalSettleOperation,
 		accountUpgradeOperation: AccountUpgradeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
@@ -72,6 +75,7 @@ export default class OperationManager {
 			assetSettleCancelOperation,
 			assetClaimFeesOperation,
 			assetUpdateFeedProducersOperation,
+			assetGlobalSettleOperation,
 			accountUpgradeOperation,
 		];
 		for (const operation of operations) {
@@ -84,7 +88,7 @@ export default class OperationManager {
 	async parse<T extends ECHO.OPERATION_ID>(
 		[id, body]: [T, ECHO.OPERATION_PROPS[T]],
 		[_, result]: [unknown, ECHO.OPERATION_RESULT[T]],
-		dTx: ITransactionDocument,
+		dTx: TDoc<ITransaction>,
 	) {
 		const operation: IOperation<T> = {
 			id,

@@ -22,7 +22,7 @@ function initBodyParser(app: express.Express) {
 }
 
 function initCors(app: express.Express) {
-	if (!config.cors) return;
+	if (!config.api.cors) return;
 	app.use(cors({
 		origin: (_, cb) => cb(null, true),
 		credentials: true,
@@ -37,7 +37,7 @@ function initSession(app: express.Express) {
 	const sessionStore = new mongoStore({ mongooseConnection: connection });
 	app.use(session({
 		name: 'crypto.sid',
-		secret: config.sessionSecret,
+		secret: config.api.sessionSecret,
 		cookie: { maxAge: TIME.WEEK },
 		resave: false,
 		saveUninitialized: false,

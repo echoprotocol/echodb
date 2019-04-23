@@ -1,9 +1,8 @@
 import AbstractOperation from './abstract.operation';
+import AccountRepository from 'repositories/account.repository';
 import RedisConnection from 'connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
-import AccountRepository from 'repositories/account.repository';
-import EchoService from '../../../services/echo.service';
 import { addToArray, removeFromArray } from '../../../utils/common';
 
 type OP_ID = ECHO.OPERATION_ID.ACCOUNT_WHITELIST;
@@ -12,15 +11,14 @@ export default class AccountWhitelistOperation extends AbstractOperation<OP_ID> 
 	id = ECHO.OPERATION_ID.ACCOUNT_WHITELIST;
 
 	constructor(
-		private redisConnection: RedisConnection,
 		readonly accountRepository: AccountRepository,
-		readonly echoService: EchoService,
+		readonly redisConnection: RedisConnection,
 	) {
 		super();
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
-		const [dAccount] = await this.echoService.checkAccounts([body.authorizing_account]);
+		const dAccount = await this.accountRepository.findById(body.authorizing_account);
 		switch (body.new_listing) {
 			case ECHO.ACCOUNT_WHITELIST.BLACK_LISTED: {
 				// add to list if not listed

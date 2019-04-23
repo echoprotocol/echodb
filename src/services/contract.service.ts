@@ -1,4 +1,4 @@
-import { SomeOfAny } from './../types/some.of.d';
+import AccountRepository from '../repositories/account.repository';
 import ContractRepository from '../repositories/contract.repository';
 import ProcessingError from '../errors/processing.error';
 import * as CONTRACT from '../constants/contract.constants';
@@ -6,6 +6,8 @@ import * as ERC20 from '../constants/erc20.constants';
 import * as TOKEN from '../constants/token.constants';
 import { AccountId } from '../types/echo';
 import { ITokenInfo } from '../interfaces/IContract';
+import { SomeOfAny } from '../types/some.of.d';
+import { escapeRegExp } from '../utils/format';
 
 type GetContractsQuery = { registrar?: object, type?: CONTRACT.TYPE };
 type GetTokensQuery = { _registrar?: any, type?: any, token_info?: SomeOfAny<ITokenInfo> };
@@ -17,13 +19,15 @@ interface GetTokensParameters {
 	type?: TOKEN.TYPE;
 }
 export const ERROR = {
+	ACCOUNT_NOT_FOUND: 'account not found',
 	CONTRACT_NOT_FOUND: 'contract not found',
 };
 
 export default class ContractService {
 
 	constructor(
-		readonly contractRepository: ContractRepository,
+		private accountRepository: AccountRepository,
+		private contractRepository: ContractRepository,
 	) {}
 
 	getTypeByCode(bytecode: string): CONTRACT.TYPE {
@@ -67,12 +71,16 @@ export default class ContractService {
 	) {
 		const query: GetTokensQuery = {};
 		const tokenInfo: SomeOfAny<ITokenInfo> = {};
-		if (registrar) query._registrar = registrar;
+		if (registrar) {
+			const dAccount = await this.accountRepository.findById(registrar);
+			if (!dAccount) throw new ProcessingError(ERROR.ACCOUNT_NOT_FOUND);
+			query._registrar = dAccount;
+		}
 		if (type) query.type = type;
 		else query.type = { $in: Object.values(TOKEN.TYPE) };
 		if (symbol) tokenInfo.symbol = symbol;
 		// TODO: limit regex abilities
-		if (name) tokenInfo.name = new RegExp(name);
+		if (name) tokenInfo.name = new RegExp(escapeRegExp(name), 'i');
 		for (const key of Object.keys(tokenInfo)) {
 			// @ts-ignore
 			query[`token_info.${key}`] = tokenInfo[key];

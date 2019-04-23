@@ -1,6 +1,5 @@
 {
 	"env": "NODE_ENV",
-	"port": "PORT",
 	"echo": {
 		"url": "ECHO_URL"
 	},
@@ -20,5 +19,32 @@
 		"database": "DB_DATABASE",
 		"protocol": "DB_PROTOCOL"
 	},
-  "graphiql": "ENABLE_GRAPHIQL"
+	"asyncLogger": {
+		"enabled": "ALOG_ENABLED",
+		"delay": "ALOG_DELAY",
+		"warnBorder": "ALOG_WARN_BORDER"
+	},
+	"memoryLogger": {
+		"enabled": "MLOG_ENABLED",
+		"delay": "MLOG_DELAY",
+		"logOnStart": "MLOG_LOG_ON_START"
+	},
+	"parser": {
+		"speedo": {
+			"delay": "PARSER_SPEEDO_DELAY",
+			"logCacheSize": "PARSER_SPEEDO_LOG_CACHE_SIZE"
+		}
+	},
+	"api": {
+		"port": "PORT",
+		"playground": "ENABLE_GRAPHIQL",
+		"introspection": "API_INTROSPECTION"
+	},
+	"logger": {
+		"categories": {
+			"default": {
+				"level": "LOGGER_LEVEL"
+			}
+		}
+	}
 }

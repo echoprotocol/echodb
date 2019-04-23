@@ -1,4 +1,5 @@
 import AbstractOperation from './abstract.operation';
+import AccountRepository from '../../../repositories/account.repository';
 import AssetRepository from '../../../repositories/asset.repository';
 import BalanceRepository from 'repositories/balance.repository';
 import EchoService from '../../../services/echo.service';
@@ -10,6 +11,7 @@ export default class AssetReserveOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.ASSET_RESERVE;
 
 	constructor(
+		readonly accountRepository: AccountRepository,
 		readonly assetRepository: AssetRepository,
 		readonly balanceRepository: BalanceRepository,
 		readonly echoService: EchoService,
@@ -18,10 +20,16 @@ export default class AssetReserveOperation extends AbstractOperation<OP_ID> {
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
-		const [dAsset, [dAccount]] = await Promise.all([
+		const [dAsset, dAccount] = await Promise.all([
 			this.assetRepository.findById(body.amount_to_reserve.asset_id),
-			this.echoService.checkAccounts([body.payer]),
+			this.accountRepository.findById(body.payer),
 		]);
+		await this.balanceRepository.updateOrCreateByAccountAndAsset(
+			dAccount,
+			dAsset,
+			new BN(body.amount_to_reserve.amount).negated().toString(),
+			{ append: true },
+		);
 		const dBalance = await this.balanceRepository.findByAccountAndAsset(dAccount, dAsset);
 		dBalance.amount = new BN(dBalance.amount).minus(body.amount_to_reserve.amount).toString();
 		await dBalance.save();

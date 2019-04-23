@@ -16,6 +16,6 @@ export default class Balance {
 	@Field() account: Account;
 	@Field(() => BALANCE.TYPE) type: BALANCE.TYPE;
 	@Field() amount: number;
-	@Field() asset: string;
-	@Field() contract: Contract;
+	@Field({ nullable: true }) asset: string;
+	@Field({ nullable: true }) contract: Contract;
 }

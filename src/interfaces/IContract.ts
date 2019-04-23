@@ -1,11 +1,11 @@
 import * as CONTRACT from '../constants/contract.constants';
-import { Document } from 'mongoose';
 import { MongoId } from '../types/mongoose';
 
 export interface ITokenInfo {
 	total_supply: string;
 	name: string;
 	symbol: string;
+	decimals: string;
 }
 
 export interface IContract {
@@ -16,6 +16,3 @@ export interface IContract {
 	type: CONTRACT.TYPE;
 	token_info?: ITokenInfo;
 }
-
-// @ts-ignore
-export interface IContractDocument extends IContract, Document {}

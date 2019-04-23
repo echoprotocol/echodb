@@ -1,18 +1,14 @@
-import AbstractForm from './abstract.form';
-import * as API from '../../../constants/api.constants';
+import AbstractForm, { rule } from './abstract.form';
+import PaginationForm from './pagination.form';
+import * as Joi from 'joi';
 import { ArgsType, Field, Int } from 'type-graphql';
 
 @ArgsType()
-export class BlockForm extends AbstractForm {
+export class GetBlockForm extends AbstractForm {
+	@rule(Joi.number().positive())
 	@Field(() => Int, { nullable: false })
 	round: number;
 }
 
 @ArgsType()
-export class BlocksForm extends AbstractForm {
-	@Field(() => Int, { defaultValue: API.PAGINATION.DEFAULT_COUNT })
-	count: number;
-
-	@Field(() => Int, { defaultValue: 0 })
-	offset: number;
-}
+export class GetBlocksForm extends PaginationForm {}

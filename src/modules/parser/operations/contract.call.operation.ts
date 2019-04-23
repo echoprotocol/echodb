@@ -1,37 +1,49 @@
 import AbstractOperation from './abstract.operation';
-import BalanceRepository from 'repositories/balance.repository';
+import AccountRepository from '../../../repositories/account.repository';
+import BalanceRepository from '../../../repositories/balance.repository';
+import ContractBalanceRepository from '../../../repositories/contract.balance.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import ContractService from 'services/contract.service';
-import EchoService from 'services/echo.service';
 import EchoRepository from '../../../repositories/echo.repository';
 import * as ECHO from '../../../constants/echo.constants';
 import * as CONTRACT from '../../../constants/contract.constants';
 import * as ERC20 from '../../../constants/erc20.constants';
 import { decode } from 'echojs-contract';
-import { IContractDocument } from '../../../interfaces/IContract';
+import { IContract } from '../../../interfaces/IContract';
+import { TDoc } from '../../../types/mongoose';
+import { getLogger } from 'log4js';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CALL;
+
+const logger = getLogger('contract.call');
 
 export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.CONTRACT_CALL;
 
 	constructor(
+		readonly accountRepository: AccountRepository,
 		readonly balanceRepository: BalanceRepository,
+		readonly contractBalanceRepository: ContractBalanceRepository,
 		readonly contractRepository: ContractRepository,
-		readonly echoRepository: EchoRepository,
 		readonly contractService: ContractService,
-		readonly echoService: EchoService,
+		readonly echoRepository: EchoRepository,
 	) {
 		super();
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
 		const dContract = await this.contractRepository.findById(body.callee);
-		if (!dContract) {
-			await this.echoService.checkAccounts([body.registrar]);
-			return;
+		if (dContract) {
+			await this.contractBalanceRepository.updateOrCreate(
+				dContract,
+				body.value.asset_id,
+				body.value.amount.toString(),
+				{ append: true },
+			);
+			if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body);
+		} else {
+			logger.warn('contract not found, can not parse call');
 		}
-		if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body);
 		return this.validateRelation({
 			from: [body.registrar],
 			assets: [body.fee.asset_id],
@@ -40,7 +52,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	}
 
 	// FIXME: refactor ?
-	private async handleERC20(dContract: IContractDocument, body: ECHO.OPERATION_PROPS[OP_ID]) {
+	private async handleERC20(dContract: TDoc<IContract>, body: ECHO.OPERATION_PROPS[OP_ID]) {
 		const method = ERC20.METHOD.MAP[body.code.substring(0, 8)];
 		if (!method) return;
 		const [name, parameters] = method;
@@ -74,8 +86,8 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		}
 	}
 
-	async updateAccountBalances(dContract: IContractDocument, from: string, to: string) {
-		const [dFrom, dTo] = await this.echoService.checkAccounts([from, to]);
+	async updateAccountBalances(dContract: TDoc<IContract>, from: string, to: string) {
+		const [dFrom, dTo] = await this.accountRepository.findManyByIds([from, to]);
 		const [fromBalance, toBalance] = await Promise.all([
 			this.echoRepository.getAccountTokenBalance(dContract.id, from),
 			this.echoRepository.getAccountTokenBalance(dContract.id, to),
