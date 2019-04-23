@@ -1,7 +1,7 @@
 import { AccountId } from '../types/echo';
 import { TDoc } from '../types/mongoose';
 import { IAccount } from '../interfaces/IAccount';
-import { IAsset } from 'interfaces/IAsset';
+import { IAsset } from '../interfaces/IAsset';
 import { IBalance } from '../interfaces/IBalance';
 import { IContractBalance } from '../interfaces/IContractBalance';
 import { IBlock } from '../interfaces/IBlock';
