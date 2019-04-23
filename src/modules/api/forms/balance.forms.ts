@@ -1,4 +1,5 @@
 import AbstractForm, { rule } from './abstract.form';
+import AssetId from '../types/asset.id.type';
 import AccountId from '../types/account.id.type';
 import ContractId from '../types/contract.id.type';
 import * as BALANCE from '../../../constants/balance.constants';
@@ -6,12 +7,21 @@ import * as Joi from 'joi';
 import { ArgsType, Field } from 'type-graphql';
 
 @ArgsType()
-export class GetBalanceInForm extends AbstractForm {
+export class GetBalanceInTokenForm extends AbstractForm {
 	@Field(() => AccountId, { nullable: false })
 	account: string;
 
 	@Field(() => ContractId, { nullable: false })
 	contract: string;
+}
+
+@ArgsType()
+export class GetBalanceInAssetForm extends AbstractForm {
+	@Field(() => AccountId, { nullable: false })
+	account: string;
+
+	@Field(() => AssetId, { nullable: false })
+	asset: string;
 }
 
 @ArgsType()

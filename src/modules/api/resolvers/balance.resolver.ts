@@ -1,4 +1,5 @@
 import AbstractResolver, { handleError, validateArgs } from './abstract.resolver';
+import AssetRepository from '../../../repositories/asset.repository';
 import AccountRepository from '../../../repositories/account.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import Balance from '../types/balance.type';
@@ -9,7 +10,12 @@ import * as REDIS from '../../../constants/redis.constants';
 import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
-import { GetBalanceInForm, GetBalancesForm, BalanceSubscribeForm } from '../forms/balance.forms';
+import {
+	GetBalanceInTokenForm,
+	GetBalanceInAssetForm,
+	GetBalancesForm,
+	BalanceSubscribeForm,
+} from '../forms/balance.forms';
 
 interface IBalanceSubscriptionFilterArgs {
 	payload: Payload<REDIS.EVENT.NEW_BALANCE> | Payload<REDIS.EVENT.BALANCE_UPDATED>;
@@ -17,11 +23,13 @@ interface IBalanceSubscriptionFilterArgs {
 }
 @Resolver(Balance)
 export default class BalanceResolver extends AbstractResolver {
+	@inject static assetRepository: AssetRepository;
 	@inject static accountRepository: AccountRepository;
 	@inject static contractRepository: ContractRepository;
 	@inject static balanceService: BalanceService;
 
 	constructor(
+		private assetRepository: AssetRepository,
 		private accountRepository: AccountRepository,
 		private contractRepository: ContractRepository,
 		private balanceService: BalanceService,
@@ -45,8 +53,18 @@ export default class BalanceResolver extends AbstractResolver {
 		[BALANCE_SERVICE_ERROR.BALANCE_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
 		[BALANCE_SERVICE_ERROR.CONTRACT_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
 	})
-	getBalanceIn(@Args() { account, contract }: GetBalanceInForm) {
-		return this.balanceService.getBalanceIn(account, contract);
+	getBalanceInToken(@Args() { account, contract }: GetBalanceInTokenForm) {
+		return this.balanceService.getBalanceInToken(account, contract);
+	}
+
+	@Query(() => Balance)
+	@handleError({
+		[BALANCE_SERVICE_ERROR.ACCOUNT_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
+		[BALANCE_SERVICE_ERROR.BALANCE_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
+		[BALANCE_SERVICE_ERROR.ASSET_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
+	})
+	getBalanceInAsset(@Args() { account, asset }: GetBalanceInAssetForm) {
+		return this.balanceService.getBalanceInAsset(account, asset);
 	}
 
 	// FieldResolver
@@ -59,6 +77,12 @@ export default class BalanceResolver extends AbstractResolver {
 	contract(@Root('type') type: Balance['type'], @Root('_contract') id: Balance['_contract']) {
 		if (type !== BALANCE.TYPE.TOKEN) return null;
 		return this.resolveMongoField(id, this.contractRepository);
+	}
+
+	@FieldResolver()
+	asset(@Root('type') type: Balance['type'], @Root('_asset') id: Balance['_asset']) {
+		if (type !== BALANCE.TYPE.ASSET) return null;
+		return this.resolveMongoField(id, this.assetRepository);
 	}
 
 	// Subscription

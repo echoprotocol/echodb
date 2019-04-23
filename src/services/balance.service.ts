@@ -3,16 +3,14 @@ import AccountRepository from '../repositories/account.repository';
 import BalanceRepository from '../repositories/balance.repository';
 import ContractBalanceRepository from '../repositories/contract.balance.repository';
 import ContractRepository from '../repositories/contract.repository';
-import RedisConnection from '../connections/redis.connection';
 import ProcessingError from '../errors/processing.error';
-import EchoService from '../services/echo.service';
 import * as BALANCE from '../constants/balance.constants';
 import * as ECHO from '../constants/echo.constants';
 import { BigNumber as BN } from 'bignumber.js';
 import { TDoc } from '../types/mongoose';
 import { IAccount } from '../interfaces/IAccount';
 import { IContract } from 'interfaces/IContract';
-import { AccountId, ContractId } from 'types/echo';
+import { AccountId, ContractId, AssetId } from 'types/echo';
 
 export const ERROR = {
 	ACCOUNT_NOT_FOUND: 'account not found',
@@ -24,13 +22,11 @@ export const ERROR = {
 export default class BalanceService {
 
 	constructor(
-		readonly redisConnection: RedisConnection,
 		readonly assetRepository: AssetRepository,
 		readonly accountRepository: AccountRepository,
 		readonly balanceRepository: BalanceRepository,
 		readonly contractBalanceRepository: ContractBalanceRepository,
 		readonly contractRepository: ContractRepository,
-		readonly echoService: EchoService,
 	) {}
 
 	async getBalances(accounts: string[], type?: BALANCE.TYPE) {
@@ -47,7 +43,7 @@ export default class BalanceService {
 		return dBalances;
 	}
 
-	async getBalanceIn(account: string, contract: string) {
+	async getBalanceInToken(account: AccountId, contract: ContractId) {
 		const [dAccount, dContract] = await Promise.all([
 			this.accountRepository.findById(account),
 			this.contractRepository.findById(contract),
@@ -74,6 +70,20 @@ export default class BalanceService {
 			bnAmount.negated().toString(),
 			{ append: true },
 		);
+	}
+
+	async getBalanceInAsset(account: AccountId, asset: AssetId) {
+		const [dAccount, dAsset] = await Promise.all([
+			this.accountRepository.findById(account),
+			this.assetRepository.findById(asset),
+		]);
+		if (!dAccount) throw new ProcessingError(ERROR.ACCOUNT_NOT_FOUND);
+		if (!dAsset) throw new ProcessingError(ERROR.ASSET_NOT_FOUND);
+		const dBalance = await this.balanceRepository.findByAccountAndAsset(dAccount._id, dAsset._id);
+		if (!dBalance) throw new ProcessingError(ERROR.BALANCE_NOT_FOUND);
+		dBalance._account = dAccount;
+		dBalance._asset = dAsset;
+		return dBalance;
 	}
 
 	async getContractBalances(count: number, offset: number, contracts: ContractId[]) {

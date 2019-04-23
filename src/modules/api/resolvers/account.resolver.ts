@@ -10,6 +10,8 @@ import { GetAccountForm, GetAccountsForm } from '../forms/account.forms';
 import { Resolver, Query, Args, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
+import { Document } from 'mongoose';
+import { isMongoObjectId } from '../../../utils/validators';
 
 const paginatedAccounts = PaginatedResponse(Account);
 
@@ -43,18 +45,24 @@ export default class AccountResolver extends AbstractResolver {
 
 	// FieldResolver
 	@FieldResolver(() => Account)
-	registrar(@Root('registrar') id: string) {
-		return this.accountRepository.findById(id);
+	registrar(@Root('registrar') id: string | Document) {
+		if (isMongoObjectId(id)) return this.accountRepository.findByMongoId(id);
+		if (this.accountRepository.isChild(id)) return id;
+		return this.accountRepository.findById(<string>id);
 	}
 
 	@FieldResolver(() => Account)
-	referrer(@Root('referrer') id: string) {
-		return this.accountRepository.findById(id);
+	referrer(@Root('referrer') id: string | Document) {
+		if (isMongoObjectId(id)) return this.accountRepository.findByMongoId(id);
+		if (this.accountRepository.isChild(id)) return id;
+		return this.accountRepository.findById(<string>id);
 	}
 
 	@FieldResolver(() => Account)
-	lifetime_referrer(@Root('lifetime_referrer') id: string) {
-		return this.accountRepository.findById(id);
+	lifetime_referrer(@Root('lifetime_referrer') id: string | Document) {
+		if (isMongoObjectId(id)) return this.accountRepository.findByMongoId(id);
+		if (this.accountRepository.isChild(id)) return id;
+		return this.accountRepository.findById(<string>id);
 	}
 
 	// Subscription

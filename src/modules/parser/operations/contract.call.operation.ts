@@ -4,7 +4,6 @@ import AccountRepository from '../../../repositories/account.repository';
 import BalanceRepository from '../../../repositories/balance.repository';
 import ContractBalanceRepository from '../../../repositories/contract.balance.repository';
 import ContractRepository from '../../../repositories/contract.repository';
-import ContractService from 'services/contract.service';
 import EchoRepository from '../../../repositories/echo.repository';
 import TransferRepository from '../../../repositories/transfer.repository';
 import BN from 'bignumber.js';
@@ -33,7 +32,6 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		readonly contractRepository: ContractRepository,
 		readonly transferRepository: TransferRepository,
 		readonly echoRepository: EchoRepository,
-		readonly contractService: ContractService,
 	) {
 		super();
 	}
