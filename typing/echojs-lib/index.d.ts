@@ -99,6 +99,62 @@ declare module 'echojs-lib' {
   		};
   		transactions: Transaction[];
 	}
+	export interface IAssetBitasset {
+		id: string;
+		current_feed_publication_time: string;
+		force_settled_volume: number;
+		settlement_fund: number;
+		feeds: unknown[];
+		is_prediction_market: boolean;
+		options: {
+			short_backing_asset: string;
+			maximum_force_settlement_volume: number;
+			force_settlement_offset_percent: number;
+			force_settlement_delay_sec: number;
+			feed_lifetime_sec: number;
+			minimum_feeds: number;
+			extensions: unknown[];
+		};
+		current_feed: {
+			maintenance_collateral_ratio: number;
+			maximum_short_squeeze_ratio: number;
+			settlement_price: IAssetPrice;
+			core_exchange_rate: IAssetPrice;
+		};
+		settlement_price: IAssetPrice;
+	}
+	export interface Asset{ // virtual export
+		id: string;
+		symbol: string;
+		precision: number;
+		issuer: string;
+		options: {
+			max_supply: string;
+			market_fee_percent: number;
+			max_market_fee: string;
+			issuer_permissions: number;
+			flags: number;
+			core_exchange_rate: {
+				base: {
+					amount: number;
+					asset_id: string;
+				};
+				quote: {
+					amount: number;
+					asset_id: string;
+				};
+			};
+			whitelist_authorities: unknown[];
+			blacklist_authorities: unknown[];
+			whitelist_markets: unknown[];
+			blacklist_markets: unknown[];
+			description: string;
+			extensions: unknown[];
+		};
+		dynamic_asset_data_id: string;
+		dynamic: object;
+		bitasset: IAssetBitasset;
+	}
 	export interface DynamicGlobalProperties { // virtual export
 		id: string;
 		head_block_number: number;
@@ -142,6 +198,7 @@ declare module 'echojs-lib' {
 		// getDynamicAssetData
 		getBlockHeader(blockNum: number): Promise<BlockHeader>;
 		getBlock(blockNum: number, force: boolean = false): Promise<Block>;
+		getAssets(assets: string[]): Promise<Asset[]>;
 		getDynamicGlobalProperties(): Promise<DynamicGlobalProperties>;
 		getAccounts(ids: string[]): Promise<Account[]>;
 		getAccountCount(): Promise<number>;

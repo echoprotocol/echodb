@@ -31,7 +31,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const dContract = await this.contractRepository.findById(body.callee);
 		if (dContract) {
 			await this.contractBalanceRepository.updateOrCreate(
@@ -52,7 +52,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	}
 
 	// FIXME: refactor ?
-	private async handleERC20(dContract: TDoc<IContract>, body: ECHO.OPERATION_PROPS[OP_ID]) {
+	private async handleERC20(dContract: TDoc<IContract>, body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const method = ERC20.METHOD.MAP[body.code.substring(0, 8)];
 		if (!method) return;
 		const [name, parameters] = method;

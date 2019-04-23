@@ -1,7 +1,7 @@
 import EchoConnection from '../connections/echo.connection';
 import * as ECHO from '../constants/echo.constants';
 import * as ERC20 from '../constants/erc20.constants';
-import { Block } from 'echojs-lib';
+import { Block, Asset } from 'echojs-lib';
 import { encode, decode } from 'echojs-contract';
 import { AccountId, ContractId } from '../types/echo';
 import RavenHelper from 'helpers/raven.helper';
@@ -16,6 +16,14 @@ export default class EchoRepository {
 	async getBlock(blockNum: number): Promise<Block> {
 		try {
 			return await this.echoConnection.echo.api.getBlock(blockNum);
+		} catch (error) {
+			// TODO: raven
+			throw error;
+		}
+	}
+	async getAssets(assets: string[]): Promise<Asset[]> {
+		try {
+			return await this.echoConnection.echo.api.getAssets(assets);
 		} catch (error) {
 			// TODO: raven
 			throw error;
@@ -37,7 +45,7 @@ export default class EchoRepository {
 		const hexValue = await this.echoConnection.echo.api.callContractNoChangingState(
 			contractId,
 			address,
-			ECHO.ASSET.ECHO,
+			ECHO.CORE_ASSET,
 			// FIXME: use constant
 			ERC20.METHOD.HASH.BALANCE_OF + encode({ value: address, type: 'address' }),
 		);
@@ -52,7 +60,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.ASSET.ECHO,
+				ECHO.CORE_ASSET,
 				ERC20.METHOD.HASH.TOTAL_SUPPLY,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.TOTAL_SUPPLY).toString();
@@ -68,7 +76,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.ASSET.ECHO,
+				ECHO.CORE_ASSET,
 				ERC20.METHOD.HASH.NAME,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.NAME);
@@ -84,7 +92,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.ASSET.ECHO,
+				ECHO.CORE_ASSET,
 				ERC20.METHOD.HASH.SYMBOL,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.SYMBOL);
@@ -100,7 +108,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.ASSET.ECHO,
+				ECHO.CORE_ASSET,
 				ERC20.METHOD.HASH.DECIMALS,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.DECIMALS).toString();

@@ -40,3 +40,18 @@ export class BalanceSubscribeForm extends AbstractForm {
 	@Field(() => ContractId, { nullable: true })
 	contract: string;
 }
+
+@ArgsType()
+export class BalanceSubscribe extends AbstractForm {
+	@Field(() => AccountId, { nullable: false })
+	account: string;
+
+	@Field(() => BALANCE.TYPE, { nullable: true, description: 'balance type' })
+	type: BALANCE.TYPE;
+
+	@Field(() => ContractId, { nullable: true })
+	contract: string;
+
+	@Field(() => String, { nullable: true })
+	asset: string;
+}

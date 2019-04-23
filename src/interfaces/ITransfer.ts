@@ -1,4 +1,3 @@
-import { Document } from 'mongoose';
 import { AccountId, AssetId } from '../types/echo';
 
 export interface IMemo {
@@ -15,6 +14,3 @@ export interface ITransfer {
 	_asset: AssetId;
 	memo?: IMemo;
 }
-
-// @ts-ignore
-export interface ITransferDocument extends ITransfer, Document {}

@@ -12,7 +12,7 @@ export default class AccountUpgradeOperation extends AbstractOperation<OP_ID> {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const dAccount = await this.accountRepository.findById(body.account_to_upgrade);
 		dAccount.registrar = body.account_to_upgrade;
 		dAccount.referrer = body.account_to_upgrade;

@@ -2,6 +2,7 @@ import AccountRepository from '../../repositories/account.repository';
 import AbstractModule from '../abstract.module';
 import BlockEngine from './block.engine';
 import BlockRepository from '../../repositories/block.repository';
+import AssetRepository from '../../repositories/asset.repository';
 import EchoRepository from '../../repositories/echo.repository';
 import MemoryHelper from '../../helpers/memory.helper';
 import InfoRepository from '../../repositories/info.repository';
@@ -10,6 +11,7 @@ import RavenHelper from 'helpers/raven.helper';
 import RedisConnection from '../../connections/redis.connection';
 import TransactionRepository from '../../repositories/transaction.repository';
 import * as INFO from '../../constants/info.constants';
+import * as ECHO from '../../constants/echo.constants';
 import * as REDIS from '../../constants/redis.constants';
 import { Block } from 'echojs-lib';
 import { getLogger } from 'log4js';
@@ -23,11 +25,12 @@ export default class ParserModule extends AbstractModule {
 		readonly blockEngine: BlockEngine,
 		readonly ravenHelper: RavenHelper,
 		readonly redisConnection: RedisConnection,
+		readonly infoRepository: InfoRepository,
+		readonly assetRepository: AssetRepository,
 		readonly echoRepository: EchoRepository,
 		readonly blockRepository: BlockRepository,
 		readonly transactionRepository: TransactionRepository,
 		readonly memoryHelper: MemoryHelper,
-		readonly infoRepository: InfoRepository,
 		readonly operationManager: OperationManager,
 	) {
 		super();
@@ -35,7 +38,10 @@ export default class ParserModule extends AbstractModule {
 
 	async init() {
 		const from = await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
-		if (from === 1) await this.syncAllAccounts();
+		if (from === 1) {
+			await this.syncAllAccounts();
+			await this.syncCoreAsset();
+		}
 		for await (const block of this.blockEngine.start(from)) {
 			try {
 				await this.parseBlock(block);
@@ -72,6 +78,20 @@ export default class ParserModule extends AbstractModule {
 			promises.push(this.fetchAccounts(i * batchSize, i === batchCount - 1 ? lastBatchSize : batchSize));
 		}
 		await Promise.all(promises);
+	}
+
+	async syncCoreAsset() {
+		logger.info('Parsing first block. Synchronizing core asset');
+		const [coreAsset] = await this.echoRepository.getAssets([ECHO.CORE_ASSET]);
+		const account = await this.accountRepository.findById(coreAsset.issuer);
+		return this.assetRepository.create([{
+			id: coreAsset.id,
+			_account: account,
+			symbol: coreAsset.symbol,
+			precision: coreAsset.precision,
+			options: coreAsset.options,
+			bitasset: coreAsset.options.flags ? coreAsset.bitasset : null,
+		}]);
 	}
 
 	async fetchAccounts(from: number, batchSize: number) { // TODO: what to do on erorr?

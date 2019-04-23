@@ -12,7 +12,7 @@ interface IBasic {
 
 // asset
 export interface IBalanceAsset extends IBasic {
-	asset: string;
+	_asset: MongoId;
 	type: BALANCE.TYPE.ASSET;
 }
 

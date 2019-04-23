@@ -16,7 +16,7 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS[OP_ID], result: ECHO.OPERATION_RESULT[OP_ID]) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
 		const dAccount = await this.accountRepository.findById(result)
 			|| await this.accountRepository.create({
 				id: result,

@@ -56,7 +56,7 @@ export default class BlockEngine extends EventEmitter {
 	}
 
 	public async *start(current?: number): AsyncIterableIterator<Block> {
-		this.current = (current || current === 0)
+		this.current = current
 			? current
 			: await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
 		this.last = await this.echoRepository.getLastBlockNum(); // Not needed

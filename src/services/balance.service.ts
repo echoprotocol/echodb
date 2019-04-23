@@ -1,16 +1,22 @@
+import AssetRepository from '../repositories/asset.repository';
 import AccountRepository from '../repositories/account.repository';
 import BalanceRepository from '../repositories/balance.repository';
 import ContractBalanceRepository from '../repositories/contract.balance.repository';
 import ContractRepository from '../repositories/contract.repository';
+import RedisConnection from '../connections/redis.connection';
 import ProcessingError from '../errors/processing.error';
+import EchoService from '../services/echo.service';
 import * as BALANCE from '../constants/balance.constants';
+import * as ECHO from '../constants/echo.constants';
+import { BigNumber as BN } from 'bignumber.js';
 import { TDoc } from '../types/mongoose';
 import { IAccount } from '../interfaces/IAccount';
-import { ContractId } from 'types/echo';
 import { IContract } from 'interfaces/IContract';
+import { AccountId, ContractId } from 'types/echo';
 
 export const ERROR = {
 	ACCOUNT_NOT_FOUND: 'account not found',
+	ASSET_NOT_FOUND: 'asset not found',
 	BALANCE_NOT_FOUND: 'balance not found',
 	CONTRACT_NOT_FOUND: 'contract not found',
 };
@@ -18,10 +24,13 @@ export const ERROR = {
 export default class BalanceService {
 
 	constructor(
+		readonly redisConnection: RedisConnection,
+		readonly assetRepository: AssetRepository,
 		readonly accountRepository: AccountRepository,
 		readonly balanceRepository: BalanceRepository,
 		readonly contractBalanceRepository: ContractBalanceRepository,
 		readonly contractRepository: ContractRepository,
+		readonly echoService: EchoService,
 	) {}
 
 	async getBalances(accounts: string[], type?: BALANCE.TYPE) {
@@ -50,6 +59,21 @@ export default class BalanceService {
 		dBalance._account = dAccount;
 		dBalance._contract = dContract;
 		return dBalance;
+	}
+
+	async takeFee(account: AccountId, { asset_id, amount }: ECHO.Fee) {
+		const bnAmount = new BN(amount);
+		if (bnAmount.eq(0)) return;
+		const [dAccount, dAsset] = await Promise.all([
+			this.accountRepository.findById(account),
+			this.assetRepository.findById(asset_id),
+		]);
+		await this.balanceRepository.updateOrCreateByAccountAndAsset(
+			dAccount,
+			dAsset,
+			bnAmount.negated().toString(),
+			{ append: true },
+		);
 	}
 
 	async getContractBalances(count: number, offset: number, contracts: ContractId[]) {

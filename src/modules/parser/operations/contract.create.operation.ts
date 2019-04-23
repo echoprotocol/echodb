@@ -27,7 +27,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS[OP_ID], result: ECHO.OPERATION_RESULT[OP_ID]) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
 		const dAccount = await this.accountRepository.findById(body.registrar);
 		const [, { exec_res: { new_address: hexAddr } }] = await this.echoRepository.getContractResult(result);
 		const contract: IContract = {

@@ -6,9 +6,9 @@ import { IOperationRelation } from '../../../interfaces/IOperation';
 export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 	abstract id: ECHO.OPERATION_ID;
 	status: boolean = true;
-	abstract parse<Y extends ECHO.OPERATION_ID>(
-		body: ECHO.OPERATION_PROPS[Y],
-		result: ECHO.OPERATION_RESULT[Y],
+	abstract parse<Y extends ECHO.KNOWN_OPERATION>(
+		body: ECHO.OPERATION_PROPS<Y>,
+		result: ECHO.OPERATION_RESULT<Y>,
 	): Promise<IOperationRelation>;
 
 	validateRelation(params: RelationParameters) {

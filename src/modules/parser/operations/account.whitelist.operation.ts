@@ -17,7 +17,7 @@ export default class AccountWhitelistOperation extends AbstractOperation<OP_ID> 
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS[OP_ID]) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const dAccount = await this.accountRepository.findById(body.authorizing_account);
 		switch (body.new_listing) {
 			case ECHO.ACCOUNT_WHITELIST.BLACK_LISTED: {
@@ -44,6 +44,7 @@ export default class AccountWhitelistOperation extends AbstractOperation<OP_ID> 
 				removeFromArray(dAccount.blacklisted_accounts, body.account_to_list);
 			}
 		}
+		await dAccount.save();
 		this.redisConnection.emit(REDIS.EVENT.ACCOUNT_UPDATED, body.authorizing_account);
 		return this.validateRelation({
 			from: [body.authorizing_account],
