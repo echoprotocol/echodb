@@ -7,8 +7,17 @@ import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import AssetCreateOperation from './asset.create.operation';
 import TransferOperation from './transfer.operation';
+import AssetClaimFeesOperation from './asset.claim.fees.operation';
 import AssetUpdateOperation from './asset.update.operation';
+import AssetBitassetUpdateOperation from './asset.bitasset.update.operation';
 import AssetIssueOperation from './asset.issue.operation';
+import AssetReserverOperation from './asset.reserve.operation';
+import AssetFundFeePoolOperation from './asset.fund.fee.pool.operation';
+import AssetSettleOperation from './asset.settle.operation';
+import AssetPublishFeedOperation from './asset.publish.feed.operation';
+import AssetSettleCancelOperation from './asset.settle.cancel.operation';
+import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
+import AssetGlobalSettleOperation from './asset.global.settle.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import OperationRepository from '../../../repositories/operation.repository';
@@ -38,9 +47,18 @@ export default class OperationManager {
 		accountTransferOperation: AccountTransferOperation,
 		accountWhitelistOperation: AccountWhitelistOperation,
 		assetCreateOperation: AssetCreateOperation,
-		accountUpgradeOperation: AccountUpgradeOperation,
+		assetClaimFeesOperation: AssetClaimFeesOperation,
 		assetUpdateOperation: AssetUpdateOperation,
+		assetBitassetUpdateOperation: AssetBitassetUpdateOperation,
 		assetIssueOperation: AssetIssueOperation,
+		assetReserveOperation: AssetReserverOperation,
+		assetSettleOperation: AssetSettleOperation,
+		assetFundFeePoolOperation: AssetFundFeePoolOperation,
+		assetPublishFeedOperation: AssetPublishFeedOperation,
+		assetSettleCancelOperation: AssetSettleCancelOperation,
+		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
+		assetGlobalSettleOperation: AssetGlobalSettleOperation,
+		accountUpgradeOperation: AccountUpgradeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 	) {
@@ -51,8 +69,18 @@ export default class OperationManager {
 			accountWhitelistOperation,
 			assetCreateOperation,
 			assetUpdateOperation,
+			assetBitassetUpdateOperation,
 			contractCreateOperation,
 			contractCallOperation,
+			assetIssueOperation,
+			assetReserveOperation,
+			assetSettleOperation,
+			assetFundFeePoolOperation,
+			assetPublishFeedOperation,
+			assetSettleCancelOperation,
+			assetClaimFeesOperation,
+			assetUpdateFeedProducersOperation,
+			assetGlobalSettleOperation,
 			accountUpgradeOperation,
 			assetIssueOperation,
 			transferOperation,

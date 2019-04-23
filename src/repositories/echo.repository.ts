@@ -3,8 +3,9 @@ import * as ECHO from '../constants/echo.constants';
 import * as ERC20 from '../constants/erc20.constants';
 import { Block, Asset } from 'echojs-lib';
 import { encode, decode } from 'echojs-contract';
-import { AccountId, ContractId } from '../types/echo';
+import { AccountId, ContractId, AssetId } from '../types/echo';
 import RavenHelper from 'helpers/raven.helper';
+import ProcessingError from '../errors/processing.error';
 
 export default class EchoRepository {
 
@@ -99,6 +100,16 @@ export default class EchoRepository {
 		} catch (error) {
 			this.ravenHelper.error(error, 'echoRepository#getTokenSymbol');
 			return null;
+		}
+	}
+
+	async getAsset(assetId: AssetId) {
+		try {
+			const [assetData] = await this.echoConnection.echo.api.getAssets([assetId]);
+			return assetData;
+		} catch (error) {
+			this.ravenHelper.error(error, 'echoRepository#getAsset', { assetId });
+			throw new ProcessingError(error);
 		}
 	}
 

@@ -1,8 +1,7 @@
-import RedisConnection from '../../../connections/redis.connection';
-import AbstractOperation from './abstract.operation';
-import EchoService from '../../../services/echo.service';
-import AssetRepository from '../../../repositories/asset.repository';
 import AccountRepository from '../../../repositories/account.repository';
+import AbstractOperation from './abstract.operation';
+import AssetRepository from '../../../repositories/asset.repository';
+import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import { MongoId } from '../../../types/mongoose';
@@ -17,10 +16,9 @@ export default class AssetUpdateOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.ASSET_UPDATE;
 
 	constructor(
-		readonly redisConnection: RedisConnection,
-		readonly assetRepository: AssetRepository,
 		readonly accountRepository: AccountRepository,
-		readonly echoService: EchoService,
+		readonly assetRepository: AssetRepository,
+		readonly redisConnection: RedisConnection,
 	) {
 		super();
 	}
@@ -38,7 +36,7 @@ export default class AssetUpdateOperation extends AbstractOperation<OP_ID> {
 		this.redisConnection.emit(REDIS.EVENT.ASSET_UPDATED, body.asset_to_update);
 		return this.validateRelation({
 			from: [body.issuer],
-			accounts: [body.new_issuer],
+			accounts: body.new_issuer ? [body.new_issuer] : [],
 			assets: [body.fee.asset_id, body.asset_to_update],
 		});
 	}

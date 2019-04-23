@@ -52,6 +52,12 @@ declare module 'echojs-lib' {
 		top_n_control_flags: number;
 	}
 
+	export interface Asset {
+		dynamic_asset_data_id: string;
+		bitasset: IAssetBitasset;
+		bitasset_data_id: string;
+	}
+
 	export interface BlockHeader { // virtual export
 		previous: string;
 		timestamp: string;
@@ -150,7 +156,13 @@ declare module 'echojs-lib' {
 			description: string;
 		};
 		dynamic_asset_data_id: string;
-		dynamic: object;
+		dynamic: {
+			id: string;
+			current_supply: string;
+			confidential_supply: string;
+			accumulated_fees: string;
+			fee_pool: string;
+		};
 		bitasset: IAssetBitasset;
 	}
 	export interface DynamicGlobalProperties { // virtual export
@@ -201,6 +213,7 @@ declare module 'echojs-lib' {
 		getAccounts(ids: string[]): Promise<Account[]>;
 		getAccountCount(): Promise<number>;
 		getContractResult(resultId: string): Promise<[number, ContractResult]>;
+		getAssets(ids: string[]): Promise<Asset[]>;
 		callContractNoChangingState(
 			contractId: string,
 			accountId: string,

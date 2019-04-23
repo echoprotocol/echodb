@@ -1,5 +1,5 @@
-import ContractRepository from '../repositories/contract.repository';
 import AccountRepository from '../repositories/account.repository';
+import ContractRepository from '../repositories/contract.repository';
 import ProcessingError from '../errors/processing.error';
 import * as CONTRACT from '../constants/contract.constants';
 import * as ERC20 from '../constants/erc20.constants';
@@ -26,8 +26,8 @@ export const ERROR = {
 export default class ContractService {
 
 	constructor(
-		readonly contractRepository: ContractRepository,
-		readonly accountRepository: AccountRepository,
+		private accountRepository: AccountRepository,
+		private contractRepository: ContractRepository,
 	) {}
 
 	getTypeByCode(bytecode: string): CONTRACT.TYPE {

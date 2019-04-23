@@ -57,7 +57,7 @@ export default class BalanceService {
 		return dBalance;
 	}
 
-	async takeFee(account: AccountId, { asset_id, amount }: ECHO.Fee) {
+	async takeFee(account: AccountId, { asset_id, amount }: ECHO.IAmount) {
 		const bnAmount = new BN(amount);
 		if (bnAmount.eq(0)) return;
 		const [dAccount, dAsset] = await Promise.all([

@@ -1,22 +1,36 @@
+import * as ECHO from '../constants/echo.constants';
 import { MongoId } from '../types/mongoose';
+import { AssetId, BitassetDataId, BitassetId } from '../types/echo';
 
 export interface IAssetPrice {
-	base: {
-		amount: number;
-		asset_id: string;
-	};
-	quote: {
-		amount: number;
-		asset_id: string;
-	};
+	base: ECHO.IAmount;
+	quote: ECHO.IAmount;
 }
 
-export interface IAssetBitasset {
+export interface IAssetDynamic {
 	id: string;
-	current_feed_publication_time: string;
+	current_supply: string;
+	confidential_supply: string;
+	accumulated_fees: string;
+	fee_pool: string;
+}
+
+export interface IAssetDefaultBitasset {
+	current_feed: {
+		maintenance_collateral_ratio: number;
+		maximum_short_squeeze_ratio: number;
+		settlement_price: IAssetPrice;
+		core_exchange_rate: IAssetPrice;
+	};
+	settlement_price: IAssetPrice;
 	force_settled_volume: number;
 	settlement_fund: number;
 	feeds: unknown[];
+}
+
+export interface IAssetBitasset extends IAssetDefaultBitasset {
+	id: BitassetId;
+	current_feed_publication_time: Date;
 	is_prediction_market: boolean;
 	options: {
 		short_backing_asset: string;
@@ -26,17 +40,10 @@ export interface IAssetBitasset {
 		feed_lifetime_sec: number;
 		minimum_feeds: number;
 	};
-	current_feed: {
-		maintenance_collateral_ratio: number;
-		maximum_short_squeeze_ratio: number;
-		settlement_price: IAssetPrice;
-		core_exchange_rate: IAssetPrice;
-	};
-	settlement_price: IAssetPrice;
 }
 
 export interface IAsset {
-	id: string;
+	id: AssetId;
 	_account: MongoId;
 	symbol: string;
 	precision: number;
@@ -53,5 +60,7 @@ export interface IAsset {
 		blacklist_markets: unknown[];
 		core_exchange_rate: IAssetPrice;
 	};
-	bitasset: IAssetBitasset;
+	bitasset?: IAssetBitasset;
+	bitasset_data_id?: BitassetDataId;
+	dynamic: IAssetDynamic;
 }
