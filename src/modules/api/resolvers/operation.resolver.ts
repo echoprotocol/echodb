@@ -2,8 +2,8 @@ import AbstractResolver, { validateArgs } from './abstract.resolver';
 import Operation from '../types/operation.type';
 import OperationService from '../../../services/operation.service';
 import PaginatedResponse from '../types/paginated.response.type';
-import { GetOperationsHistoryForm } from '../forms/operation.forms';
 import * as REDIS from '../../../constants/redis.constants';
+import { GetOperationsHistoryForm, NewOperationSubscribe } from '../forms/operation.forms';
 import { Args, Resolver, Query, Subscription, Root } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
@@ -11,6 +11,11 @@ import { Payload } from '../../../types/graphql';
 const paginatedBlocks = PaginatedResponse(Operation);
 
 // TODO: register all enums in one file
+
+interface INewOperationSubscriptionFilterArgs {
+	payload: Payload<REDIS.EVENT.NEW_OPERATION>;
+	args: NewOperationSubscribe;
+}
 
 @Resolver(Operation)
 export default class OperationResolver extends AbstractResolver {
@@ -38,9 +43,27 @@ export default class OperationResolver extends AbstractResolver {
 	// Subscription
 	@Subscription(() => Operation, {
 		topics: REDIS.EVENT.NEW_OPERATION,
+		filter: ({
+			payload: dOperation,
+			args: { accounts, assets, tokens, operations },
+		}: INewOperationSubscriptionFilterArgs) => {
+			const relation = dOperation._relation;
+			if (!relation) return false;
+			if (accounts && !accounts.some((account) => (relation.from && relation.from.includes(account))
+				|| (relation.to && relation.to.includes(account))
+				|| (relation.accounts && relation.accounts.includes(account)))
+			) {
+				return false;
+			}
+			if (operations && !operations.includes(dOperation.id)) return false;
+			if (assets && relation.assets && !assets.some((asset) => relation.assets.includes(asset))) return false;
+			if (tokens && relation.token && !tokens.includes(relation.token)) return false;
+			return true;
+		},
 	})
 	newOperation(
 		@Root() dOperation: Payload<REDIS.EVENT.NEW_OPERATION>,
+		@Args() _: NewOperationSubscribe,
 	) {
 		return dOperation;
 	}

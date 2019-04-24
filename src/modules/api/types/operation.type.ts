@@ -15,6 +15,6 @@ export default class Operation {
 	@Field(() => JsonType)
 	body: typeof JsonType;
 
-	@Field()
+	@Field({ nullable: true })
 	result: string;
 }

@@ -101,7 +101,7 @@ export default class OperationManager {
 			body,
 			result,
 			_tx: dTx,
-			_relation: {},
+			_relation: null,
 		};
 		if (this.map[id]) {
 			operation._relation = await this.parseKnownOperation(id, body, result);
