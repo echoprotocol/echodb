@@ -19,7 +19,7 @@ import * as http from 'http';
 import * as config from 'config';
 import * as express from 'express';
 import { promisify } from 'util';
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer, SchemaError, SyntaxError, UserInputError, ValidationError } from 'apollo-server-express';
 import { getLogger } from 'log4js';
 import { buildSchema } from 'type-graphql';
 import { initMiddleware } from './express.middleware';
@@ -96,7 +96,12 @@ export default class ApiModule extends AbstractModule {
 	formatError(error: GraphQLError) {
 		const original = error.originalError;
 		if (original instanceof RestError) return this.formatRestError(error, original);
-		if (original instanceof GraphQLError) return error;
+		if (original instanceof GraphQLError
+			|| error instanceof SchemaError
+			|| error instanceof SyntaxError
+			|| error instanceof UserInputError
+			|| error instanceof ValidationError
+		) return error;
 		return this.handleServerSideError(error, original);
 	}
 
