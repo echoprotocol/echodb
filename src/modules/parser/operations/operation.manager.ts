@@ -82,7 +82,6 @@ export default class OperationManager {
 			assetUpdateFeedProducersOperation,
 			assetGlobalSettleOperation,
 			accountUpgradeOperation,
-			assetIssueOperation,
 			transferOperation,
 		];
 		for (const operation of operations) {

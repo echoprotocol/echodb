@@ -59,14 +59,19 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	// FIXME: refactor ?
 	private async handleERC20(dContract: TDoc<IContract>, body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const method = ERC20.METHOD.MAP[body.code.substring(0, 8)];
-		if (!method) return;
-		const [name, parameters] = method;
-		const code = body.code.substring(8);
 		const commonRelation = {
 			assets: [body.fee.asset_id],
 			token: body.callee,
 			contract: body.callee,
 		};
+		if (!method) {
+			return this.validateRelation({
+				...commonRelation,
+				from: [body.registrar],
+			});
+		}
+		const [name, parameters] = method;
+		const code = body.code.substring(8);
 		switch (name) {
 			case ERC20.METHOD_NAME.TRANSFER: {
 				const [to, amount] = <[string, string | number]>decode(code, parameters);
