@@ -45,7 +45,7 @@ export default class EchoRepository {
 	async getAccountTokenBalance(contractId: ContractId, address: AccountId) {
 		const hexValue = await this.echoConnection.echo.api.callContractNoChangingState(
 			contractId,
-			address,
+			'1.2.1',
 			ECHO.CORE_ASSET,
 			// FIXME: use constant
 			ERC20.METHOD.HASH.BALANCE_OF + encode({ value: address, type: 'address' }),
