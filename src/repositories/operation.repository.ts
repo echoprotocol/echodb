@@ -4,7 +4,7 @@ import { IOperation } from '../interfaces/IOperation';
 import OperationModel from '../models/operation.model';
 import * as ECHO from '../constants/echo.constants';
 
-export default class TransactionRepository extends AbstractRepository<IOperation<ECHO.OPERATION_ID>> {
+export default class OperationRepository extends AbstractRepository<IOperation<ECHO.OPERATION_ID>> {
 	constructor(
 		ravenHelper: RavenHelper,
 	) {

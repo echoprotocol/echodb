@@ -1,6 +1,8 @@
+import TransactionType from './transaction.type';
 import * as JsonType from 'graphql-type-json';
 import * as ECHO from '../../../constants/echo.constants';
 import { ObjectType, Field, registerEnumType } from 'type-graphql';
+import { MongoId } from 'types/mongoose';
 
 registerEnumType(ECHO.OPERATION_ID, {
 	name: 'OperationIdType',
@@ -9,6 +11,8 @@ registerEnumType(ECHO.OPERATION_ID, {
 
 @ObjectType()
 export default class Operation {
+	_tx: MongoId;
+
 	@Field()
 	id: string;
 
@@ -17,4 +21,7 @@ export default class Operation {
 
 	@Field({ nullable: true })
 	result: string;
+
+	@Field(() => TransactionType)
+	transaciton: TransactionType;
 }
