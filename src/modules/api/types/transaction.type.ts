@@ -3,7 +3,7 @@ import { MongoId } from 'types/mongoose';
 import Block from './block.type';
 
 @ObjectType()
-export default class TransactionType {
+export default class Transaction {
 	_block: MongoId;
 	@Field(() => Block) block: Block;
 	@Field() ref_block_num: number;

@@ -9,7 +9,7 @@ registerEnumType(TOKEN.TYPE, {
 });
 
 @ObjectType()
-export default class TokenType {
+export default class Token {
 	@Field() type: string;
 	@Field() symbol: string;
 	@Field() name: string;

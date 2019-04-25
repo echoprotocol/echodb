@@ -2,7 +2,7 @@ import AbstractResolver, { validateArgs } from './abstract.resolver';
 import Operation from '../types/operation.type';
 import OperationService from '../../../services/operation.service';
 import TranasctionRepository from '../../../repositories/transaction.repository';
-import TransactionType from '../types/transaction.type';
+import Transaction from '../types/transaction.type';
 import PaginatedResponse from '../types/paginated.response.type';
 import * as REDIS from '../../../constants/redis.constants';
 import { GetOperationsHistoryForm, NewOperationSubscribe } from '../forms/operation.forms';
@@ -45,7 +45,7 @@ export default class OperationResolver extends AbstractResolver {
 	}
 
 	// FieldResolver
-	@FieldResolver(() => TransactionType)
+	@FieldResolver(() => Transaction)
 	transaction(@Root('_tx') tx: Operation['_tx']) {
 		return this.resolveMongoField(tx, this.transactionRepository);
 	}
