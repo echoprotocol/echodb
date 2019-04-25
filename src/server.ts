@@ -12,6 +12,7 @@ async function main() {
 		const moduleName = process.env.MODULE;
 		logger.trace(`${moduleName} module initializing`);
 		await initModule(process.env.MODULE);
+		logger.info(`${moduleName} module started`);
 	} catch (error) {
 		logger.fatal(error);
 		process.exit(1);
