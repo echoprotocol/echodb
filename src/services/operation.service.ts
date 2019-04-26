@@ -1,6 +1,5 @@
 import OperationRepository from '../repositories/operation.repository';
 import * as ECHO from '../constants/echo.constants';
-import { SomeOfAny } from '../types/some.of';
 import { AccountId, ContractId, AssetId } from 'types/echo';
 import { IOperationRelation } from '../interfaces/IOperation';
 
@@ -24,47 +23,46 @@ interface GetHistoryParameters {
 	[KEY.OPERATIONS]?: ECHO.OPERATION_ID[];
 }
 
+type InSelect<T = string> = { $in: T[] };
+type Query = { [x: string]: Query[] | { $in: (ECHO.OPERATION_ID | string)[] } };
+type OrKeys = 'from' | 'accounts' | 'to';
+type StrictRelationQuery = Partial<Record<OrKeys, InSelect>>;
+type RelationQuery = Partial<Record<Exclude<keyof IOperationRelation, OrKeys>, InSelect>>;
+
 export default class OperationService {
 
 	constructor(
 		readonly operationRepository: OperationRepository,
 	) {}
 
-	// TODO: move to repo
-	// TODO: remove @ts-ignore
 	async getHistory(count: number, offset: number, params: GetHistoryParameters) {
-		// FIXME: add types (someOf)
-		const query: any = {};
-		const relation: SomeOfAny<IOperationRelation> = {};
-		for (const key in params) {
-			if (!params.hasOwnProperty(key)) continue;
-			// @ts-ignore
-			if (!params[key]) continue;
-			switch (key) {
-				case KEY.FROM:
-				case KEY.ACCOUNTS:
-				case KEY.ASSETS:
-					relation[key] = { $all: params[key] };
-					break;
-				case KEY.TO:
-					relation[key] = { $in: params[key] };
-				case KEY.CONTRACTS:
-					relation.contract = { $in: params[key] };
-				case KEY.TOKENS:
-					relation.token = { $in: params[key] };
-					break;
-				case KEY.OPERATIONS:
-					query.id = { $in: params[key] };
-					break;
+		const query: Query = {};
+		const relation: RelationQuery = {};
+		const strictRelation: StrictRelationQuery = {};
+
+		if (params.from) strictRelation.from = { $in: params.from };
+		if (params.to) strictRelation.to = { $in: params.to };
+		if (params.accounts) strictRelation.accounts = { $in: params.accounts };
+
+		if (params.contracts) relation.contract = { $in: params.contracts };
+		if (params.assets) relation.assets = { $in: params.assets };
+		if (params.tokens) relation.token = { $in: params.tokens };
+
+		if (params.operations) query.id = { $in: params.operations };
+
+		for (const key of Object.keys(strictRelation) as (keyof typeof strictRelation)[]) {
+			query[`_relation.${key}`] = strictRelation[key];
+		}
+
+		const relationKeys = <(keyof typeof relation)[]>Object.keys(relation);
+		if (relationKeys.length) {
+			query.$or = [];
+			for (const key of relationKeys) {
+				query.$or.push({ [`_relation.${key}`]: relation[key] });
 			}
 		}
-		// FIXME: refactor condition logic
-		for (const relationKey of Object.keys(relation)) {
-			// @ts-ignore
-			query[`_relation.${relationKey}`] = relation[relationKey];
-		}
 		const [items, total] = await Promise.all([
-			this.operationRepository.find(query , null, { skip: offset, limit: count }),
+			this.operationRepository.find(query, null, { skip: offset, limit: count }),
 			this.operationRepository.count(query),
 		]);
 		return { total, items };
