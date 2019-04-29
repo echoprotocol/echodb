@@ -27,7 +27,7 @@ type InSelect<T = string> = { $in: T[] };
 type Query = { [x: string]: Query[] | { $in: (ECHO.OPERATION_ID | string)[] } };
 type OrKeys = 'from' | 'accounts' | 'to';
 type StrictRelationQuery = Partial<Record<OrKeys, InSelect>>;
-type RelationQuery = Partial<Record<Exclude<keyof IOperationRelation, OrKeys>, InSelect>>;
+type RelationQuery = Partial<Record<keyof IOperationRelation, InSelect>>;
 
 export default class OperationService {
 
@@ -42,7 +42,11 @@ export default class OperationService {
 
 		if (params.from) strictRelation.from = { $in: params.from };
 		if (params.to) strictRelation.to = { $in: params.to };
-		if (params.accounts) strictRelation.accounts = { $in: params.accounts };
+		if (params.accounts) {
+			relation.from = { $in: params.accounts };
+			relation.to = { $in: params.accounts };
+			relation.accounts = { $in: params.accounts };
+		}
 
 		if (params.contracts) relation.contract = { $in: params.contracts };
 		if (params.assets) relation.assets = { $in: params.assets };
