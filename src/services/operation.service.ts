@@ -1,7 +1,6 @@
 import OperationRepository from '../repositories/operation.repository';
 import * as ECHO from '../constants/echo.constants';
 import { AccountId, ContractId, AssetId } from 'types/echo';
-import { IOperationRelation } from '../interfaces/IOperation';
 
 export enum KEY {
 	FROM = 'from',
@@ -23,11 +22,7 @@ interface GetHistoryParameters {
 	[KEY.OPERATIONS]?: ECHO.OPERATION_ID[];
 }
 
-type InSelect<T = string> = { $in: T[] };
-type Query = { [x: string]: Query[] | { $in: (ECHO.OPERATION_ID | string)[] } };
-type OrKeys = 'from' | 'accounts' | 'to';
-type StrictRelationQuery = Partial<Record<OrKeys, InSelect>>;
-type RelationQuery = Partial<Record<keyof IOperationRelation, InSelect>>;
+type Query = { [x: string]: Query[] | { $in: (ECHO.OPERATION_ID | string)[] } | { $or: Query[] } };
 
 export default class OperationService {
 
@@ -37,34 +32,32 @@ export default class OperationService {
 
 	async getHistory(count: number, offset: number, params: GetHistoryParameters) {
 		const query: Query = {};
-		const relation: RelationQuery = {};
-		const strictRelation: StrictRelationQuery = {};
-
-		if (params.from) strictRelation.from = { $in: params.from };
-		if (params.to) strictRelation.to = { $in: params.to };
-		if (params.accounts) {
-			relation.from = { $in: params.accounts };
-			relation.to = { $in: params.accounts };
-			relation.accounts = { $in: params.accounts };
-		}
-
-		if (params.contracts) relation.contract = { $in: params.contracts };
-		if (params.assets) relation.assets = { $in: params.assets };
-		if (params.tokens) relation.token = { $in: params.tokens };
+		const accountsQuery: Query[] = [];
+		const otherQuery: Query[] = [];
 
 		if (params.operations) query.id = { $in: params.operations };
+		if (params.from) query['_relation.from'] = { $in: params.from };
+		if (params.to) query['_relation.to'] = { $in: params.to };
 
-		for (const key of Object.keys(strictRelation) as (keyof typeof strictRelation)[]) {
-			query[`_relation.${key}`] = strictRelation[key];
+		if (params.accounts) {
+			accountsQuery.push(
+				{ '_relation.from': { $in: params.accounts } },
+				{ '_relation.to': { $in: params.accounts } },
+				{ '_relation.accounts': { $in: params.accounts } },
+			);
 		}
 
-		const relationKeys = <(keyof typeof relation)[]>Object.keys(relation);
-		if (relationKeys.length) {
-			query.$or = [];
-			for (const key of relationKeys) {
-				query.$or.push({ [`_relation.${key}`]: relation[key] });
-			}
+		if (params.contracts) otherQuery.push({ '_relation.contract': { $in: params.contracts } });
+		if (params.assets) otherQuery.push({ '_relation.assets': { $in: params.assets } });
+		if (params.tokens) otherQuery.push({ '_relation.token': { $in: params.tokens } });
+
+		if (accountsQuery.length && otherQuery.length) {
+			query.$and = [{ $or: accountsQuery }, { $or: otherQuery }];
+		} else {
+			if (accountsQuery.length) query.$or = accountsQuery;
+			if (otherQuery.length) query.$or = otherQuery;
 		}
+
 		const [items, total] = await Promise.all([
 			this.operationRepository.find(query, null, { skip: offset, limit: count }),
 			this.operationRepository.count(query),
