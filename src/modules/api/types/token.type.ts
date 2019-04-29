@@ -1,12 +1,6 @@
 import Contract from './contract.type';
 import Account from './account.type';
-import * as TOKEN from '../../../constants/token.constants';
-import { ObjectType, Field, registerEnumType } from 'type-graphql';
-
-registerEnumType(TOKEN.TYPE, {
-	name: 'TokenTypeEnum',
-	description: 'Type of a token',
-});
+import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
 export default class Token {

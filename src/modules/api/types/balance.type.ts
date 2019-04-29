@@ -2,13 +2,8 @@ import Asset from './asset.type';
 import Account from './account.type';
 import Contract from './contract.type';
 import * as BALANCE from '../../../constants/balance.constants';
-import { ObjectType, Field, registerEnumType } from 'type-graphql';
+import { ObjectType, Field } from 'type-graphql';
 import { MongoId } from '../../../types/mongoose';
-
-registerEnumType(BALANCE.TYPE, {
-	name: 'BalanceTypeEnum',
-	description: 'Type of a balance',
-});
 
 @ObjectType()
 export default class Balance {

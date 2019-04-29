@@ -15,6 +15,8 @@ import * as ECHO from '../../constants/echo.constants';
 import * as REDIS from '../../constants/redis.constants';
 import { Block } from 'echojs-lib';
 import { getLogger } from 'log4js';
+import { TDoc } from 'types/mongoose';
+import { ITransactionExtended } from 'interfaces/ITransaction';
 
 const logger = getLogger('parser.module');
 
@@ -58,7 +60,7 @@ export default class ParserModule extends AbstractModule {
 		const dBlock = await this.blockRepository.create(block);
 		for (const tx of block.transactions) {
 			logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
-			const dTx = await this.transactionRepository.create({ ...tx, _block: dBlock });
+			const dTx = <TDoc<ITransactionExtended>>await this.transactionRepository.create({ ...tx, _block: dBlock });
 			for (const [i, operation] of tx.operations.entries()) {
 				await this.operationManager.parse(operation, tx.operation_results[i], dTx);
 			}

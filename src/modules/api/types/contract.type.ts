@@ -4,12 +4,7 @@ import Token from './token.type';
 import * as CONTRACT from '../../../constants/contract.constants';
 import { IAccount } from '../../../interfaces/IAccount';
 import { TDoc } from '../../../types/mongoose';
-import { ObjectType, Field, registerEnumType } from 'type-graphql';
-
-registerEnumType(CONTRACT.TYPE, {
-	name: 'ContractTypeEnum',
-	description: 'Type of a contract',
-});
+import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
 export default class Contract {

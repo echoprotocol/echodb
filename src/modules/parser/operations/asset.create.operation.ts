@@ -7,6 +7,7 @@ import RedisConnection from 'connections/redis.connection';
 import * as REDIS from '../../../constants/redis.constants';
 import * as ECHO from '../../../constants/echo.constants';
 import { IAssetDefaultBitasset } from '../../../interfaces/IAsset';
+import { dateFromUtcIso } from '../../../utils/format';
 
 type OP_ID = ECHO.OPERATION_ID.ASSET_CREATE;
 
@@ -53,7 +54,7 @@ export default class AssetCreateOperation extends AbstractOperation<OP_ID> {
 			bitasset: assetData.bitasset ? {
 				...bitAssetDefaultFields,
 				id: assetData.bitasset.id,
-				current_feed_publication_time: new Date(`${assetData.bitasset.current_feed_publication_time}+00:00`),
+				current_feed_publication_time:  dateFromUtcIso(assetData.bitasset.current_feed_publication_time),
 				is_prediction_market: body.is_prediction_market,
 				options: body.bitasset_opts,
 			} : null,

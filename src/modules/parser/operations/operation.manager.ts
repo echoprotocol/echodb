@@ -26,9 +26,10 @@ import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import * as OPERATION from '../../../constants/operation.constants';
 import { IOperation, IOperationRelation } from 'interfaces/IOperation';
-import { ITransaction } from '../../../interfaces/ITransaction';
+import { ITransactionExtended } from '../../../interfaces/ITransaction';
 import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
+import { dateFromUtcIso } from '../../../utils/format';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -94,13 +95,14 @@ export default class OperationManager {
 	async parse<T extends ECHO.KNOWN_OPERATION>(
 		[id, body]: [T, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_PROPS<T> : unknown],
 		[_, result]: [unknown, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<T> : unknown],
-		dTx: TDoc<ITransaction>,
+		dTx: TDoc<ITransactionExtended>,
 	) {
 		const operation: IOperation<T> = {
 			id,
 			body,
 			result,
 			_tx: dTx,
+			timestamp: dateFromUtcIso(dTx._block.timestamp),
 			_relation: null,
 		};
 		if (this.map[id]) {

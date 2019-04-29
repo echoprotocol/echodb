@@ -7,6 +7,7 @@ export type IOperation<T extends ECHO.OPERATION_ID = ECHO.OPERATION_ID> = {
 	body: T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_PROPS<T> : unknown;
 	result: T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<T> : unknown;
 	_tx: MongoId;
+	timestamp: Date;
 	_relation: IOperationRelation | null;
 };
 

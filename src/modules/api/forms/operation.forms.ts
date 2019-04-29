@@ -4,6 +4,7 @@ import AssetId from '../types/asset.id.type';
 import ContractId from '../types/contract.id.type';
 import PaginationForm from './pagination.form';
 import * as ECHO from '../../../constants/echo.constants';
+import * as API from '../../../constants/api.constants';
 import * as Joi from 'joi';
 import { ArgsType, Field } from 'type-graphql';
 
@@ -38,6 +39,10 @@ export class GetOperationsHistoryForm extends PaginationForm {
 	@rule(Joi.array().items(Joi.number()))
 	@Field(() => [ECHO.OPERATION_ID], { nullable: true })
 	operations: ECHO.OPERATION_ID[];
+
+	@rule(Joi.string().valid(API.SORT_DESTINATION.ASC, API.SORT_DESTINATION.DESC))
+	@Field(() => API.SORT_DESTINATION, { defaultValue: API.SORT_DESTINATION.DESC })
+	sort: API.SORT_DESTINATION;
 }
 
 @ArgsType()

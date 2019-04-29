@@ -21,3 +21,7 @@ export function inline(str: string, replaceWith = ' ') {
 export function escapeRegExp(str: string) {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+export function dateFromUtcIso(str: string) {
+	return new Date(`${str}Z`);
+}

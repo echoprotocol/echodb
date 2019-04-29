@@ -1,5 +1,6 @@
 import OperationRepository from '../repositories/operation.repository';
 import * as ECHO from '../constants/echo.constants';
+import * as API from '../constants/api.constants';
 import { AccountId, ContractId, AssetId } from 'types/echo';
 
 export enum KEY {
@@ -10,6 +11,7 @@ export enum KEY {
 	ASSETS = 'assets',
 	TOKENS = 'tokens',
 	OPERATIONS = 'operations',
+	SORT = 'sort',
 }
 
 interface GetHistoryParameters {
@@ -20,6 +22,7 @@ interface GetHistoryParameters {
 	[KEY.ASSETS]?: AssetId[];
 	[KEY.TOKENS]?: ContractId[];
 	[KEY.OPERATIONS]?: ECHO.OPERATION_ID[];
+	[KEY.SORT]?: API.SORT_DESTINATION;
 }
 
 type Query = { [x: string]: Query[] | { $in: (ECHO.OPERATION_ID | string)[] } | { $or: Query[] } };
@@ -58,8 +61,13 @@ export default class OperationService {
 			if (otherQuery.length) query.$or = otherQuery;
 		}
 
+		const sortDestination = params.sort === API.SORT_DESTINATION.ASC ? 1 : -1;
 		const [items, total] = await Promise.all([
-			this.operationRepository.find(query, null, { skip: offset, limit: count }),
+			this.operationRepository.find(
+				query,
+				null,
+				{ skip: offset, limit: count, sort: { timestamp: sortDestination } },
+			),
 			this.operationRepository.count(query),
 		]);
 		return { total, items };

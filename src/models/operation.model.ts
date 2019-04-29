@@ -18,5 +18,6 @@ export default AbstractModel<IOperation<ECHO.OPERATION_ID>>(MODEL.NAME.OPERATION
 	body: Schema.Types.Mixed,
 	result: Schema.Types.Mixed,
 	_tx: { type: Schema.Types.ObjectId, ref: MODEL.NAME.TRANSACTION },
+	timestamp: Date,
 	_relation: relationSchema,
 });

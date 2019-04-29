@@ -35,12 +35,23 @@ export default class OperationResolver extends AbstractResolver {
 	@Query(() => paginatedBlocks)
 	@validateArgs(GetOperationsHistoryForm)
 	getHistory(
-		@Args() { count, offset, from, to, accounts, contracts, assets, tokens, operations }: GetOperationsHistoryForm,
+		@Args() {
+			count,
+			offset,
+			from,
+			to,
+			accounts,
+			contracts,
+			assets,
+			tokens,
+			operations,
+			sort,
+		}: GetOperationsHistoryForm,
 	) {
 		return this.operationService.getHistory(
 			count,
 			offset,
-			{ from, to, accounts, contracts, assets, tokens, operations },
+			{ from, to, accounts, contracts, assets, tokens, operations, sort },
 		);
 	}
 
