@@ -32,6 +32,7 @@ export default class BalanceRepository extends AbstractRepository<IBalance<BALAN
 		if (append) dBalance.amount = new BN(amount).plus(amount).toString();
 		else dBalance.amount = amount;
 		await dBalance.save();
+		this.redisConnection.emit(REDIS.EVENT.BALANCE_UPDATED, dBalance);
 		return dBalance;
 	}
 

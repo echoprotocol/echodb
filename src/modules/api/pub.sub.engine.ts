@@ -82,6 +82,11 @@ export default class PubSubEngine extends EventEmitter {
 				dBalance._contract = await this.contractRepository.findByMongoId(dBalance._contract);
 			}
 		}
+		if (dBalance.type === BALANCE.TYPE.ASSET) {
+			if (isMongoObjectId(dBalance._asset)) {
+				dBalance._asset = await this.assetRepository.findByMongoId(dBalance._asset);
+			}
+		}
 		return <TDoc<IBalanceExtended>>dBalance;
 	}
 

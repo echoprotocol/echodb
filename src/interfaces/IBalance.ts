@@ -2,6 +2,7 @@ import * as BALANCE from '../constants/balance.constants';
 import { MongoId, TDoc } from '../types/mongoose';
 import { IAccount } from './IAccount';
 import { IContract } from './IContract';
+import { IAsset } from './IAsset';
 
 // common
 interface IBasic {
@@ -18,6 +19,7 @@ export interface IBalanceAsset extends IBasic {
 
 export interface IBalanceAssetExtended extends IBalanceAsset {
 	_account: TDoc<IAccount>;
+	_asset: TDoc<IAsset>;
 }
 
 // tokens

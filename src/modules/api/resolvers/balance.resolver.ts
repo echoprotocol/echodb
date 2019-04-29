@@ -1,4 +1,4 @@
-import AbstractResolver, { handleError, validateArgs } from './abstract.resolver';
+import AbstractResolver, { handleError, validateArgs, validateSubscriptionArgs } from './abstract.resolver';
 import AssetRepository from '../../../repositories/asset.repository';
 import AccountRepository from '../../../repositories/account.repository';
 import ContractRepository from '../../../repositories/contract.repository';
@@ -89,7 +89,7 @@ export default class BalanceResolver extends AbstractResolver {
 	@Subscription(() => Balance, {
 		topics: REDIS.EVENT.NEW_BALANCE,
 		filter: BalanceResolver.balanceChangeFilter,
-		description: 'Filters by accounts and contract expected in 0.2.0',
+		description: 'Type and existence of the the corresponding filter are not allowed',
 	})
 	newBalance(
 		@Root() dBalance: Payload<REDIS.EVENT.NEW_BALANCE>,
@@ -99,9 +99,9 @@ export default class BalanceResolver extends AbstractResolver {
 	}
 
 	@Subscription(() => Balance, {
-		topics: REDIS.EVENT.BALANCE_UPDATED,
+		topics: validateSubscriptionArgs(REDIS.EVENT.BALANCE_UPDATED, BalanceSubscribeForm),
 		filter: BalanceResolver.balanceChangeFilter,
-		description: 'Filters by accounts and contract expected in 0.2.0',
+		description: 'Type and existence of the the corresponding filter are not allowed',
 	})
 	balanceUpdated(
 		@Root() dBalance: Payload<REDIS.EVENT.BALANCE_UPDATED>,
@@ -111,15 +111,33 @@ export default class BalanceResolver extends AbstractResolver {
 	}
 
 	static async balanceChangeFilter(
-		{ payload: dBalance, args: { accounts, type, contract } }: IBalanceSubscriptionFilterArgs,
+		{ payload: dBalance, args: { accounts, type, contracts, assets } }: IBalanceSubscriptionFilterArgs,
 	) {
 		if (!accounts.includes(dBalance._account.id)) return false;
-		if (contract) {
-			if (dBalance.type === BALANCE.TYPE.TOKEN) {
-				return dBalance._contract.id === contract;
+		if (assets || contracts || type) {
+			const byAsset = assets && dBalance.type === BALANCE.TYPE.ASSET && assets.includes(dBalance._asset.id);
+			const byToken =
+				contracts
+				&& dBalance.type === BALANCE.TYPE.TOKEN
+				&& contracts.includes(dBalance._contract.id);
+			const byType = dBalance.type === type;
+
+			if (type) {
+				if (assets || contracts) {
+					if (assets && !byAsset && !byType) return false;
+					if (contracts && !byToken && !byType) return false;
+				} else {
+					return byType;
+				}
+			} else {
+				if (assets && contracts) {
+					if (!byAsset && !byToken) return false;
+				} else {
+					if (assets && !byAsset) return false;
+					if (contracts && !byToken) return false;
+				}
 			}
 		}
-		if (type) return dBalance.type === type;
 		return true;
 	}
 

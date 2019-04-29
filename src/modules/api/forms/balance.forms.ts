@@ -38,7 +38,7 @@ export class GetBalancesForm extends AbstractForm {
 
 @ArgsType()
 export class BalanceSubscribeForm extends AbstractForm {
-	@rule(Joi.array().max(100))
+	@rule(Joi.array().items(Joi.string()).max(100).unique())
 	@Field(() => [AccountId], { nullable: false })
 	accounts: string[];
 
@@ -46,22 +46,17 @@ export class BalanceSubscribeForm extends AbstractForm {
 	@Field(() => BALANCE.TYPE, { nullable: true, description: 'balance type' })
 	type: BALANCE.TYPE;
 
-	@rule(Joi.string())
-	@Field(() => ContractId, { nullable: true })
-	contract: string;
-}
+	@rule(Joi.array().items(Joi.string()).max(100).unique().when('type', {
+		is: BALANCE.TYPE.TOKEN,
+		then: Joi.forbidden(),
+	}))
+	@Field(() => [ContractId], { nullable: true })
+	contracts: string[];
 
-@ArgsType()
-export class BalanceSubscribe extends AbstractForm {
-	@Field(() => AccountId, { nullable: false })
-	account: string;
-
-	@Field(() => BALANCE.TYPE, { nullable: true, description: 'balance type' })
-	type: BALANCE.TYPE;
-
-	@Field(() => ContractId, { nullable: true })
-	contract: string;
-
-	@Field(() => String, { nullable: true })
-	asset: string;
+	@rule(Joi.array().items(Joi.string()).max(100).unique().when('type', {
+		is: BALANCE.TYPE.ASSET,
+		then: Joi.forbidden(),
+	}))
+	@Field(() => [AssetId], { nullable: true })
+	assets: string[];
 }
