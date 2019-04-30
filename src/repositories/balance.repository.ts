@@ -29,8 +29,7 @@ export default class BalanceRepository extends AbstractRepository<IBalance<BALAN
 	async updateOrCreateByAccountAndAsset(account: MongoId, asset: MongoId, amount: string, { append = false }) {
 		const dBalance = await this.findByAccountAndAsset(account, asset);
 		if (!dBalance) return this.createByAccountAndAsset(account, asset, amount);
-		if (append) dBalance.amount = new BN(amount).plus(amount).toString();
-		else dBalance.amount = amount;
+		dBalance.amount = append ? new BN(dBalance.amount).plus(amount).toString() : amount;
 		await dBalance.save();
 		this.redisConnection.emit(REDIS.EVENT.BALANCE_UPDATED, dBalance);
 		return dBalance;
