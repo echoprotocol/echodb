@@ -29,7 +29,6 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 				lifetime_referrer_fee_percentage: 3000,
 				referrer_rewards_percentage: body.referrer_percent,
 				name: body.name,
-				owner: body.owner,
 				active: body.active,
 				ed_key: body.ed_key,
 				options: body.options,

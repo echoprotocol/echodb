@@ -19,12 +19,6 @@ declare module 'echojs-lib' {
 		lifetime_referrer_fee_percentage: number;
 		referrer_rewards_percentage: number;
 		name: string;
-		owner: {
-			weight_threshold: number;
-			account_auths: unknown[];
-			key_auths: unknown[][];
-		   address_auths: unknown[];
-		};
 		active: {
 			weight_threshold: number;
 			account_auths: unknown[];

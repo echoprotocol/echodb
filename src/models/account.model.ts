@@ -13,12 +13,6 @@ export default AbstractModel<IAccount>(MODEL.NAME.ACCOUNT, {
 	lifetime_referrer_fee_percentage: Number,
 	referrer_rewards_percentage: Number,
 	name: String,
-	owner: {
-		weight_threshold: Number,
-		account_auths: [Schema.Types.Mixed],
-		key_auths: [[Schema.Types.Mixed]],
-	   address_auths: [Schema.Types.Mixed],
-	},
 	active: {
 		weight_threshold: Number,
 		account_auths: [Schema.Types.Mixed],
