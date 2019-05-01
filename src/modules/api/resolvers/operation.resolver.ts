@@ -1,4 +1,4 @@
-import AbstractResolver, { validateArgs } from './abstract.resolver';
+import AbstractResolver, { validateArgs, validateSubscriptionArgs } from './abstract.resolver';
 import Operation from '../types/operation.type';
 import OperationService from '../../../services/operation.service';
 import TranasctionRepository from '../../../repositories/transaction.repository';
@@ -63,7 +63,7 @@ export default class OperationResolver extends AbstractResolver {
 
 	// Subscription
 	@Subscription(() => Operation, {
-		topics: REDIS.EVENT.NEW_OPERATION,
+		topics: validateSubscriptionArgs(REDIS.EVENT.NEW_OPERATION, NewOperationSubscribe),
 		filter: ({
 			payload: dOperation,
 			args: { accounts, assets, tokens, operations },

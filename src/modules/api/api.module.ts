@@ -19,7 +19,13 @@ import * as http from 'http';
 import * as config from 'config';
 import * as express from 'express';
 import { promisify } from 'util';
-import { ApolloServer, SchemaError, SyntaxError, UserInputError, ValidationError } from 'apollo-server-express';
+import {
+	ApolloServer,
+	SchemaError,
+	SyntaxError,
+	UserInputError,
+	ValidationError,
+} from 'apollo-server-express';
 import { getLogger } from 'log4js';
 import { buildSchema } from 'type-graphql';
 import { initMiddleware } from './express.middleware';

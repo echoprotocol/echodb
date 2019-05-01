@@ -39,8 +39,8 @@ export default class AccountResolver extends AbstractResolver {
 
 	@validateArgs(GetAccountsForm)
 	@Query(() => paginatedAccounts)
-	getAccounts(@Args() { count, offset }: GetAccountsForm) {
-		return this.accountService.getAccounts(count, offset);
+	getAccounts(@Args() { count, offset, name }: GetAccountsForm) {
+		return this.accountService.getAccounts(count, offset, name);
 	}
 
 	// FieldResolver

@@ -21,4 +21,8 @@ export class GetAccountForm extends AbstractForm {
 }
 
 @ArgsType()
-export class GetAccountsForm extends PaginationForm {}
+export class GetAccountsForm extends PaginationForm {
+	@rule(Joi.string().max(100))
+	@Field(() => String, { nullable: true })
+	name: string;
+}
