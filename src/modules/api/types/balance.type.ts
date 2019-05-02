@@ -1,6 +1,7 @@
 import Asset from './asset.type';
 import Account from './account.type';
 import Contract from './contract.type';
+import StringifiedNumber from './string.number.type';
 import * as BALANCE from '../../../constants/balance.constants';
 import { ObjectType, Field } from 'type-graphql';
 import { MongoId } from '../../../types/mongoose';
@@ -12,7 +13,7 @@ export default class Balance {
 	_asset: MongoId;
 	@Field() account: Account;
 	@Field(() => BALANCE.TYPE) type: BALANCE.TYPE;
-	@Field() amount: number;
+	@Field(() => StringifiedNumber) amount: string;
 	@Field({ nullable: true }) asset: Asset;
 	@Field({ nullable: true }) contract: Contract;
 }

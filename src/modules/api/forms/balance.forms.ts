@@ -32,7 +32,6 @@ export class GetBalancesForm extends AbstractForm {
 
 	@rule(Joi.string())
 	@Field(() => BALANCE.TYPE, { nullable: true, description: 'balance type' })
-	@rule(Joi.string())
 	type: BALANCE.TYPE;
 }
 
