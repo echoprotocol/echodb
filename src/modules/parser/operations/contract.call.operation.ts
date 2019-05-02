@@ -1,21 +1,14 @@
 import AbstractOperation from './abstract.operation';
-import RedisConnection from '../../../connections/redis.connection';
-import AccountRepository from '../../../repositories/account.repository';
-import BalanceRepository from '../../../repositories/balance.repository';
 import ContractBalanceRepository from '../../../repositories/contract.balance.repository';
 import ContractRepository from '../../../repositories/contract.repository';
+import ContractService from '../../../services/contract.service';
 import EchoRepository from '../../../repositories/echo.repository';
-import TransferRepository from '../../../repositories/transfer.repository';
-import BN from 'bignumber.js';
-import * as ECHO from '../../../constants/echo.constants';
 import * as CONTRACT from '../../../constants/contract.constants';
-import * as ERC20 from '../../../constants/erc20.constants';
-import * as REDIS from '../../../constants/redis.constants';
-import * as BALANCE from '../../../constants/balance.constants';
-import { decode } from 'echojs-contract';
-import { IContract } from '../../../interfaces/IContract';
+import * as ECHO from '../../../constants/echo.constants';
 import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
+import { IOperationRelation } from '../../../interfaces/IOperation';
+import { IContract } from '../../../interfaces/IContract';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CALL;
 
@@ -25,18 +18,15 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.CONTRACT_CALL;
 
 	constructor(
-		readonly redisConnection: RedisConnection,
-		readonly accountRepository: AccountRepository,
-		readonly balanceRepository: BalanceRepository,
-		readonly contractBalanceRepository: ContractBalanceRepository,
-		readonly contractRepository: ContractRepository,
-		readonly transferRepository: TransferRepository,
-		readonly echoRepository: EchoRepository,
+		private contractBalanceRepository: ContractBalanceRepository,
+		private contractRepository: ContractRepository,
+		private contractService: ContractService,
+		private echoRepository: EchoRepository,
 	) {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
 		const dContract = await this.contractRepository.findById(body.callee);
 		if (dContract) {
 			await this.contractBalanceRepository.updateOrCreate(
@@ -45,76 +35,30 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 				body.value.amount.toString(),
 				{ append: true },
 			);
-			if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body);
+			if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body, result);
 		} else {
 			logger.warn('contract not found, can not parse call');
 		}
 		return this.validateRelation({
 			from: [body.registrar],
 			assets: [body.fee.asset_id],
-			contract: body.callee,
+			contracts: body.callee,
 		});
 	}
 
-	// FIXME: refactor ?
-	private async handleERC20(dContract: TDoc<IContract>, body: ECHO.OPERATION_PROPS<OP_ID>) {
-		const method = ERC20.METHOD.MAP[body.code.substring(0, 8)];
-		const commonRelation = {
+	private async handleERC20(
+		dContract: TDoc<IContract>,
+		body: ECHO.OPERATION_PROPS<OP_ID>,
+		result: ECHO.OPERATION_RESULT<OP_ID>,
+	): Promise<IOperationRelation> {
+		const [, contractResult] = await this.echoRepository.getContractResult(result);
+		const relations = await this.contractService.handleErc20Logs(dContract, contractResult);
+		return this.validateAndMergeRelations({
+			from: [body.registrar],
 			assets: [body.fee.asset_id],
-			token: body.callee,
-			contract: body.callee,
-		};
-		if (!method) {
-			return this.validateRelation({
-				...commonRelation,
-				from: [body.registrar],
-			});
-		}
-		const [name, parameters] = method;
-		const code = body.code.substring(8);
-		switch (name) {
-			case ERC20.METHOD_NAME.TRANSFER: {
-				const [to, amount] = <[string, string | number]>decode(code, parameters);
-				await this.updateAccountBalances(dContract, body.registrar, to, amount);
-				return this.validateRelation({
-					...commonRelation,
-					to,
-					from: [body.registrar],
-				});
-			}
-			case ERC20.METHOD_NAME.TRANSFER_FROM: {
-				const [from, to, amount] = <[string, string,  string | number]>decode(code, parameters);
-				await this.updateAccountBalances(dContract, from, to, amount);
-				return this.validateRelation({
-					...commonRelation,
-					to,
-					from: [body.registrar, from],
-				});
-			}
-			default:
-				return;
-		}
-	}
-
-	async updateAccountBalances(dContract: TDoc<IContract>, from: string, to: string, amount: string | number) {
-		const [dFrom, dTo] = await this.accountRepository.findManyByIds([from, to]);
-		const [fromBalance, toBalance] = await Promise.all([
-			this.echoRepository.getAccountTokenBalance(dContract.id, from),
-			this.echoRepository.getAccountTokenBalance(dContract.id, to),
-		]);
-		await Promise.all([
-			this.balanceRepository.updateOrCreateByAccountAndContract(dFrom, dContract, fromBalance),
-			this.balanceRepository.updateOrCreateByAccountAndContract(dTo, dContract, toBalance),
-		]);
-		const dTransfer = await this.transferRepository.create({
-			_from: dFrom,
-			_to: dTo,
-			amount: new BN(amount).toString(),
-			_contract: dContract,
-			type: BALANCE.TYPE.TOKEN,
-			memo: null,
-		});
-		this.redisConnection.emit(REDIS.EVENT.NEW_TRANSFER, dTransfer);
+			contracts: [body.callee],
+			tokens: [body.callee],
+		}, relations);
 	}
 
 }

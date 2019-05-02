@@ -18,6 +18,7 @@ export default AbstractModel<IContract>(MODEL.NAME.CONTRACT, {
 	supported_asset_id: String,
 	type: { $type: String, enum: Object.values(CONTRACT.TYPE) },
 	token_info: erc20infoSchema,
+	problem: { $type: Boolean, default: false },
 }, {
 	typeKey: '$type',
 });

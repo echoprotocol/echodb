@@ -1,4 +1,4 @@
-import { AccountId, AssetId } from '../types/echo';
+import { AccountId, AssetId, ContractResultId } from '../types/echo';
 export const CORE_ASSET = '1.3.0';
 
 export enum OPERATION_ID {
@@ -97,7 +97,7 @@ export type OperationResult = {
 	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
-	[OPERATION_ID.CONTRACT_CALL]: unknown;
+	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;

@@ -14,9 +14,9 @@ export type IOperation<T extends ECHO.OPERATION_ID = ECHO.OPERATION_ID> = {
 // TODO: add block or tx
 export interface IOperationRelation {
 	from: AccountId[];
-	to: AccountId;
+	to: AccountId[];
 	accounts: AccountId[];
-	contract: ContractId;
+	contracts: ContractId[];
 	assets: AssetId[];
-	token: ContractId;
+	tokens: ContractId[];
 }

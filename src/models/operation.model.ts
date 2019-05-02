@@ -8,9 +8,9 @@ const relationSchema = createSchema<IOperationRelation>({
 	from: [String],
 	to: String,
 	accounts: [String],
-	contract: String,
+	contracts: [String],
 	assets: [String],
-	token: String,
+	tokens: [String],
 });
 
 export default AbstractModel<IOperation<ECHO.OPERATION_ID>>(MODEL.NAME.OPERATION, {

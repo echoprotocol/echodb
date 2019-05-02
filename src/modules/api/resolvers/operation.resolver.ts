@@ -78,7 +78,7 @@ export default class OperationResolver extends AbstractResolver {
 			}
 			if (operations && !operations.includes(dOperation.id)) return false;
 			if (assets && relation.assets && !assets.some((asset) => relation.assets.includes(asset))) return false;
-			if (tokens && relation.token && !tokens.includes(relation.token)) return false;
+			if (tokens && relation.tokens && !tokens.some((token) => relation.tokens.includes(token))) return false;
 			return true;
 		},
 	})

@@ -14,37 +14,74 @@ export function isMongoObjectId(value: string | number | any) {
 // FIXME: refactor to use keys
 export type RelationParameters = {
 	from: AccountId[],
-	to?: AccountId,
+	to?: AccountId | AccountId[],
 	accounts?: AccountId[],
-	contract?: ContractId,
+	contracts?: ContractId | ContractId[],
 	assets: AssetId[],
-	token?: ContractId,
+	tokens?: ContractId | ContractId[],
 };
 
 export function relationResponse(
-	{ from, to, accounts, contract, assets, token }: RelationParameters,
+	{ from, to, accounts, contracts, assets, tokens }: RelationParameters,
 ): IOperationRelation {
-	ok(from.length > 0);
-	if (from.length > 1) from = removeDuplicates(from);
-	for (const account of from) ok(isAccountId(account));
-	if (to) ok(isAccountId(to));
-	if (contract) ok(isContractId(contract));
-	if (assets) {
-		ok(assets.length > 0);
-		if (assets.length > 1) assets = removeDuplicates(assets);
-		for (const asset of assets) ok(isAssetId(asset));
-	}
-	if (accounts) {
-		if (accounts.length > 1) accounts = removeDuplicates(accounts);
-		for (const account of accounts) ok(isAccountId(account));
-	}
-	if (token) ok(isContractId(token));
 	return {
-		from,
-		assets,
-		accounts: accounts || [],
-		to: to || null,
-		contract: contract || null,
-		token: token || null,
+		from: validateArray(from, isAccountId, {
+			unique: true,
+			canBeEmpty: false,
+			canBeNotArray: false,
+		}),
+		to: validateArray(to, isAccountId, {
+			unique: true,
+			canBeEmpty: true,
+			canBeNotArray: true,
+		}),
+		accounts: validateArray(accounts, isAccountId, {
+			unique: true,
+			canBeEmpty: true,
+			canBeNotArray: false,
+		}),
+		contracts: validateArray(contracts, isContractId, {
+			unique: true,
+			canBeEmpty: true,
+			canBeNotArray: true,
+		}),
+		assets: validateArray(assets, isAssetId, {
+			unique: true,
+			canBeEmpty: false,
+			canBeNotArray: false,
+		}),
+		tokens: validateArray(tokens, isContractId, {
+			unique: true,
+			canBeEmpty: true,
+			canBeNotArray: true,
+		}),
 	};
+}
+
+function validateArray<T>(
+	value: T | T[],
+	validator: (value: T) => boolean,
+	{
+		unique = true,
+		canBeNotArray = true,
+		canBeEmpty = false,
+	} = {},
+) {
+	if (canBeEmpty && value === undefined) value = [];
+	if (canBeNotArray) {
+		if (value !== undefined && !Array.isArray(value)) value = [value];
+	} else {
+		ok(Array.isArray(value));
+	}
+	if (!canBeEmpty) {
+		ok(Array.isArray(value));
+		ok((<T[]>value).length > 0);
+	}
+	if (unique) value = removeDuplicates(<T[]>value);
+	if (validator) {
+		for (const v of value as T[]) {
+			ok(validator(v));
+		}
+	}
+	return <T[]>value;
 }

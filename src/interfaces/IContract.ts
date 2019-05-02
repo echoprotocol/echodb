@@ -15,4 +15,5 @@ export interface IContract {
 	supported_asset_id: string;
 	type: CONTRACT.TYPE;
 	token_info?: ITokenInfo;
+	problem: boolean;
 }

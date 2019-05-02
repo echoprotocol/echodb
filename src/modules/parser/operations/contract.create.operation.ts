@@ -17,35 +17,62 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.CONTRACT_CREATE;
 
 	constructor(
-		readonly accountRepository: AccountRepository,
-		readonly contractBalanceRepository: ContractBalanceRepository,
-		readonly contractRepository: ContractRepository,
-		readonly contractService: ContractService,
-		readonly echoRepository: EchoRepository,
-		readonly redisConnection: RedisConnection,
+		private accountRepository: AccountRepository,
+		private contractRepository: ContractRepository,
+		private contractService: ContractService,
+		private echoRepository: EchoRepository,
+		private contractBalanceRepository: ContractBalanceRepository,
+		private redisConnection: RedisConnection,
 	) {
 		super();
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
-		const dAccount = await this.accountRepository.findById(body.registrar);
-		const [, { exec_res: {
-				new_address: hexAddr,
-				code_deposit: codeDeposit,
-			}}] = await this.echoRepository.getContractResult(result);
+		const [, contractResult] = await this.echoRepository.getContractResult(result);
+		const { exec_res: {
+			new_address: hexAddr,
+			code_deposit: codeDeposit,
+		} } = contractResult;
 		if (codeDeposit !== 'Success') {
 			return this.validateRelation({
 				from: [body.registrar],
 				assets: [body.fee.asset_id],
 			});
 		}
-		const contract: IContract = {
+		const contract: IContract = await this.fullfillContract({
 			id: ethAddrToEchoId(hexAddr),
-			_registrar: dAccount,
+			_registrar: await this.accountRepository.findById(body.registrar),
 			eth_accuracy: body.eth_accuracy,
 			supported_asset_id: body.supported_asset_id || null,
 			type: this.contractService.getTypeByCode(body.code),
+			problem: false,
+		});
+		const dContract = await this.createContractAndContractBalance(contract, body.value);
+		const commonRelations = {
+			from: [body.registrar],
+			assets: [body.fee.asset_id],
+			contracts: contract.id,
 		};
+		if (contract.type === CONTRACT.TYPE.ERC20) {
+			const relations = await this.contractService.handleErc20Logs(dContract, contractResult);
+			return this.validateAndMergeRelations(commonRelations, relations);
+		}
+		return this.validateRelation(commonRelations);
+	}
+
+	private async createContractAndContractBalance(contract: IContract, value: ECHO.IAmount) {
+		const dContract = await this.contractRepository.create(contract);
+		await this.contractBalanceRepository.fastCreate(
+			dContract,
+			value.asset_id,
+			value.amount.toString(),
+		);
+		this.redisConnection.emit(REDIS.EVENT.NEW_CONTRACT, dContract);
+		// TODO: emit new contract balance
+		return dContract;
+	}
+
+	private async fullfillContract(contract: IContract) {
 		if (contract.type === CONTRACT.TYPE.ERC20) {
 			const [totalSupply, name, symbol, decimals] = await Promise.all([
 				this.echoRepository.getTokenTotalSupply(contract.id),
@@ -57,18 +84,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 				name, symbol, decimals, total_supply: totalSupply,
 			};
 		}
-		const dContract = await this.contractRepository.create(contract);
-		await this.contractBalanceRepository.fastCreate(
-			dContract,
-			body.value.asset_id,
-			body.value.amount.toString(),
-		);
-		this.redisConnection.emit(REDIS.EVENT.NEW_CONTRACT, dContract);
-		return this.validateRelation({
-			from: [body.registrar],
-			assets: [body.fee.asset_id],
-			contract: contract.id,
-		});
+		return contract;
 	}
 
 }
