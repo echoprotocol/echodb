@@ -65,10 +65,9 @@ export default class ContractBalanceResolver extends AbstractResolver {
 	}
 
 	static async contractBalanceFilter(
-		{ payload: dBalance, args: { contracts, type } }: IContractBalanceSubscriptionFilterArgs,
+		{ payload: dBalance, args: { owners: contracts } }: IContractBalanceSubscriptionFilterArgs,
 	) {
-		if (contracts && contracts.length && !contracts.includes(dBalance._contract.id)) return false;
-		if (type && dBalance._contract.type !== type) return false;
+		if (contracts && contracts.length && !contracts.includes(dBalance._owner.id)) return false;
 		return true;
 	}
 

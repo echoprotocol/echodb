@@ -1,7 +1,6 @@
 import AbstractForm, { rule } from './abstract.form';
 import ContractId from '../types/contract.id.type';
 import PaginationForm from './pagination.form';
-import * as CONTRACT from '../../../constants/contract.constants';
 import * as Joi from 'joi';
 import { ArgsType, Field } from 'type-graphql';
 
@@ -18,13 +17,5 @@ export class GetContractBalancesForm extends PaginationForm {
 export class ContractBalanceSubscribeForm extends AbstractForm {
 	@rule(Joi.array().items(Joi.string()).max(100))
 	@Field(() => [ContractId], { nullable: true })
-	contracts: string[];
-
-	@rule(Joi.string())
-	@Field(() => CONTRACT.TYPE, { nullable: true })
-	type: CONTRACT.TYPE;
-
-	static append(schema: Joi.ObjectSchema) {
-		return schema.xor('contracts', 'type');
-	}
+	owners: string[];
 }

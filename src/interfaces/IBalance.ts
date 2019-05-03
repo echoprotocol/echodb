@@ -6,14 +6,14 @@ import { IAsset } from './IAsset';
 
 // common
 interface IBasic {
-	_account: MongoId;
+	_account: MongoId<IAccount>;
 	type: BALANCE.TYPE;
 	amount: string;
 }
 
 // asset
 export interface IBalanceAsset extends IBasic {
-	_asset: MongoId;
+	_asset: MongoId<IAsset>;
 	type: BALANCE.TYPE.ASSET;
 }
 
@@ -24,7 +24,7 @@ export interface IBalanceAssetExtended extends IBalanceAsset {
 
 // tokens
 export interface IBalanceToken extends IBasic {
-	_contract: MongoId;
+	_contract: MongoId<IContract>;
 	type: BALANCE.TYPE.TOKEN;
 }
 

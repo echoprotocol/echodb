@@ -1,4 +1,5 @@
 import * as BALANCE from '../constants/balance.constants';
+import * as TRANSFER from '../constants/transfer.constants';
 import { MongoId, TDoc } from '../types/mongoose';
 import { IAccount } from './IAccount';
 import { IContract } from './IContract';
@@ -12,9 +13,12 @@ export interface IMemo {
 }
 
 interface IBasic {
-	_from: MongoId;
-	_to: MongoId;
-	type: BALANCE.TYPE;
+	_fromAccount?: MongoId;
+	_fromContract?: MongoId;
+	_toAccount?: MongoId;
+	_toContract?: MongoId;
+	relationType: TRANSFER.TYPE;
+	valueType: BALANCE.TYPE;
 	amount: string;
 	memo?: IMemo;
 }
@@ -22,24 +26,28 @@ interface IBasic {
 // asset
 export interface ITransferAsset extends IBasic {
 	_asset: MongoId;
-	type: BALANCE.TYPE.ASSET;
+	valueType: BALANCE.TYPE.ASSET;
 }
 
 export interface ITransferAssetExtended extends ITransferAsset {
-	_from: TDoc<IAccount>;
-	_to: TDoc<IAccount>;
+	_fromAccount?: TDoc<IAccount>;
+	_fromContract?: TDoc<IContract>;
+	_toAccount?: TDoc<IAccount>;
+	_toContract?: TDoc<IContract>;
 	_asset: TDoc<IAsset>;
 }
 
 // tokens
 export interface ITransferToken extends IBasic {
 	_contract: MongoId;
-	type: BALANCE.TYPE.TOKEN;
+	valueType: BALANCE.TYPE.TOKEN;
 }
 
 export interface ITransferTokenExtended extends ITransferToken {
-	_from: TDoc<IAccount>;
-	_to: TDoc<IAccount>;
+	_fromAccount?: TDoc<IAccount>;
+	_fromContract?: TDoc<IContract>;
+	_toAccount?: TDoc<IAccount>;
+	_toContract?: TDoc<IContract>;
 	_contract: TDoc<IContract>;
 }
 
@@ -56,3 +64,6 @@ type Extended = {
 
 export type ITransfer<T extends BALANCE.TYPE = BALANCE.TYPE> = Transfer[T];
 export type ITransferExtended<T extends BALANCE.TYPE = BALANCE.TYPE> = Extended[T];
+
+export type ITransferWithoutParticipants =
+	Exclude<ITransfer, '_fromAccount' | '_fromContract' | '_toAccount' | '_toContract'>;

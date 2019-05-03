@@ -4,7 +4,7 @@ import * as BALANCE from '../constants/balance.constants';
 import { IBalance } from 'interfaces/IBalance';
 import { Schema } from 'mongoose';
 
-export default AbstractModel<IBalance<BALANCE.TYPE>>(MODEL.NAME.BALANCE, {
+export default AbstractModel<IBalance>(MODEL.NAME.BALANCE, {
 	_contract: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.CONTRACT },
 	_account: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.ACCOUNT },
 	_asset: { $type: Schema.Types.ObjectId, ref: MODEL.NAME.ASSET },

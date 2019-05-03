@@ -3,8 +3,10 @@ import AccountRepository from '../../../repositories/account.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import AssetRepository from '../../../repositories/asset.repository';
 import Transfer from '../types/transfer.type';
+import TransferRepository from '../../../repositories/transfer.repository';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as REDIS from '../../../constants/redis.constants';
+import * as TRANSFER from '../../../constants/transfer.constants';
 import { TransferSubscribeForm } from '../forms/transfer.forms';
 import { Resolver, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
@@ -17,38 +19,68 @@ interface ITransferSubscriptionFilterArgs {
 @Resolver(Transfer)
 export default class TransferResolver extends AbstractResolver {
 	@inject static accountRepository: AccountRepository;
-	@inject static contractRepository: ContractRepository;
 	@inject static assetRepository: AssetRepository;
+	@inject static contractRepository: ContractRepository;
+	@inject static transferrepository: TransferRepository;
 
 	constructor(
 		private accountRepository: AccountRepository,
-		private contractRepository: ContractRepository,
 		private assetRepository: AssetRepository,
+		private contractRepository: ContractRepository,
+		private transferRepository: TransferRepository,
 	) {
 		super();
 	}
 
+	// FieldResolver
 	@FieldResolver()
-	from(@Root('_from') id: Transfer['_from']) {
-		return this.resolveMongoField(id, this.accountRepository);
+	from(
+		@Root('relationType') relationType: Transfer['relationType'],
+		@Root('_fromAccount') fromAccount: Transfer['_fromAccount'],
+		@Root('_fromContract') fromContract: Transfer['_fromContract'],
+	) {
+		const senderType = this.transferRepository.getSenderType(relationType);
+		if (senderType === TRANSFER.PARTICIPANT_TYPE.ACCOUNT) {
+			return this.resolveMongoField(fromAccount, this.accountRepository);
+		}
+		if (senderType === TRANSFER.PARTICIPANT_TYPE.CONTRACT) {
+			return this.resolveMongoField(fromContract, this.contractRepository);
+		}
 	}
 
 	@FieldResolver()
-	to(@Root('_to') id: Transfer['_to']) {
-		return this.resolveMongoField(id, this.accountRepository);
+	to(
+		@Root('relationType') relationType: Transfer['relationType'],
+		@Root('_toAccount') toAccount: Transfer['_toAccount'],
+		@Root('_toContract') toContract: Transfer['_toContract'],
+	) {
+		const receiverType = this.transferRepository.getReceiverType(relationType);
+		if (receiverType === TRANSFER.PARTICIPANT_TYPE.ACCOUNT) {
+			return this.resolveMongoField(toAccount, this.accountRepository);
+		}
+		if (receiverType === TRANSFER.PARTICIPANT_TYPE.CONTRACT) {
+			return this.resolveMongoField(toContract, this.contractRepository);
+		}
 	}
 
 	@FieldResolver()
-	asset(@Root('type') type: Transfer['type'], @Root('_asset') id: Transfer['_asset']) {
+	asset(@Root('valueType') type: Transfer['valueType'], @Root('_asset') id: Transfer['_asset']) {
 		if (type !== BALANCE.TYPE.ASSET) return null;
 		return this.resolveMongoField(id, this.assetRepository);
 	}
 
 	@FieldResolver()
-	contract(@Root('type') type: Transfer['type'], @Root('_contract') id: Transfer['_contract']) {
+	contract(@Root('valueType') type: Transfer['valueType'], @Root('_contract') id: Transfer['_contract']) {
 		if (type !== BALANCE.TYPE.TOKEN) return null;
 		return this.resolveMongoField(id, this.contractRepository);
 	}
+
+	@FieldResolver()
+	type(@Root('valueType') type: Transfer['valueType']) {
+		return type;
+	}
+
+	// Subscription
 	@Subscription(() => Transfer, {
 		topics: validateSubscriptionArgs(REDIS.EVENT.NEW_TRANSFER, TransferSubscribeForm),
 		filter: TransferResolver.transferCreateFilter,
@@ -63,13 +95,17 @@ export default class TransferResolver extends AbstractResolver {
 	static transferCreateFilter(
 		{ payload: dTransfer, args: { from, to, assets, contracts } }: ITransferSubscriptionFilterArgs,
 	) {
-		if (from && !from.includes(dTransfer._from.id)) return false;
-		if (to && !to.includes(dTransfer._to.id)) return false;
+		const sender = this.transferrepository.getSender(dTransfer);
+		const receiver = this.transferrepository.getReceiver(dTransfer);
+		if (from && !from.includes(sender.id)) return false;
+		if (to && !to.includes(receiver.id)) return false;
 		if (assets || contracts) {
-			const byAsset = assets && dTransfer.type === BALANCE.TYPE.ASSET && assets.includes(dTransfer._asset.id);
+			const byAsset = assets
+				&& dTransfer.valueType === BALANCE.TYPE.ASSET
+				&& assets.includes(dTransfer._asset.id);
 			const byToken =
 				contracts
-				&& dTransfer.type === BALANCE.TYPE.TOKEN
+				&& dTransfer.valueType === BALANCE.TYPE.TOKEN
 				&& contracts.includes(dTransfer._contract.id);
 
 			if (assets && contracts) {

@@ -7,6 +7,9 @@ import * as BALANCE from '../constants/balance.constants';
 import * as REDIS from '../constants/redis.constants';
 import { IBalance, IBalanceToken, IBalanceAsset } from '../interfaces/IBalance';
 import { MongoId, TDoc } from '../types/mongoose';
+import { IAccount } from '../interfaces/IAccount';
+import { IContract } from '../interfaces/IContract';
+import { IAsset } from '../interfaces/IAsset';
 
 export default class BalanceRepository extends AbstractRepository<IBalance<BALANCE.TYPE>> {
 
@@ -18,15 +21,20 @@ export default class BalanceRepository extends AbstractRepository<IBalance<BALAN
 	}
 
 	// Assets
-	findByAsset(asset: MongoId) {
+	findByAsset(asset: MongoId<IAsset>) {
 		return <Promise<TDoc<IBalanceAsset>[]>>super.find({ _asset: asset });
 	}
 
-	findByAccountAndAsset(account: MongoId, asset: MongoId) {
-		return <Promise<TDoc<IBalanceAsset>>>this.findOne({ _account: account, _asset: asset });
+	findByAccountAndAsset(accountId: MongoId<IAccount>, asset: MongoId<IAsset>) {
+		return <Promise<TDoc<IBalanceAsset>>>this.findOne({ _account: accountId, _asset: asset });
 	}
 
-	async updateOrCreateByAccountAndAsset(account: MongoId, asset: MongoId, amount: string, { append = false }) {
+	async updateOrCreateByAccountAndAsset(
+		account: MongoId<IAccount>,
+		asset: MongoId<IAsset>,
+		amount: string,
+		{ append = false },
+	) {
 		const dBalance = await this.findByAccountAndAsset(account, asset);
 		if (!dBalance) return this.createByAccountAndAsset(account, asset, amount);
 		dBalance.amount = append ? new BN(dBalance.amount).plus(amount).toString() : amount;
@@ -35,11 +43,11 @@ export default class BalanceRepository extends AbstractRepository<IBalance<BALAN
 		return dBalance;
 	}
 
-	async createByAccountAndAsset(accountId: MongoId, assetId: MongoId, amount: string) {
+	async createByAccountAndAsset(account: MongoId<IAccount>, asset: MongoId<IAsset>, amount: string) {
 		const dBalance = <TDoc<IBalanceAsset>>await super.create({
 			amount,
-			_account: accountId,
-			_asset: assetId,
+			_account: account,
+			_asset: asset,
 			type: BALANCE.TYPE.ASSET,
 		});
 		this.redisConnection.emit(REDIS.EVENT.NEW_BALANCE, dBalance);
@@ -47,19 +55,19 @@ export default class BalanceRepository extends AbstractRepository<IBalance<BALAN
 	}
 
 	// Tokens
-	findByAccountAndContract(accountId: MongoId, contractId: MongoId) {
-		return <Promise<TDoc<IBalanceToken>>>super.findOne({ _account: accountId, _contract: contractId });
+	findByAccountAndContract(account: MongoId<IAccount>, contract: MongoId<IContract>) {
+		return <Promise<TDoc<IBalanceToken>>>super.findOne({ _account: account, _contract: contract });
 	}
 
 	async updateOrCreateByAccountAndContract(
-		accountId: MongoId,
-		contractId: MongoId,
+		account: MongoId<IAccount>,
+		contract: MongoId<IContract>,
 		amount: string,
 		{ append = false } = {},
 	) {
-		const dBalance = await this.findByAccountAndContract(accountId, contractId);
+		const dBalance = await this.findByAccountAndContract(account, contract);
 		if (!dBalance) {
-			return this.createByAccountAndContract(accountId, contractId, amount);
+			return this.createByAccountAndContract(account, contract, amount);
 		}
 		dBalance.amount = append ? new BN(dBalance.amount).plus(amount).toString() : amount;
 		await dBalance.save();
@@ -67,12 +75,12 @@ export default class BalanceRepository extends AbstractRepository<IBalance<BALAN
 		return dBalance;
 	}
 
-	async createByAccountAndContract(accountId: MongoId, contractId: MongoId, amount: string) {
+	async createByAccountAndContract(account: MongoId<IAccount>, contract: MongoId<IContract>, amount: string) {
 		const dBalance = <TDoc<IBalanceToken>>await super.create({
 			amount,
-			_account: accountId,
+			_account: account,
+			_contract: contract,
 			type: BALANCE.TYPE.TOKEN,
-			_contract: contractId,
 		});
 		this.redisConnection.emit(REDIS.EVENT.NEW_BALANCE, dBalance);
 		return dBalance;

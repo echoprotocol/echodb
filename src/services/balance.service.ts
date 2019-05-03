@@ -86,9 +86,9 @@ export default class BalanceService {
 		return dBalance;
 	}
 
-	async getContractBalances(count: number, offset: number, contracts: ContractId[]) {
-		const dContracts = await this.contractRepository.find({ id: { $in: contracts } });
-		const query = { _contract: { $in: dContracts } };
+	async getContractBalances(count: number, offset: number, owners: ContractId[]) {
+		const dContracts = await this.contractRepository.find({ id: { $in: owners } });
+		const query = { _owner: { $in: dContracts } };
 		const [items, total] = await Promise.all([
 			this.contractBalanceRepository.find(query, null, { limit: count, skip: offset }),
 			this.contractBalanceRepository.count(query),
@@ -96,7 +96,7 @@ export default class BalanceService {
 		const dContractsMap = new Map(dContracts.map((dContract) =>
 			<[string, TDoc<IContract>]>[dContract._id.toString(), dContract]));
 		for (const dBalance of items) {
-			dBalance._contract = dContractsMap.get(dBalance._contract.toString());
+			dBalance._owner = dContractsMap.get(dBalance._owner.toString());
 		}
 		return { items, total };
 	}

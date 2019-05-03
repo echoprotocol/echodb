@@ -7,7 +7,7 @@ import { removeDuplicates } from './common';
 
 const { isAccountId, isContractId, isAssetId } = validators;
 
-export function isMongoObjectId(value: string | number | any) {
+export function isMongoObjectId(value: string | number | any): value is mongoose.Types.ObjectId {
 	return mongoose.Types.ObjectId.isValid(value);
 }
 

@@ -3,10 +3,12 @@ import ContractBalanceModel from '../models/contract.balance.model';
 import RavenHelper from '../helpers/raven.helper';
 import RedisConnection from '../connections/redis.connection';
 import * as REDIS from '../constants/redis.constants';
-import { IContractBalance } from '../interfaces/IContractBalance';
-import { ContractId, AssetId } from '../types/echo';
-import { MongoId } from '../types/mongoose';
+import * as BALANCE from '../constants/balance.constants';
+import { IContractBalance, IContractBalanceToken, IContractBalanceAsset } from '../interfaces/IContractBalance';
+import { MongoId, TDoc } from '../types/mongoose';
 import { BigNumber as BN } from 'bignumber.js';
+import { IContract } from '../interfaces/IContract';
+import { IAsset } from '../interfaces/IAsset';
 
 export default class ContractBalanceRepository extends AbstractRepository<IContractBalance> {
 
@@ -17,19 +19,32 @@ export default class ContractBalanceRepository extends AbstractRepository<IContr
 		super(ravenHelper, ContractBalanceModel);
 	}
 
-	findById(id: ContractId) {
-		return super.findOne({ id });
+	// Token
+	findByOwnerAndContract(owner: MongoId<IContract>, contract: MongoId<IContract>) {
+		return <Promise<TDoc<IContractBalanceToken>>>super.findOne({ _owner: owner, _contract: contract });
 	}
 
-	async updateOrCreate(
-		contractId: MongoId,
-		assetEchoId: AssetId,
+	async createByOwnerAndContract(owner: MongoId<IContract>, contract: MongoId<IContract>, amount: string) {
+		const dBalance = await super.create({
+			amount,
+			_owner: owner,
+			_contract: contract,
+			type: BALANCE.TYPE.TOKEN,
+		});
+		this.redisConnection.emit(REDIS.EVENT.NEW_CONTRACT_BALANCE, dBalance);
+		return dBalance;
+	}
+
+	async updateOrCreateByOwnerAndContract(
+		owner: MongoId<IContract>,
+		contract: MongoId<IContract>,
 		amount: string,
 		{ append = false } = {},
 	) {
-		const dBalance = await this.findOne({ _contract: contractId, asset: assetEchoId });
+		// const dBalance = await this.findOne({ _owner: owner, _contract: contract });
+		const dBalance = await this.findByOwnerAndContract(owner, contract);
 		if (!dBalance) {
-			return this.fastCreate(contractId, assetEchoId, amount);
+			return this.createByOwnerAndContract(owner, contract, amount);
 		}
 		dBalance.amount = append ? new BN(dBalance.amount).plus(amount).toString() : amount;
 		await dBalance.save();
@@ -37,14 +52,38 @@ export default class ContractBalanceRepository extends AbstractRepository<IContr
 		return dBalance;
 	}
 
-	async fastCreate(contractId: MongoId, assetEchoId: AssetId, amount: string) {
+	// Asset
+	findByOwnerAndAsset(owner: MongoId<IContract>, asset: MongoId<IAsset>) {
+		return <Promise<TDoc<IContractBalanceAsset>>>super.findOne({ _owner: owner, _asset: asset });
+	}
+
+	async createByOwnerAndAsset(owner: MongoId<IContract>, asset: MongoId<IAsset>, amount: string) {
 		const dBalance = await super.create({
 			amount,
-			_contract: contractId,
-			asset: assetEchoId,
+			_owner: owner,
+			_asset: asset,
+			type: BALANCE.TYPE.ASSET,
 		});
 		this.redisConnection.emit(REDIS.EVENT.NEW_CONTRACT_BALANCE, dBalance);
 		return dBalance;
+	}
+
+	async updateOrCreateByOwnerAndAsset(
+		owner: MongoId<IContract>,
+		asset: MongoId<IAsset>,
+		amount: string,
+		{ append = false } = {},
+	) {
+		// const dBalance = await this.findOne({ _owner: owner, _asset: asset });
+		const dBalance = await this.findByOwnerAndAsset(owner, asset);
+		if (!dBalance) {
+			return this.createByOwnerAndAsset(owner, asset, amount);
+		}
+		dBalance.amount = append ? new BN(dBalance.amount).plus(amount).toString() : amount;
+		await dBalance.save();
+		this.redisConnection.emit(REDIS.EVENT.CONTRACT_BALANCE_UPDATED, dBalance);
+		return dBalance;
+
 	}
 
 }

@@ -8,14 +8,18 @@ import * as BALANCE from '../constants/balance.constants';
 import * as CONTRACT from '../constants/contract.constants';
 import * as ERC20 from '../constants/erc20.constants';
 import * as TOKEN from '../constants/token.constants';
-import { AccountId } from '../types/echo';
+import * as TRANSFER from '../constants/transfer.constants';
+import { AccountId, ContractId } from '../types/echo';
 import { IContract, ITokenInfo } from '../interfaces/IContract';
 import { IOperationRelation } from '../interfaces/IOperation';
 import { SomeOfAny } from '../types/some.of.d';
 import { escapeRegExp } from '../utils/format';
 import { ContractResult } from 'echojs-lib';
-import { TDoc } from '../types/mongoose';
+import { TDoc, MongoId } from '../types/mongoose';
 import { decode } from 'echojs-contract';
+import TransferService from './transfer.service';
+import { IAccount } from 'interfaces/IAccount';
+import ContractBalanceRepository from 'repositories/contract.balance.repository';
 
 type GetContractsQuery = { registrar?: object, type?: CONTRACT.TYPE };
 type GetTokensQuery = { _registrar?: any, type?: any, token_info?: SomeOfAny<ITokenInfo> };
@@ -37,8 +41,10 @@ export default class ContractService {
 		private accountRepository: AccountRepository,
 		private balanceRepository: BalanceRepository,
 		private contractRepository: ContractRepository,
+		private contractBalanceRepository: ContractBalanceRepository,
 		private echoRepository: EchoRepository,
 		private transferRepository: TransferRepository,
+		private transferService: TransferService,
 	) { }
 
 	getTypeByCode(bytecode: string): CONTRACT.TYPE {
@@ -144,19 +150,26 @@ export default class ContractService {
 		return true;
 	}
 
-	async handleTokenTransfer(dContract: TDoc<IContract>, from: string, to: string, amount: string | number) {
-		const [[dFrom, dTo], fromAmount, toAmount] = await Promise.all([
-			this.accountRepository.findManyByIds([from, to]),
+	async handleTokenTransfer(
+		dContract: TDoc<IContract>,
+		from: AccountId | ContractId,
+		to: AccountId | ContractId,
+		amount: string | number,
+	) {
+		const senderType = this.transferRepository.determineParticipantType(from);
+		const receiverType = this.transferRepository.determineParticipantType(to);
+		const [dFrom, dTo, fromAmount, toAmount] = await Promise.all([
+			this.transferService.fetchParticipant(from, senderType),
+			this.transferService.fetchParticipant(to, receiverType),
 			this.echoRepository.getAccountTokenBalance(dContract.id, from),
 			this.echoRepository.getAccountTokenBalance(dContract.id, to),
 		]);
 		await Promise.all([
 			this.transferRepository.createAndEmit({
-				_from: dFrom,
-				_to: dTo,
+				relationType: this.transferRepository.determineRelationType(from, to),
 				amount: amount.toString(),
 				_contract: dContract,
-				type: BALANCE.TYPE.TOKEN,
+				valueType: BALANCE.TYPE.TOKEN,
 			}),
 			(async () => {
 				if (dContract.problem) return;
@@ -168,21 +181,45 @@ export default class ContractService {
 					return;
 				}
 				await Promise.all([
-					this.balanceRepository.updateOrCreateByAccountAndContract(
+					this.updateOrCreate(
+						senderType,
 						dFrom,
 						dContract,
 						sFromAmount,
-						{ append: true },
 					),
-					this.balanceRepository.updateOrCreateByAccountAndContract(
+					this.updateOrCreate(
+						receiverType,
 						dTo,
 						dContract,
 						sToAmount,
-						{ append: true },
 					),
 				]);
 			})(),
 		]);
+	}
+
+	async updateOrCreate(
+		type: TRANSFER.PARTICIPANT_TYPE,
+		dOwner: MongoId<IAccount | IContract>,
+		dContract: MongoId<IContract>,
+		amount: string,
+	) {
+		switch (type) {
+			case TRANSFER.PARTICIPANT_TYPE.ACCOUNT:
+				await this.balanceRepository.updateOrCreateByAccountAndContract(
+					<MongoId<IAccount>>dOwner,
+					dContract,
+					amount,
+				);
+				break;
+			case TRANSFER.PARTICIPANT_TYPE.CONTRACT:
+				await this.contractBalanceRepository.updateOrCreateByOwnerAndContract(
+					<MongoId<IContract>>dOwner,
+					dContract,
+					amount,
+				);
+				break;
+		}
 	}
 
 }

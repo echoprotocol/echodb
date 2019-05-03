@@ -15,6 +15,7 @@ import { Payload as RedisPayload } from '../../types/redis';
 import { Payload as GqlPayload } from '../../types/graphql';
 import { ITransfer, ITransferExtended } from 'interfaces/ITransfer';
 import { IContractBalance, IContractBalanceExtended } from 'interfaces/IContractBalance';
+import AbstractRepository from 'repositories/abstract.repository';
 
 const logger = getLogger('pub.sub');
 
@@ -78,42 +79,38 @@ export default class PubSubEngine extends EventEmitter {
 			dBalance._account = await this.accountRepository.findByMongoId(dBalance._account);
 		}
 		if (dBalance.type === BALANCE.TYPE.TOKEN) {
-			if (isMongoObjectId(dBalance._contract)) {
-				dBalance._contract = await this.contractRepository.findByMongoId(dBalance._contract);
-			}
+			this.resolveRelationField(dBalance, '_contract', this.contractRepository);
 		}
 		if (dBalance.type === BALANCE.TYPE.ASSET) {
-			if (isMongoObjectId(dBalance._asset)) {
-				dBalance._asset = await this.assetRepository.findByMongoId(dBalance._asset);
-			}
+			this.resolveRelationField(dBalance, '_asset', this.assetRepository);
 		}
 		return <TDoc<IBalanceExtended>>dBalance;
 	}
 
 	private async transformTransfer(dTransfer: TDoc<ITransfer>): Promise<TDoc<ITransferExtended>> {
-		if (isMongoObjectId(dTransfer._from)) {
-			dTransfer._from = await this.accountRepository.findByMongoId(dTransfer._from);
+		this.resolveRelationField(dTransfer, '_fromAccount', this.accountRepository);
+		this.resolveRelationField(dTransfer, '_fromContract', this.contractRepository);
+		this.resolveRelationField(dTransfer, '_toAccount', this.accountRepository);
+		this.resolveRelationField(dTransfer, '_toContract', this.contractRepository);
+		if (dTransfer.valueType === BALANCE.TYPE.TOKEN) {
+			this.resolveRelationField(dTransfer, '_contract', this.contractRepository);
 		}
-		if (isMongoObjectId(dTransfer._to)) {
-			dTransfer._to = await this.accountRepository.findByMongoId(dTransfer._to);
-		}
-		if (dTransfer.type === BALANCE.TYPE.TOKEN) {
-			if (isMongoObjectId(dTransfer._contract)) {
-				dTransfer._contract = await this.contractRepository.findByMongoId(dTransfer._contract);
-			}
-		}
-		if (dTransfer.type === BALANCE.TYPE.ASSET) {
-			if (isMongoObjectId(dTransfer._asset)) {
-				dTransfer._asset = await this.assetRepository.findByMongoId(dTransfer._asset);
-			}
+		if (dTransfer.valueType === BALANCE.TYPE.ASSET) {
+			this.resolveRelationField(dTransfer, '_asset', this.assetRepository);
 		}
 		return <TDoc<ITransferExtended>>dTransfer;
 	}
 	private async transformContractBalance(dBalance: TDoc<IContractBalance>): Promise<TDoc<IContractBalanceExtended>> {
-		if (isMongoObjectId(dBalance._contract)) {
-			dBalance._contract = await this.contractRepository.findByMongoId(dBalance._contract);
-		}
+		this.resolveRelationField(dBalance, '_owner', this.contractRepository);
 		return <TDoc<IContractBalanceExtended>>dBalance;
+	}
+
+	private async resolveRelationField<T extends { [x: string]: any }>(
+			body: T, field: keyof T, repository: AbstractRepository,
+	) {
+		const value = body[field];
+		if (!value || !isMongoObjectId(value)) return;
+		body[field] = <T[keyof T]>await repository.findByMongoId(value);
 	}
 
 }

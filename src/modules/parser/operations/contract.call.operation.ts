@@ -9,6 +9,7 @@ import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
 import { IOperationRelation } from '../../../interfaces/IOperation';
 import { IContract } from '../../../interfaces/IContract';
+import AssetRepository from 'repositories/asset.repository';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CALL;
 
@@ -18,6 +19,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.CONTRACT_CALL;
 
 	constructor(
+		private assetRepository: AssetRepository,
 		private contractBalanceRepository: ContractBalanceRepository,
 		private contractRepository: ContractRepository,
 		private contractService: ContractService,
@@ -29,12 +31,16 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
 		const dContract = await this.contractRepository.findById(body.callee);
 		if (dContract) {
-			await this.contractBalanceRepository.updateOrCreate(
-				dContract,
-				body.value.asset_id,
-				body.value.amount.toString(),
-				{ append: true },
-			);
+			const amount = body.value.amount.toString();
+			if (amount) {
+				const dAsset = await this.assetRepository.findById(body.value.asset_id);
+				await this.contractBalanceRepository.updateOrCreateByOwnerAndAsset(
+					dContract,
+					dAsset,
+					amount,
+					{ append: true },
+				);
+			}
 			if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body, result);
 		} else {
 			logger.warn('contract not found, can not parse call');

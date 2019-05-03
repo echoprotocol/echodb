@@ -10,11 +10,11 @@ const uniqueArraySchema = Joi.array().items(Joi.string()).unique().max(100);
 @ArgsType()
 export class TransferSubscribeForm extends AbstractForm {
 	@rule(uniqueArraySchema)
-	@Field(() => AccountId, { nullable: true })
+	@Field(() => [AccountId, ContractId], { nullable: true })
 	from: string[];
 
 	@rule(uniqueArraySchema)
-	@Field(() => AccountId, { nullable: true })
+	@Field(() => [AccountId, ContractId], { nullable: true })
 	to: string[];
 
 	@rule(uniqueArraySchema)

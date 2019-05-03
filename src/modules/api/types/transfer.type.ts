@@ -4,13 +4,18 @@ import Asset from '../types/asset.type';
 import Memo from './transfer.memo.type';
 import StringifiedNumber from './string.number.type';
 import * as BALANCE from '../../../constants/balance.constants';
+import * as TRANSFER from '../../../constants/transfer.constants';
 import { ObjectType, Field } from 'type-graphql';
 import { MongoId } from '../../../types/mongoose';
 
 @ObjectType()
 export default class Transfer {
-	_from: MongoId;
-	_to: MongoId;
+	relationType: TRANSFER.TYPE;
+	valueType: BALANCE.TYPE;
+	_fromAccount: MongoId;
+	_fromContract: MongoId;
+	_toAccount: MongoId;
+	_toContract: MongoId;
 	_asset: MongoId;
 	_contract: MongoId;
 	@Field(() => Account) from: string;

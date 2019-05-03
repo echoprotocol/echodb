@@ -1,13 +1,12 @@
 import AbstractOperation from './abstract.operation';
-import AccountRepository from 'repositories/account.repository';
+import AccountRepository from '../../../repositories/account.repository';
+import AssetRepository from '../../../repositories/asset.repository';
 import ContractBalanceRepository from '../../../repositories/contract.balance.repository';
 import ContractService from '../../../services/contract.service';
 import ContractRepository from '../../../repositories/contract.repository';
 import EchoRepository from '../../../repositories/echo.repository';
-import RedisConnection from '../../../connections/redis.connection';
 import * as CONTRACT from '../../../constants/contract.constants';
 import * as ECHO from '../../../constants/echo.constants';
-import * as REDIS from '../../../constants/redis.constants';
 import { ethAddrToEchoId } from '../../../utils/format';
 import { IContract } from '../../../interfaces/IContract';
 
@@ -18,11 +17,11 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 
 	constructor(
 		private accountRepository: AccountRepository,
+		private assetRepository: AssetRepository,
 		private contractRepository: ContractRepository,
 		private contractService: ContractService,
 		private echoRepository: EchoRepository,
 		private contractBalanceRepository: ContractBalanceRepository,
-		private redisConnection: RedisConnection,
 	) {
 		super();
 	}
@@ -61,14 +60,16 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	}
 
 	private async createContractAndContractBalance(contract: IContract, value: ECHO.IAmount) {
-		const dContract = await this.contractRepository.create(contract);
-		await this.contractBalanceRepository.fastCreate(
-			dContract,
-			value.asset_id,
-			value.amount.toString(),
-		);
-		this.redisConnection.emit(REDIS.EVENT.NEW_CONTRACT, dContract);
-		// TODO: emit new contract balance
+		const [dContract, dAsset] = await Promise.all([
+			this.contractRepository.createAndEmit(contract),
+			this.assetRepository.findById(value.asset_id),
+		]);
+		const amount = value.amount.toString();
+		if (amount !== '0') {
+			await this.contractBalanceRepository.createByOwnerAndAsset(
+				dContract, dAsset, amount,
+			);
+		}
 		return dContract;
 	}
 
