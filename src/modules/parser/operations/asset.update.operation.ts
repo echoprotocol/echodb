@@ -29,11 +29,12 @@ export default class AssetUpdateOperation extends AbstractOperation<OP_ID> {
 			toUpdate._account = await this.accountRepository.findById(body.new_issuer);
 		}
 		if (body.new_options) toUpdate.options = body.new_options;
-		await this.assetRepository.updateOne(
+		const dAsset = await this.assetRepository.findOneAndUpdate(
 			{ id: body.asset_to_update },
 			{ $set: toUpdate },
+			{ new: true },
 		);
-		this.redisConnection.emit(REDIS.EVENT.ASSET_UPDATED, body.asset_to_update);
+		this.redisConnection.emit(REDIS.EVENT.ASSET_UPDATED, dAsset);
 		return this.validateRelation({
 			from: [body.issuer],
 			accounts: body.new_issuer ? [body.new_issuer] : [],

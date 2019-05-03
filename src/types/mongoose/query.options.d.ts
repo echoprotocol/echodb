@@ -1,4 +1,5 @@
 import { ClientSession } from 'mongoose';
+import { boolean } from 'joi';
 
 // https://mongoosejs.com/docs/api.html#query_Query-setOptions
 
@@ -44,6 +45,10 @@ declare type Common = {
 	},
 };
 
+declare type ReturnNew = {
+	new?: boolean;
+};
+
 export type QueryOptions = {
 	readonly Create: Create;
 	readonly Update: Update,
@@ -69,7 +74,7 @@ export declare type Create = Common;
 export declare type Update = CommonUpdate & Lean & Common & MaxTimeMs;
 export declare type Find = Find & Lean & Common;
 export declare type FindOne = Lean & Common;
-export declare type FindOneAndUpdate = CommonUpdate & Lean & Common;
+export declare type FindOneAndUpdate = CommonUpdate & Lean & Common & ReturnNew;
 export declare type FindById = Lean & Common;
 export declare type FindByIdAndUpdate = CommonUpdate & Lean & Common;
 

@@ -90,14 +90,14 @@ export default class ParserModule extends AbstractModule {
 	async syncCoreAsset() {
 		logger.info('Parsing first block. Synchronizing core asset');
 		const [coreAsset] = await this.echoRepository.getAssets([ECHO.CORE_ASSET]);
-		const account = await this.accountRepository.findById(coreAsset.issuer);
-		return this.assetRepository.create([{
+		const dAccount = await this.accountRepository.findById(coreAsset.issuer);
+		await this.assetRepository.create([{
 			bitasset: !coreAsset.bitasset ? null : {
 				...coreAsset.bitasset,
 				current_feed_publication_time: new Date(coreAsset.bitasset.current_feed_publication_time),
 			},
 			id: coreAsset.id,
-			_account: account,
+			_account: dAccount,
 			symbol: coreAsset.symbol,
 			precision: coreAsset.precision,
 			options: coreAsset.options,

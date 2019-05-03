@@ -70,9 +70,9 @@ export default class AccountResolver extends AbstractResolver {
 		topics: REDIS.EVENT.ACCOUNT_UPDATED,
 	})
 	accountUpdated(
-		@Root() accountId: Payload<REDIS.EVENT.ACCOUNT_UPDATED>,
+		@Root() dAccount: Payload<REDIS.EVENT.ACCOUNT_UPDATED>,
 	) {
-		return this.accountService.getAccount(accountId);
+		return dAccount;
 	}
 
 	@Subscription(() => AccountOwnerChangedSubscription, {

@@ -22,7 +22,7 @@ export default class AssetBitassetUpdateOperation extends AbstractOperation<OP_I
 		const dAsset = await this.assetRepository.findById(body.asset_to_update);
 		if (body.new_options) dAsset.bitasset.options = body.new_options;
 		await dAsset.save();
-		this.redisConnection.emit(REDIS.EVENT.ASSET_UPDATED, body.asset_to_update);
+		this.redisConnection.emit(REDIS.EVENT.ASSET_UPDATED, dAsset);
 		return this.validateRelation({
 			from: [body.issuer],
 			assets: [body.fee.asset_id, body.asset_to_update],

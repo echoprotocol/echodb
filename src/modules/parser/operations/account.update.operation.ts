@@ -30,11 +30,12 @@ export default class AccountUpdateOperation extends AbstractOperation<OP_ID> {
 		if (body.active) toUpdate.active = body.active;
 		if (body.ed_key) toUpdate.ed_key = body.ed_key;
 		if (body.new_options) toUpdate.options = body.new_options;
-		await this.accountRepository.updateOne(
+		const dAccount = await this.accountRepository.findOneAndUpdate(
 			{ id: body.account },
 			{ $set: toUpdate },
+			{ new: true },
 		);
-		this.redisConnection.emit(REDIS.EVENT.ACCOUNT_UPDATED, body.account);
+		this.redisConnection.emit(REDIS.EVENT.ACCOUNT_UPDATED, dAccount);
 		// FIXME: add some fields from options ?
 		return this.validateRelation({
 			from: [body.account],

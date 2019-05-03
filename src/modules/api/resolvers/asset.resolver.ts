@@ -4,7 +4,7 @@ import AccountRepository from '../../../repositories/account.repository';
 import PaginatedResponse from '../types/paginated.response.type';
 import AssetService from '../../../services/asset.service';
 import * as REDIS from '../../../constants/redis.constants';
-import { NewAssetSubscriptionForm, GetAssetsForm } from '../forms/asset.forms';
+import { NewAssetSubscriptionForm, GetAssetsForm, AssetSubscribeForm } from '../forms/asset.forms';
 import { Resolver, FieldResolver, Root, Subscription, Query, Args } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { MongoId } from '../../../types/mongoose';
@@ -14,6 +14,12 @@ interface INewAssetSubscriptionFilterArgs {
 	payload: Payload<REDIS.EVENT.NEW_ASSET>;
 	args: NewAssetSubscriptionForm;
 }
+
+interface IAssetSubscriptionFilterArgs {
+	payload: Payload<REDIS.EVENT.ASSET_UPDATED>;
+	args: AssetSubscribeForm;
+}
+
 const paginatedAssets = PaginatedResponse(Asset);
 
 @Resolver(Asset)
@@ -54,6 +60,23 @@ export default class AssetResolver extends AbstractResolver {
 		@Args() _: NewAssetSubscriptionForm,
 	) {
 		return dAsset;
+	}
+
+	@Subscription(() => Asset, {
+		topics: REDIS.EVENT.ASSET_UPDATED,
+		filter: AssetResolver.assetChangeFilter,
+	})
+	assetUpdated(
+		@Root() dAsset: Payload<REDIS.EVENT.ASSET_UPDATED>,
+		@Args() _: AssetSubscribeForm,
+	) {
+		return dAsset;
+	}
+
+	static async assetChangeFilter(
+		{ payload: dAsset, args: { assets } }: IAssetSubscriptionFilterArgs,
+	) {
+		return assets.includes(dAsset.id);
 	}
 
 }

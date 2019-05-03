@@ -40,9 +40,9 @@ export type EVENT_PAYLOAD = {
 	[EVENT.NEW_CONTRACT_BALANCE]: TDoc<IContractBalance>;
 	[EVENT.NEW_CONTRACT]: TDoc<IContract>;
 	[EVENT.NEW_TRANSFER]: TDoc<ITransfer>;
-	[EVENT.ACCOUNT_UPDATED]: AccountId;
+	[EVENT.ACCOUNT_UPDATED]: TDoc<IAccount>;
 	[EVENT.ACCOUNT_OWNER_CHANGED]: { old: AccountId, new: AccountId };
-	[EVENT.ASSET_UPDATED]: string;
+	[EVENT.ASSET_UPDATED]: TDoc<IAsset>;
 	[EVENT.BALANCE_UPDATED]: TDoc<IBalance>;
 	[EVENT.CONTRACT_BALANCE_UPDATED]: TDoc<IContractBalance>;
 };

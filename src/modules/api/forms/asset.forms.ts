@@ -1,7 +1,7 @@
 import AbstractForm, { rule } from './abstract.form';
-import AccountId from '../types/account.id.type';
 import PaginationForm from './pagination.form';
 import AssetId from '../types/asset.id.type';
+import AccountId from '../types/account.id.type';
 import * as Joi from 'joi';
 import { ArgsType, Field } from 'type-graphql';
 
@@ -30,4 +30,11 @@ export class GetAssetsForm extends PaginationForm {
 	@rule(Joi.string())
 	@Field(() => AccountId, { nullable: true })
 	account: string;
+}
+
+@ArgsType()
+export class AssetSubscribeForm extends AbstractForm {
+	@rule(Joi.array().items(Joi.string()).max(100))
+	@Field(() => [AssetId], { nullable: true })
+	assets: string[];
 }
