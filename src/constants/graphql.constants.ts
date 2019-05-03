@@ -3,7 +3,8 @@ import { IBalanceExtended } from '../interfaces/IBalance';
 import { ITransferExtended } from '../interfaces/ITransfer';
 import { TDoc } from '../types/mongoose';
 import { Overwrite } from '../types';
-import { IContractBalanceExtended } from 'interfaces/IContractBalance';
+import { IContractBalanceExtended } from '../interfaces/IContractBalance';
+import { IAssetExtended } from '../interfaces/IAsset';
 
 export enum EVENT {
 	NOT_REDIS_EVENT = 'asd',
@@ -14,6 +15,7 @@ type EVENT_PAYLOAD_CUSTOM = {
 };
 
 type EVENT_PAYLOAD_OVERWRITE = {
+	[REDIS.EVENT.NEW_ASSET]: TDoc<IAssetExtended>;
 	[REDIS.EVENT.NEW_BALANCE]: TDoc<IBalanceExtended>;
 	[REDIS.EVENT.BALANCE_UPDATED]: TDoc<IBalanceExtended>;
 	[REDIS.EVENT.NEW_TRANSFER]: TDoc<ITransferExtended>;

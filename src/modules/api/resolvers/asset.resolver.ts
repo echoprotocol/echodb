@@ -1,14 +1,19 @@
-import AbstractResolver, { validateArgs } from './abstract.resolver';
+import AbstractResolver, { validateArgs, validateSubscriptionArgs } from './abstract.resolver';
 import Asset from '../types/asset.type';
 import AccountRepository from '../../../repositories/account.repository';
 import PaginatedResponse from '../types/paginated.response.type';
 import AssetService from '../../../services/asset.service';
-import { Resolver, FieldResolver, Root, Query, Args } from 'type-graphql';
+import * as REDIS from '../../../constants/redis.constants';
+import { NewAssetSubscriptionForm, GetAssetsForm } from '../forms/asset.forms';
+import { Resolver, FieldResolver, Root, Subscription, Query, Args } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
-import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
-import { GetAssetsForm } from '../forms/asset.forms';
+import { Payload } from '../../../types/graphql';
 
+interface INewAssetSubscriptionFilterArgs {
+	payload: Payload<REDIS.EVENT.NEW_ASSET>;
+	args: NewAssetSubscriptionForm;
+}
 const paginatedAssets = PaginatedResponse(Asset);
 
 @Resolver(Asset)
@@ -23,6 +28,7 @@ export default class AssetResolver extends AbstractResolver {
 		super();
 	}
 
+	// FieldResolver
 	@FieldResolver()
 	account(@Root('_account') id: MongoId) {
 		return this.resolveMongoField(id, this.accountRepository);
@@ -32,6 +38,22 @@ export default class AssetResolver extends AbstractResolver {
 	@Query(() => paginatedAssets)
 	getAssets(@Args() { count, offset, symbols, assets, account }: GetAssetsForm) {
 		return this.assetService.getAssets(count, offset, { symbols, assets, account });
+	}
+
+	// Subscription
+	@Subscription(() => Asset, {
+		topics: validateSubscriptionArgs(REDIS.EVENT.NEW_ASSET, NewAssetSubscriptionForm),
+		filter: ({ payload: dAsset, args: { registrars, symbols } }: INewAssetSubscriptionFilterArgs) => {
+			if (registrars && !registrars.includes(dAsset._account.id)) return false;
+			if (symbols && !symbols.includes(dAsset.symbol)) return false;
+			return true;
+		},
+	})
+	newAsset(
+		@Root() dAsset: Payload<REDIS.EVENT.NEW_ASSET>,
+		@Args() _: NewAssetSubscriptionForm,
+	) {
+		return dAsset;
 	}
 
 }

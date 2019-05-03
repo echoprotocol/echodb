@@ -1,6 +1,7 @@
 import * as ECHO from '../constants/echo.constants';
-import { MongoId } from '../types/mongoose';
+import { MongoId, TDoc } from '../types/mongoose';
 import { AssetId, BitassetDataId, BitassetId } from '../types/echo';
+import { IAccount } from './IAccount';
 
 export interface IAssetPrice {
 	base: ECHO.IAmount;
@@ -63,4 +64,8 @@ export interface IAsset {
 	bitasset?: IAssetBitasset;
 	bitasset_data_id?: BitassetDataId;
 	dynamic: IAssetDynamic;
+}
+
+export interface IAssetExtended extends IAsset {
+	_account: TDoc<IAccount>;
 }

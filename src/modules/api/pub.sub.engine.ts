@@ -1,6 +1,7 @@
 import AccountRepository from '../../repositories/account.repository';
-import ContractRepository from 'repositories/contract.repository';
-import AssetRepository from 'repositories/asset.repository';
+import AbstractRepository from '../../repositories/abstract.repository';
+import ContractRepository from '../../repositories/contract.repository';
+import AssetRepository from '../../repositories/asset.repository';
 import RedisConnection from '../../connections/redis.connection';
 import * as REDIS from '../../constants/redis.constants';
 import * as BALANCE from '../../constants/balance.constants';
@@ -13,9 +14,9 @@ import { IBalance, IBalanceExtended } from '../../interfaces/IBalance';
 import { TDoc } from '../../types/mongoose';
 import { Payload as RedisPayload } from '../../types/redis';
 import { Payload as GqlPayload } from '../../types/graphql';
-import { ITransfer, ITransferExtended } from 'interfaces/ITransfer';
-import { IContractBalance, IContractBalanceExtended } from 'interfaces/IContractBalance';
-import AbstractRepository from 'repositories/abstract.repository';
+import { ITransfer, ITransferExtended } from '../../interfaces/ITransfer';
+import { IContractBalance, IContractBalanceExtended } from '../../interfaces/IContractBalance';
+import { IAsset, IAssetExtended } from '../../interfaces/IAsset';
 
 const logger = getLogger('pub.sub');
 
@@ -69,6 +70,10 @@ export default class PubSubEngine extends EventEmitter {
 				return this.transformTransfer(
 					<RedisPayload<REDIS.EVENT.NEW_TRANSFER>>payload,
 				);
+			case REDIS.EVENT.NEW_ASSET:
+				return this.transformAsset(
+					<RedisPayload<REDIS.EVENT.NEW_ASSET>>payload,
+				);
 			default:
 				return <GqlPayload>payload;
 		}
@@ -98,6 +103,14 @@ export default class PubSubEngine extends EventEmitter {
 		}
 		return <TDoc<ITransferExtended>>dTransfer;
 	}
+
+	private async transformAsset(dAsset: TDoc<IAsset>) {
+		if (isMongoObjectId(dAsset._account)) {
+			dAsset._account = await this.accountRepository.findByMongoId(dAsset._account);
+		}
+		return <TDoc<IAssetExtended>>dAsset;
+	}
+
 	private async transformContractBalance(dBalance: TDoc<IContractBalance>): Promise<TDoc<IContractBalanceExtended>> {
 		this.resolveRelationField(dBalance, '_owner', this.contractRepository);
 		return <TDoc<IContractBalanceExtended>>dBalance;

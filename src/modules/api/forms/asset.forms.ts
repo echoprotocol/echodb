@@ -1,9 +1,21 @@
+import AbstractForm, { rule } from './abstract.form';
+import AccountId from '../types/account.id.type';
 import PaginationForm from './pagination.form';
 import AssetId from '../types/asset.id.type';
-import AccountId from '../types/account.id.type';
 import * as Joi from 'joi';
-import { rule } from './abstract.form';
 import { ArgsType, Field } from 'type-graphql';
+
+@ArgsType()
+export class NewAssetSubscriptionForm extends AbstractForm {
+
+	@rule(Joi.array().items(Joi.string()))
+	@Field(() => [String], { nullable: true })
+	symbols?: string[];
+
+	@rule(Joi.array().items(Joi.string()).max(100).unique())
+	@Field(() => [AccountId], { nullable: true })
+	registrars?: string[];
+}
 
 @ArgsType()
 export class GetAssetsForm extends PaginationForm {
