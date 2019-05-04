@@ -10,10 +10,8 @@ import OperationResolver from './resolvers/operation.resolver';
 import RavenHelper from '../../helpers/raven.helper';
 import RestError from '../../errors/rest.error';
 import FormError from '../../errors/form.error';
-import RedisConnection from '../../connections/redis.connection';
 import PubSubEngine from './pub.sub.engine';
 import TransactionResolver from './resolvers/transaction.resolver';
-import TokenResolver from './resolvers/token.resolver';
 import * as HTTP from '../../constants/http.constants';
 import * as http from 'http';
 import * as config from 'config';
@@ -40,18 +38,16 @@ export default class ApiModule extends AbstractModule {
 	private httpServer: http.Server;
 
 	constructor(
-		readonly ravenHelper: RavenHelper,
-		readonly redisConnection: RedisConnection,
-		readonly pubSubEngine: PubSubEngine,
-		readonly accountResolver: AccountResolver,
-		readonly balanceResolver: BalanceResolver,
-		readonly blockResolver: BlockResolver,
-		readonly contractResolver: ContractResolver,
-		readonly operationResolver: OperationResolver,
-		readonly transactionResolver: TransactionResolver,
-		readonly tokenResolver: TokenResolver,
-		readonly assetResolver: AssetResolver,
-		readonly contractBalanceResolver: ContractBalanceResolver,
+		private ravenHelper: RavenHelper,
+		private pubSubEngine: PubSubEngine,
+		private accountResolver: AccountResolver,
+		private balanceResolver: BalanceResolver,
+		private blockResolver: BlockResolver,
+		private contractResolver: ContractResolver,
+		private operationResolver: OperationResolver,
+		private transactionResolver: TransactionResolver,
+		private assetResolver: AssetResolver,
+		private contractBalanceResolver: ContractBalanceResolver,
 	) {
 		super();
 	}
@@ -102,7 +98,8 @@ export default class ApiModule extends AbstractModule {
 	formatError(error: GraphQLError) {
 		const original = error.originalError;
 		if (original instanceof RestError) return this.formatRestError(error, original);
-		if (original instanceof GraphQLError
+		if ((original && original instanceof GraphQLError)
+			|| (!original && error instanceof GraphQLError)
 			|| error instanceof SchemaError
 			|| error instanceof SyntaxError
 			|| error instanceof UserInputError
