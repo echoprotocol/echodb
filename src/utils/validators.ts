@@ -1,3 +1,4 @@
+import InternalError from '../errors/internal.error';
 import * as mongoose from 'mongoose';
 import { validators } from 'echojs-lib';
 import { AccountId, AssetId, ContractId } from '../types/echo';
@@ -25,12 +26,12 @@ export function relationResponse(
 	{ from, to, accounts, contracts, assets, tokens }: RelationParameters,
 ): IOperationRelation {
 	return {
-		from: validateArray(from, isAccountId, {
+		from: validateArray(from, [isAccountId, isContractId], {
 			unique: true,
 			canBeEmpty: false,
 			canBeNotArray: false,
 		}),
-		to: validateArray(to, isAccountId, {
+		to: validateArray(to, [isAccountId, isContractId], {
 			unique: true,
 			canBeEmpty: true,
 			canBeNotArray: true,
@@ -60,7 +61,7 @@ export function relationResponse(
 
 function validateArray<T>(
 	value: T | T[],
-	validator: (value: T) => boolean,
+	validator: {(value: T): boolean} | { (value: T): boolean }[],
 	{
 		unique = true,
 		canBeNotArray = true,
@@ -79,8 +80,15 @@ function validateArray<T>(
 	}
 	if (unique) value = removeDuplicates(<T[]>value);
 	if (validator) {
-		for (const v of value as T[]) {
-			ok(validator(v));
+		if	(Array.isArray(validator)) {
+			for (const v of value as T[]) {
+				const isValid = validator.some((func) => func(v));
+				ok(isValid, new InternalError(`validateArray error ${v} is invalid`));
+			}
+		}  else {
+			for (const v of value as T[]) {
+				ok(validator(v));
+			}
 		}
 	}
 	return <T[]>value;

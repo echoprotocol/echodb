@@ -68,6 +68,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
+	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
 };
 
 export type OperationResult = {
@@ -91,6 +92,7 @@ export type OperationResult = {
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
+	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -120,6 +122,13 @@ interface TransferOperation {
 		nonce: string;
 		message: string;
 	};
+}
+
+interface ContractTransferOperation {
+	fee: IAmount;
+	from: string;
+	to: string;
+	amount: IAmount;
 }
 
 export interface AccountPerson {

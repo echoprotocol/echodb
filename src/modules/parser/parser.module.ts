@@ -13,7 +13,7 @@ import TransactionRepository from '../../repositories/transaction.repository';
 import * as INFO from '../../constants/info.constants';
 import * as ECHO from '../../constants/echo.constants';
 import * as REDIS from '../../constants/redis.constants';
-import { Block } from 'echojs-lib';
+import { IBlockWithVOps } from '../../interfaces/IBlock';
 import { getLogger } from 'log4js';
 import { TDoc } from 'types/mongoose';
 import { ITransactionExtended } from 'interfaces/ITransaction';
@@ -56,13 +56,18 @@ export default class ParserModule extends AbstractModule {
 		}
 	}
 
-	async parseBlock(block: Block) {
+	async parseBlock({ block, map }: IBlockWithVOps) {
 		const dBlock = await this.blockRepository.create(block);
-		for (const tx of block.transactions) {
+		for (const [txIndex, tx] of block.transactions.entries()) {
 			logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
 			const dTx = <TDoc<ITransactionExtended>>await this.transactionRepository.create({ ...tx, _block: dBlock });
-			for (const [i, operation] of tx.operations.entries()) {
-				await this.operationManager.parse(operation, tx.operation_results[i], dTx);
+			for (const [opIndex, operation] of tx.operations.entries()) {
+				await this.operationManager.parse(operation, tx.operation_results[opIndex], dTx);
+			}
+			if (map.has(txIndex)) {
+				for (const { op, result } of map.get(txIndex)) {
+					await this.operationManager.parse(op, result, dTx);
+				}
 			}
 			this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 		}

@@ -1,4 +1,6 @@
 import AbstractOperation from './abstract.operation';
+import AccountRepository from '../../../repositories/account.repository';
+import BalanceRepository from '../../../repositories/balance.repository';
 import ContractBalanceRepository from '../../../repositories/contract.balance.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import ContractService from '../../../services/contract.service';
@@ -10,6 +12,7 @@ import { getLogger } from 'log4js';
 import { IOperationRelation } from '../../../interfaces/IOperation';
 import { IContract } from '../../../interfaces/IContract';
 import AssetRepository from 'repositories/asset.repository';
+import BN from 'bignumber.js';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CALL;
 
@@ -20,6 +23,8 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 
 	constructor(
 		private assetRepository: AssetRepository,
+		private accountRepository: AccountRepository,
+		private balanceRepository: BalanceRepository,
 		private contractBalanceRepository: ContractBalanceRepository,
 		private contractRepository: ContractRepository,
 		private contractService: ContractService,
@@ -31,13 +36,20 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
 		const dContract = await this.contractRepository.findById(body.callee);
 		if (dContract) {
-			const amount = body.value.amount.toString();
+			const amount = new BN(body.value.amount);
 			if (amount) {
 				const dAsset = await this.assetRepository.findById(body.value.asset_id);
+				const dAccount = await this.accountRepository.findById(body.registrar);
 				await this.contractBalanceRepository.updateOrCreateByOwnerAndAsset(
 					dContract,
 					dAsset,
-					amount,
+					amount.toString(),
+					{ append: true },
+				);
+				await this.balanceRepository.updateOrCreateByAccountAndAsset(
+					dAccount,
+					dAsset,
+					amount.negated().toString(),
 					{ append: true },
 				);
 			}

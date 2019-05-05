@@ -1,3 +1,5 @@
+import { Block, BlockVirtualOperation } from 'echojs-lib';
+
 export interface IBlock {
 	previous: string;
 	timestamp: string;
@@ -23,4 +25,9 @@ export interface IBlock {
 			_bba_sign: string;
 		}[];
 	};
+}
+
+export interface IBlockWithVOps {
+	block: Block;
+	map: Map<number, BlockVirtualOperation[]>;
 }

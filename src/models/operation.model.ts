@@ -6,7 +6,7 @@ import { IOperation, IOperationRelation } from '../interfaces/IOperation';
 
 const relationSchema = createSchema<IOperationRelation>({
 	from: [String],
-	to: String,
+	to: [String],
 	accounts: [String],
 	contracts: [String],
 	assets: [String],

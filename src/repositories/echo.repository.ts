@@ -1,7 +1,7 @@
 import EchoConnection from '../connections/echo.connection';
 import * as ECHO from '../constants/echo.constants';
 import * as ERC20 from '../constants/erc20.constants';
-import { Block, Asset } from 'echojs-lib';
+import { Block, Asset, BlockVirtualOperation } from 'echojs-lib';
 import { encode, decode } from 'echojs-contract';
 import { AccountId, ContractId, AssetId } from '../types/echo';
 import RavenHelper from 'helpers/raven.helper';
@@ -22,6 +22,25 @@ export default class EchoRepository {
 			throw error;
 		}
 	}
+
+	async getBlockVirtualOperations(blockNum: number): Promise<[BlockVirtualOperation]> {
+		try {
+			return await this.echoConnection.echo.api.getBlockVirtualOperations(blockNum);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getBlockVirtualOperations');
+		}
+	}
+
+	async getBlockVirtualOperationsMap(blockNum: number): Promise<Map<number, BlockVirtualOperation[]>> {
+		const virtualOperations = await this.echoConnection.echo.api.getBlockVirtualOperations(blockNum);
+		return virtualOperations.reduce((map, operation) => {
+			const txIndex = operation.trx_in_block;
+			if (map.has(txIndex)) map.get(txIndex).push(operation);
+			else map.set(txIndex, [operation]);
+			return map;
+		}, new Map<number, BlockVirtualOperation[]>());
+	}
+
 	async getAssets(assets: string[]): Promise<Asset[]> {
 		try {
 			return await this.echoConnection.echo.api.getAssets(assets);

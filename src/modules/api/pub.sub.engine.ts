@@ -75,9 +75,7 @@ export default class PubSubEngine extends EventEmitter {
 	}
 
 	private async transformBalance(dBalance: TDoc<IBalance>): Promise<TDoc<IBalanceExtended>> {
-		if (isMongoObjectId(dBalance._account)) {
-			dBalance._account = await this.accountRepository.findByMongoId(dBalance._account);
-		}
+		this.resolveRelationField(dBalance, '_account', this.accountRepository);
 		if (dBalance.type === BALANCE.TYPE.TOKEN) {
 			this.resolveRelationField(dBalance, '_contract', this.contractRepository);
 		}

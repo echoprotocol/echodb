@@ -3,6 +3,8 @@ import BalanceRepository from '../repositories/balance.repository';
 import ContractRepository from '../repositories/contract.repository';
 import EchoRepository from '../repositories/echo.repository';
 import TransferRepository from '../repositories/transfer.repository';
+import TransferService from './transfer.service';
+import ContractBalanceRepository from '../repositories/contract.balance.repository';
 import ProcessingError from '../errors/processing.error';
 import * as BALANCE from '../constants/balance.constants';
 import * as CONTRACT from '../constants/contract.constants';
@@ -17,9 +19,7 @@ import { escapeRegExp } from '../utils/format';
 import { ContractResult } from 'echojs-lib';
 import { TDoc, MongoId } from '../types/mongoose';
 import { decode } from 'echojs-contract';
-import TransferService from './transfer.service';
-import { IAccount } from 'interfaces/IAccount';
-import ContractBalanceRepository from 'repositories/contract.balance.repository';
+import { IAccount } from '../interfaces/IAccount';
 
 type GetContractsQuery = { registrar?: object, type?: CONTRACT.TYPE };
 type GetTokensQuery = { _registrar?: any, type?: any, token_info?: SomeOfAny<ITokenInfo> };
@@ -181,13 +181,13 @@ export default class ContractService {
 					return;
 				}
 				await Promise.all([
-					this.updateOrCreate(
+					this.updateOrCreateToken(
 						senderType,
 						dFrom,
 						dContract,
 						sFromAmount,
 					),
-					this.updateOrCreate(
+					this.updateOrCreateToken(
 						receiverType,
 						dTo,
 						dContract,
@@ -198,7 +198,7 @@ export default class ContractService {
 		]);
 	}
 
-	async updateOrCreate(
+	async updateOrCreateToken(
 		type: TRANSFER.PARTICIPANT_TYPE,
 		dOwner: MongoId<IAccount | IContract>,
 		dContract: MongoId<IContract>,

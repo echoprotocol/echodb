@@ -194,6 +194,16 @@ declare module 'echojs-lib' {
 		};
 	}
 
+	export interface BlockVirtualOperation {
+		id: string;
+		op: [number, any];
+		result: [number, {}];
+		block_num: number;
+		trx_in_block: number;
+		op_in_trx: number;
+		virtual_op: number;
+	}
+
 	class API {
 		constructor(cache: Cache, wsApi: WSAPI);
 		getObjects(objectIds: string[], force = false): Promise<object[]>;
@@ -207,6 +217,7 @@ declare module 'echojs-lib' {
 		getAccounts(ids: string[]): Promise<Account[]>;
 		getAccountCount(): Promise<number>;
 		getContractResult(resultId: string): Promise<[number, ContractResult]>;
+		getBlockVirtualOperations(blockNum: number): Promise<[BlockVirtualOperation]>;
 		getAssets(ids: string[]): Promise<Asset[]>;
 		callContractNoChangingState(
 			contractId: string,

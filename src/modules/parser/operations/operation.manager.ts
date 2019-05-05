@@ -20,6 +20,7 @@ import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.ope
 import AssetGlobalSettleOperation from './asset.global.settle.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
+import ContractTransferOperation from './contract.transfer.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -62,6 +63,7 @@ export default class OperationManager {
 		accountUpgradeOperation: AccountUpgradeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
+		contractTransferOperation: ContractTransferOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -84,6 +86,7 @@ export default class OperationManager {
 			assetGlobalSettleOperation,
 			accountUpgradeOperation,
 			transferOperation,
+			contractTransferOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

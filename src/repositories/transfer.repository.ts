@@ -46,7 +46,7 @@ export default class TransferRepository extends AbstractRepository<ITransfer<BAL
 		if (isFromAccount && isToAccount) return TRANSFER.TYPE.ACCOUNT_TO_ACCOUNT;
 		if (isFromAccount && isToContract) return TRANSFER.TYPE.ACCOUNT_TO_CONTRACT;
 		if (isFromContract && isToContract) return TRANSFER.TYPE.CONTRACT_TO_CONTRACT;
-		if (isFromContract && isToContract) return TRANSFER.TYPE.CONTRACT_TO_ACCOUNT;
+		if (isFromContract && isToAccount) return TRANSFER.TYPE.CONTRACT_TO_ACCOUNT;
 
 		throw new InternalError(ERROR.UNKNOWN_TRANSFER_TYPE);
 	}
@@ -146,8 +146,6 @@ export default class TransferRepository extends AbstractRepository<ITransfer<BAL
 		const isFromSet = !!transfer._fromAccount || !!transfer._fromContract;
 		const isToSet = !!transfer._toAccount || !!transfer._toContract;
 		if (!isFromSet && !isToSet) {
-			assert(!dFrom, 'dFrom is required');
-			assert(!dTo, 'dTo is required');
 			this.setParticipants(
 				dFrom, dTo, transfer,
 				transfer.relationType || this.determineRelationType(dFrom.id, dTo.id),
