@@ -6,7 +6,12 @@ import PaginatedResponse from '../types/paginated.response.type';
 import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import * as TOKEN from '../../../constants/token.constants';
-import { GetContractForm, GetContractsForm, NewContractSubscribe } from '../forms/contract.forms';
+import {
+	GetContractForm,
+	GetContractsForm,
+	NewContractSubscribeForm,
+	ContractHistoryUpdatedSubscribeForm,
+} from '../forms/contract.forms';
 import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
@@ -17,7 +22,12 @@ const paginatedContracts = PaginatedResponse(Contract);
 
 interface INewContractSubscriptionFilterArgs {
 	payload: Payload<REDIS.EVENT.NEW_CONTRACT>;
-	args: NewContractSubscribe;
+	args: NewContractSubscribeForm;
+}
+
+interface IContractHistoryUpdatedSubscriptionFilter {
+	payload: Payload<REDIS.EVENT.NEW_OPERATION>;
+	args: ContractHistoryUpdatedSubscribeForm;
 }
 
 @Resolver(Contract)
@@ -70,7 +80,24 @@ export default class ContractResolver extends AbstractResolver {
 	newContract(
 		@Root() dContract: Payload<REDIS.EVENT.NEW_CONTRACT>,
 		// variable needed to be declared to appear in graphQl schema defenition, it's used in the subscription filter
-		@Args() _: NewContractSubscribe,
+		@Args() _: NewContractSubscribeForm,
+	) {
+		return dContract;
+	}
+
+	@Subscription(() => Contract, {
+		topics: REDIS.EVENT.NEW_OPERATION,
+		filter: ({
+			payload: dOperation,
+			args: { contracts },
+		}: IContractHistoryUpdatedSubscriptionFilter) => {
+			if (contracts && !dOperation._relation.contracts.some((relId) => contracts.includes(relId))) return false;
+			return true;
+		},
+	})
+	contractHistoryUpdated(
+		@Root() dContract: Payload<REDIS.EVENT.NEW_OPERATION>,
+		@Args() _: ContractHistoryUpdatedSubscribeForm,
 	) {
 		return dContract;
 	}

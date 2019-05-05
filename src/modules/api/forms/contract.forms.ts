@@ -21,7 +21,13 @@ export class GetContractsForm extends PaginationForm {
 }
 
 @ArgsType()
-export class NewContractSubscribe extends AbstractForm {
+export class NewContractSubscribeForm extends AbstractForm {
 	@Field(() => CONTRACT.TYPE, { nullable: true })
 	contractType: CONTRACT.TYPE;
+}
+
+@ArgsType()
+export class ContractHistoryUpdatedSubscribeForm extends AbstractForm {
+	@Field(() => [ContractId], { nullable: false })
+	contracts: string[];
 }
