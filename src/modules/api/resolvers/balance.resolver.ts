@@ -70,7 +70,7 @@ export default class BalanceResolver extends AbstractResolver {
 	// FieldResolver
 	@FieldResolver()
 	account(@Root('_account') id: Balance['_account']) {
-		return this.resolveMongoField(id, [this.accountRepository, this.contractRepository]);
+		return this.resolveMongoField(id, this.accountRepository);
 	}
 
 	@FieldResolver()
