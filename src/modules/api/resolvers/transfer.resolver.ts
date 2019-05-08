@@ -21,7 +21,7 @@ export default class TransferResolver extends AbstractResolver {
 	@inject static accountRepository: AccountRepository;
 	@inject static assetRepository: AssetRepository;
 	@inject static contractRepository: ContractRepository;
-	@inject static transferrepository: TransferRepository;
+	@inject static transferRepository: TransferRepository;
 
 	constructor(
 		private accountRepository: AccountRepository,
@@ -95,8 +95,8 @@ export default class TransferResolver extends AbstractResolver {
 	static transferCreateFilter(
 		{ payload: dTransfer, args: { from, to, assets, contracts } }: ITransferSubscriptionFilterArgs,
 	) {
-		const sender = this.transferrepository.getSender(dTransfer);
-		const receiver = this.transferrepository.getReceiver(dTransfer);
+		const sender = this.transferRepository.getSender(dTransfer);
+		const receiver = this.transferRepository.getReceiver(dTransfer);
 		if (from && !from.includes(sender.id)) return false;
 		if (to && !to.includes(receiver.id)) return false;
 		if (assets || contracts) {

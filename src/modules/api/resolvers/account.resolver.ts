@@ -6,7 +6,7 @@ import AccountRepository from '../../../repositories/account.repository';
 import PaginatedResponse from '../types/paginated.response.type';
 import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
-import { GetAccountForm, GetAccountsForm, AccountHistoryUpdatedSubscriptionForm } from '../forms/account.forms';
+import { GetAccountForm, GetAccountsForm } from '../forms/account.forms';
 import { Resolver, Query, Args, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
@@ -14,11 +14,6 @@ import { Document } from 'mongoose';
 import { isMongoObjectId } from '../../../utils/validators';
 
 const paginatedAccounts = PaginatedResponse(Account);
-
-interface IAccountHistoryUpdatedSubscription {
-	payload: Payload<REDIS.EVENT.NEW_OPERATION>;
-	args: AccountHistoryUpdatedSubscriptionForm;
-}
 
 @Resolver(Account)
 export default class AccountResolver extends AbstractResolver {
@@ -100,23 +95,6 @@ export default class AccountResolver extends AbstractResolver {
 		@Root() dAccount: Payload<REDIS.EVENT.NEW_ACCOUNT>,
 	) {
 		return dAccount;
-	}
-
-	@Subscription(() => Account, {
-		topics: REDIS.EVENT.NEW_OPERATION,
-		filter: ({
-			payload: dOperation,
-			args: { accounts },
-		}: IAccountHistoryUpdatedSubscription) => {
-			if (!dOperation._relation.accounts.some((relId) => accounts.includes(relId))) return false;
-			return true;
-		},
-	})
-	accountHistoryUpdated(
-		@Root() dOperation: Payload<REDIS.EVENT.NEW_OPERATION>,
-		@Args() _: AccountHistoryUpdatedSubscriptionForm,
-	) {
-		return dOperation;
 	}
 
 }
