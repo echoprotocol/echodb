@@ -5,7 +5,7 @@
 export const NAME = {
 	INFO: 'info',
 	BLOCK: 'block',
-	TANSFER: 'transfer',
+	TRANSFER: 'transfer',
 	TRANSACTION: 'transaction',
 	OPERATION: 'operation',
 	ACCOUNT: 'account',

@@ -12,7 +12,7 @@ const memoSchema = createSchema<IMemo>({
 	message: String,
 });
 
-export default AbstractModel<ITransfer>(MODEL.NAME.TANSFER, {
+export default AbstractModel<ITransfer>(MODEL.NAME.TRANSFER, {
 	_fromAccount: { ref: MODEL.NAME.ACCOUNT, $type: Schema.Types.ObjectId },
 	_fromContract: { ref: MODEL.NAME.CONTRACT, $type: Schema.Types.ObjectId },
 	_toAccount: { ref: MODEL.NAME.ACCOUNT, $type: Schema.Types.ObjectId },

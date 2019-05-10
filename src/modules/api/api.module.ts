@@ -7,6 +7,7 @@ import ContractResolver from './resolvers/contract.resolver';
 import BalanceResolver from './resolvers/balance.resolver';
 import BlockResolver from './resolvers/block.resolver';
 import OperationResolver from './resolvers/operation.resolver';
+import TransferResolver from './resolvers/transfer.resolver';
 import RavenHelper from '../../helpers/raven.helper';
 import RestError from '../../errors/rest.error';
 import FormError from '../../errors/form.error';
@@ -45,6 +46,7 @@ export default class ApiModule extends AbstractModule {
 		private blockResolver: BlockResolver,
 		private contractResolver: ContractResolver,
 		private operationResolver: OperationResolver,
+		private transferResolver: TransferResolver,
 		private transactionResolver: TransactionResolver,
 		private assetResolver: AssetResolver,
 		private contractBalanceResolver: ContractBalanceResolver,
@@ -74,6 +76,7 @@ export default class ApiModule extends AbstractModule {
 			this.balanceResolver,
 			this.blockResolver,
 			this.operationResolver,
+			this.transferResolver,
 			this.transactionResolver,
 			this.assetResolver,
 		];

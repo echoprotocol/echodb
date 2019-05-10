@@ -1,16 +1,20 @@
-import AbstractResolver, { validateSubscriptionArgs } from './abstract.resolver';
+import AbstractResolver, { validateArgs, validateSubscriptionArgs } from './abstract.resolver';
 import AccountRepository from '../../../repositories/account.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import AssetRepository from '../../../repositories/asset.repository';
 import Transfer from '../types/transfer.type';
+import PaginatedResponse from '../types/paginated.response.type';
 import TransferRepository from '../../../repositories/transfer.repository';
+import TransferService from '../../../services/transfer.service';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import * as TRANSFER from '../../../constants/transfer.constants';
-import { TransferSubscribeForm } from '../forms/transfer.forms';
-import { Resolver, Args, FieldResolver, Root, Subscription } from 'type-graphql';
+import { TransferSubscribeForm, GetTransferHistoryForm } from '../forms/transfer.forms';
+import { Resolver, Args, Query, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
+
+const paginatedTransfers = PaginatedResponse(Transfer);
 
 interface ITransferSubscriptionFilterArgs {
 	payload: Payload<REDIS.EVENT.NEW_TRANSFER>;
@@ -18,18 +22,42 @@ interface ITransferSubscriptionFilterArgs {
 }
 @Resolver(Transfer)
 export default class TransferResolver extends AbstractResolver {
+	@inject static transferService: TransferService;
 	@inject static accountRepository: AccountRepository;
 	@inject static assetRepository: AssetRepository;
 	@inject static contractRepository: ContractRepository;
 	@inject static transferRepository: TransferRepository;
 
 	constructor(
+		private transferService: TransferService,
 		private accountRepository: AccountRepository,
 		private assetRepository: AssetRepository,
 		private contractRepository: ContractRepository,
 		private transferRepository: TransferRepository,
 	) {
 		super();
+	}
+
+	// Query
+	@Query(() => paginatedTransfers)
+	@validateArgs(GetTransferHistoryForm)
+	getTransferHistory(
+		@Args() {
+			count,
+			offset,
+			from,
+			to,
+			accounts,
+			contracts,
+			assets,
+			tokens,
+		}: GetTransferHistoryForm,
+	) {
+		return this.transferService.getTransferHistory(
+			count,
+			offset,
+			{ from, to, accounts, contracts, assets, tokens },
+		);
 	}
 
 	// FieldResolver

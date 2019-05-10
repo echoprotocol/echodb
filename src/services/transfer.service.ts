@@ -4,7 +4,7 @@ import TransferRepository from 'repositories/transfer.repository';
 import BalanceRepository from 'repositories/balance.repository';
 import ContractBalanceRepository from 'repositories/contract.balance.repository';
 import * as TRANSFER from '../constants/transfer.constants';
-import { AccountId, ContractId } from '../types/echo';
+import { AccountId, AssetId, ContractId } from '../types/echo';
 import { IAccount } from '../interfaces/IAccount';
 import { IContract } from '../interfaces/IContract';
 import { TDoc, MongoId } from '../types/mongoose';
@@ -14,6 +14,26 @@ type ParticipantDocTypeMap = {
 	[TRANSFER.PARTICIPANT_TYPE.ACCOUNT]: TDoc<IAccount>;
 	[TRANSFER.PARTICIPANT_TYPE.CONTRACT]: TDoc<IContract>;
 };
+
+export enum KEY {
+	FROM = 'from',
+	TO = 'to',
+	ACCOUNTS = 'accounts',
+	CONTRACTS = 'contracts',
+	ASSETS = 'assets',
+	TOKENS = 'tokens',
+}
+
+interface GetHistoryParameters {
+	[KEY.FROM]?: AccountId[];
+	[KEY.TO]?: AccountId[];
+	[KEY.ACCOUNTS]?: AccountId[];
+	[KEY.CONTRACTS]?: ContractId[];
+	[KEY.ASSETS]?: AssetId[];
+	[KEY.TOKENS]?: ContractId[];
+}
+
+type Query = { [x: string]: Query[] | { $in: string[] } | { $or: Query[] } };
 
 export default class TransferService {
 
@@ -61,6 +81,52 @@ export default class TransferService {
 				);
 				break;
 		}
+	}
+
+	async getTransferHistory(count: number, offset: number, params: GetHistoryParameters) {
+		const query: Query = {};
+		const accountsQuery: Query[] = [];
+		const otherQuery: Query[] = [];
+
+		if (params.from) {
+			query.$or = [{ _fromAccount: { $in: params.from } }, { _fromContract: { $in: params.from } }];
+		}
+		if (params.to) {
+			query.$or = [{ _toAccount: { $in: params.to } }, { _toContract: { $in: params.to } }];
+		}
+
+		if (params.accounts) {
+			accountsQuery.push(
+				{ $or: [{ _fromAccount: { $in: params.from } }, { _fromContract: { $in: params.from } }] },
+				{ $or: [{ _toAccount: { $in: params.to } }, { _toContract: { $in: params.to } }] },
+			);
+		}
+
+		if (params.contracts) {
+			otherQuery.push(
+				{ _fromContract: { $in: params.contracts } },
+				{ _toContract: { $in: params.contracts } },
+				{ _contract: { $in: params.contracts } },
+			);
+		}
+		if (params.assets) otherQuery.push({ _asset: { $in: params.assets } });
+
+		if (accountsQuery.length && otherQuery.length) {
+			query.$and = [{ $or: accountsQuery }, { $or: otherQuery }];
+		} else {
+			if (accountsQuery.length) query.$or = accountsQuery;
+			if (otherQuery.length) query.$or = otherQuery;
+		}
+
+		const [items, total] = await Promise.all([
+			this.transferRepository.find(
+				query,
+				null,
+				{ skip: offset, limit: count },
+			),
+			this.transferRepository.count(query),
+		]);
+		return { total, items };
 	}
 
 }
