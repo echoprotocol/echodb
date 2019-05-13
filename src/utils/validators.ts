@@ -26,8 +26,8 @@ export function relationResponse(
 ): IOperationRelation {
 	ok(from.length > 0);
 	if (from.length > 1) from = removeDuplicates(from);
-	for (const account of from) ok(isAccountId(account));
-	if (to) ok(isAccountId(to));
+	for (const account of from) ok(isAccountId(account) || isContractId(account));
+	if (to) ok(isAccountId(to) || isContractId(to));
 	if (contract) ok(isContractId(contract));
 	if (assets) {
 		ok(assets.length > 0);
