@@ -26,3 +26,9 @@ export class GetAccountsForm extends PaginationForm {
 	@Field(() => String, { nullable: true })
 	name: string;
 }
+
+@ArgsType()
+export class AccountHistoryUpdatedSubscriptionForm {
+	@Field(() => [AccountId], { nullable: false })
+	accounts: string[];
+}

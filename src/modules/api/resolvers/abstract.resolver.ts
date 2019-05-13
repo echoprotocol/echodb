@@ -12,25 +12,8 @@ import { isMongoObjectId } from '../../../utils/validators';
 
 export default abstract class AbstractResolver {
 
-	resolveMongoField(value: MongoId, repository: AbstractRepository[] | AbstractRepository) {
-		return isMongoObjectId(value) ? this.findMongoField(value, repository) : value;
-	}
-
-	async findMongoField(value: MongoId, repository: AbstractRepository[] | AbstractRepository) {
-		if (Array.isArray(repository)) {
-			const promises = [];
-			for (let i = 0; i < repository.length; i += 1) {
-				promises.push(repository[i].findByMongoId(value));
-			}
-			const result = await Promise.all(promises);
-			for (let i = 0; i < result.length - 1; i += 1) {
-				if (result[i]) {
-					return result[i];
-				}
-			}
-			return result[result.length - 1];
-		}
-		return repository.findByMongoId(value);
+	resolveMongoField(value: MongoId, repository: AbstractRepository) {
+		return isMongoObjectId(value) ? repository.findByMongoId(value) : value;
 	}
 
 	parseError(errorMap: MethodErrorMap, error: Error) {

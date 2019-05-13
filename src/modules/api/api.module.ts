@@ -12,6 +12,7 @@ import RestError from '../../errors/rest.error';
 import FormError from '../../errors/form.error';
 import PubSubEngine from './pub.sub.engine';
 import TransactionResolver from './resolvers/transaction.resolver';
+import TokenResolver from './resolvers/token.resolver';
 import * as HTTP from '../../constants/http.constants';
 import * as http from 'http';
 import * as config from 'config';
@@ -45,6 +46,7 @@ export default class ApiModule extends AbstractModule {
 		private blockResolver: BlockResolver,
 		private contractResolver: ContractResolver,
 		private operationResolver: OperationResolver,
+		private tokenResolver: TokenResolver,
 		private transactionResolver: TransactionResolver,
 		private assetResolver: AssetResolver,
 		private contractBalanceResolver: ContractBalanceResolver,
@@ -75,6 +77,7 @@ export default class ApiModule extends AbstractModule {
 			this.blockResolver,
 			this.operationResolver,
 			this.transactionResolver,
+			this.tokenResolver,
 			this.assetResolver,
 		];
 		const schema = await buildSchema({
