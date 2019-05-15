@@ -27,9 +27,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
-		// FIXME: rm when bug is fixed
-		const contractResultId = `1.15.${Number.parseInt(result.substr(result.lastIndexOf('.') + 1), 10) - 1}`;
-		const [, contractResult] = await this.echoRepository.getContractResult(contractResultId);
+		const [, contractResult] = await this.echoRepository.getContractResult(result);
 		const { exec_res: {
 			new_address: hexAddr,
 			code_deposit: codeDeposit,

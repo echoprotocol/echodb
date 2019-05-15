@@ -70,15 +70,15 @@ export default class OperationResolver extends AbstractResolver {
 		}: INewOperationSubscriptionFilterArgs) => {
 			const relation = dOperation._relation;
 			if (!relation) return false;
-			if (accounts && !accounts.some((account) => (relation.from && relation.from.includes(account))
-				|| (relation.to && relation.to.includes(account))
-				|| (relation.accounts && relation.accounts.includes(account)))
+			if (accounts && accounts.length && !accounts.some((account) => relation.from.includes(account)
+				|| relation.to.includes(account)
+				|| relation.accounts.includes(account))
 			) {
 				return false;
 			}
-			if (operations && !operations.includes(dOperation.id)) return false;
-			if (assets && relation.assets && !assets.some((asset) => relation.assets.includes(asset))) return false;
-			if (tokens && relation.tokens && !tokens.some((token) => relation.tokens.includes(token))) return false;
+			if (operations && operations.length && !operations.includes(dOperation.id)) return false;
+			if (assets && assets.length && !assets.some((asset) => relation.assets.includes(asset))) return false;
+			if (tokens && tokens.length && !tokens.some((token) => relation.tokens.includes(token))) return false;
 			return true;
 		},
 	})
