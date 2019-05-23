@@ -101,8 +101,7 @@ export default class EchoRepository {
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.NAME);
 		} catch (error) {
-			this.ravenHelper.error(error, 'echoRepository#getTokenName');
-			return null;
+			return '';
 		}
 	}
 
@@ -117,8 +116,7 @@ export default class EchoRepository {
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.SYMBOL);
 		} catch (error) {
-			this.ravenHelper.error(error, 'echoRepository#getTokenSymbol');
-			return null;
+			return '';
 		}
 	}
 
@@ -143,8 +141,7 @@ export default class EchoRepository {
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.DECIMALS).toString();
 		} catch (error) {
-			this.ravenHelper.error(error, 'echoRepository#getTokenDecimals');
-			return null;
+			return '0';
 		}
 	}
 
