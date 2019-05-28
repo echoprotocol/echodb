@@ -50,9 +50,9 @@ export default class OperationService {
 			);
 		}
 
-		if (params.contracts) otherQuery.push({ '_relation.contract': { $in: params.contracts } });
+		if (params.contracts) otherQuery.push({ '_relation.contracts': { $in: params.contracts } });
 		if (params.assets) otherQuery.push({ '_relation.assets': { $in: params.assets } });
-		if (params.tokens) otherQuery.push({ '_relation.token': { $in: params.tokens } });
+		if (params.tokens) otherQuery.push({ '_relation.tokens': { $in: params.tokens } });
 
 		if (accountsQuery.length && otherQuery.length) {
 			query.$and = [{ $or: accountsQuery }, { $or: otherQuery }];
