@@ -1,16 +1,9 @@
-import AbstractModel, { createSchema } from './abstract.model';
+import AbstractModel from './abstract.model';
 import { Schema } from 'mongoose';
-import { ITransfer, IMemo } from '../interfaces/ITransfer';
+import { ITransfer } from '../interfaces/ITransfer';
 import * as MODEL from '../constants/model.constants';
 import * as BALANCE from '../constants/balance.constants';
 import * as TRANSFER from '../constants/transfer.constants';
-
-const memoSchema = createSchema<IMemo>({
-	from: String,
-	to: String,
-	nonce: String,
-	message: String,
-});
 
 export default AbstractModel<ITransfer>(MODEL.NAME.TANSFER, {
 	_fromAccount: { ref: MODEL.NAME.ACCOUNT, $type: Schema.Types.ObjectId },
@@ -22,7 +15,6 @@ export default AbstractModel<ITransfer>(MODEL.NAME.TANSFER, {
 	amount: String,
 	relationType: { enum: Object.values(TRANSFER.TYPE), $type: String },
 	valueType: { enum: Object.values(BALANCE.TYPE), $type: String },
-	memo: memoSchema,
 }, {
 	typeKey: '$type',
 });

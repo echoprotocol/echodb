@@ -53,6 +53,10 @@ export enum OPERATION_ID {
 	DEPOSIT_ETH,
 	WITHDRAW_ETH,
 	APPROVE_WITHDRAW_ETH,
+	CONTRACT_FUND_POOL,
+	CONTRACT_WHITELIST,
+	CONTRACT_ISSUE,
+	CONTRACT_BURN,
 }
 
 export type Operations = {
@@ -124,12 +128,6 @@ interface TransferOperation {
 	to: string;
 	amount: IAmount;
 	extensions: ExtensionsArr;
-	memo?: {
-		from: string;
-		to: string;
-		nonce: string;
-		message: string;
-	};
 }
 
 interface ContractTransferOperation {
@@ -147,7 +145,6 @@ export interface AccountPerson {
 }
 
 export interface AccountOptions {
-	memo_key: string;
 	voting_account: string;
 	delegating_account: string;
 	num_witness: number;
@@ -166,7 +163,7 @@ interface AccountCreateOperation {
 	active: AccountPerson;
 	options: AccountOptions;
 	extensions: ExtensionsObj;
-	ed_key: string;
+	echorand_key: string;
 	owner_special_authority?: Authority;
 	active_special_authority?: Authority;
 	buyback_options?: unknown;
@@ -177,7 +174,7 @@ interface AccountUpdateOperation {
 	account: string;
 	owner?: AccountPerson;
 	active?: AccountPerson;
-	ed_key?: string;
+	echorand_key?: string;
 	new_options?: AccountOptions;
 	owner_special_authority?: Authority;
 	active_special_authority?: Authority;

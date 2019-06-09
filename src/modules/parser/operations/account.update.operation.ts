@@ -7,7 +7,7 @@ import * as REDIS from '../../../constants/redis.constants';
 type OP_ID = ECHO.OPERATION_ID.ACCOUNT_UPDATE;
 type UpdateAccount = {
 	active?: ECHO.AccountPerson;
-	ed_key?: string;
+	echorand_key?: string;
 	options?: ECHO.AccountOptions;
 	// FIXME: are fields updateable ?
 	owner_special_authority?: ECHO.Authority;
@@ -28,7 +28,7 @@ export default class AccountUpdateOperation extends AbstractOperation<OP_ID> {
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const toUpdate: UpdateAccount = {};
 		if (body.active) toUpdate.active = body.active;
-		if (body.ed_key) toUpdate.ed_key = body.ed_key;
+		if (body.echorand_key) toUpdate.echorand_key = body.echorand_key;
 		if (body.new_options) toUpdate.options = body.new_options;
 		const dAccount = await this.accountRepository.findOneAndUpdate(
 			{ id: body.account },

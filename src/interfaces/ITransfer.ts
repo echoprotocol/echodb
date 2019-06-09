@@ -5,13 +5,6 @@ import { IAccount } from './IAccount';
 import { IContract } from './IContract';
 import { IAsset } from './IAsset';
 
-export interface IMemo {
-	from: string;
-	to: string;
-	nonce: string;
-	message: string;
-}
-
 interface IBasic {
 	_fromAccount?: MongoId;
 	_fromContract?: MongoId;
@@ -20,7 +13,6 @@ interface IBasic {
 	relationType: TRANSFER.TYPE;
 	valueType: BALANCE.TYPE;
 	amount: string;
-	memo?: IMemo;
 }
 
 // asset

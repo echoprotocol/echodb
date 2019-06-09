@@ -4,9 +4,6 @@ import { ObjectType, Field } from 'type-graphql';
 export default class AccountOptions {
 
 	@Field()
-	memo_key: string;
-
-	@Field()
 	voting_account: string;
 
 	@Field()

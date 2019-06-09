@@ -25,9 +25,8 @@ declare module 'echojs-lib' {
 			key_auths: unknown[][];
 		   address_auths: unknown[];
 		};
-		ed_key: string;
+		echorand_key: string;
 		options: {
-			 memo_key: string;
 			voting_account: string;
 			delegating_account: string;
 			num_witness: number;

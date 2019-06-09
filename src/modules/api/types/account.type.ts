@@ -16,7 +16,7 @@ export default class Account {
 	@Field() name: string;
 	@Field() owner: AccountAuthority;
 	@Field() active: AccountAuthority;
-	@Field() ed_key: string;
+	@Field() echorand_key: string;
 	@Field() options: AccountOptions;
 	@Field() statistics: string;
 	@Field() top_n_control_flags: number;

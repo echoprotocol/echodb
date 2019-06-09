@@ -39,7 +39,6 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 				_toAccount: dTo,
 				_asset: dAsset,
 				valueType: BALANCE.TYPE.ASSET,
-				memo: body.memo || null,
 			}),
 		]);
 		return this.validateRelation({

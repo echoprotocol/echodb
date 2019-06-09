@@ -30,7 +30,7 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 				referrer_rewards_percentage: body.referrer_percent,
 				name: body.name,
 				active: body.active,
-				ed_key: body.ed_key,
+				echorand_key: body.echorand_key,
 				options: body.options,
 				statistics: '2.6.12', // FIXME: what sould be placed here?
 				whitelisting_accounts: [],

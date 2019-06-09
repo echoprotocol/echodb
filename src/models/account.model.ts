@@ -19,9 +19,8 @@ export default AbstractModel<IAccount>(MODEL.NAME.ACCOUNT, {
 		key_auths: [[Schema.Types.Mixed]],
 	   address_auths: [Schema.Types.Mixed],
 	},
-	ed_key: String,
+	echorand_key: String,
 	options: {
-		memo_key: String,
 		voting_account: String,
 		delegating_account: String,
 		num_witness: Number,

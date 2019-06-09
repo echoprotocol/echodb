@@ -1,7 +1,6 @@
 import Account from '../types/account.type';
 import Contract from '../types/contract.type';
 import Asset from '../types/asset.type';
-import Memo from './transfer.memo.type';
 import StringifiedNumber from './string.number.type';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as TRANSFER from '../../../constants/transfer.constants';
@@ -24,5 +23,4 @@ export default class Transfer {
 	@Field(() => Asset) asset: Asset;
 	@Field(() => Contract) contract: string;
 	@Field(() => BALANCE.TYPE) type: BALANCE.TYPE;
-	@Field({ nullable: true }) memo: Memo;
 }
