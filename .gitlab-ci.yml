@@ -33,11 +33,15 @@ build.develop:
     API_PORT: 16456
     MONGODB_PORT: 16457
   script:
-    - docker-compose -p 645.echodb.develop up -d --build
+    - docker build -t 645.echodb .
+    - docker-compose -p 645.echodb.develop up -d
   only:
     - develop
   tags:
-    - pp-shell
+    - pp-develop
+  environment:
+    name: develop
+    url: https://645-echodb.pixelplex-test.by
 
 
 build.master:
@@ -49,8 +53,12 @@ build.master:
     API_PORT: 26456
     MONGODB_PORT: 26457
   script:
-    - docker-compose -p 645.echodb.master up -d --build
+    - docker build -t 645.echodb .
+    - docker-compose -p 645.echodb.develop up -d
   only:
     - master
   tags:
-    - pp-shell
+    - pp-stage
+  environment:
+    name: master
+    url: https://645-echodb.pixelplexlabs.com
