@@ -4,7 +4,6 @@ LABEL maintainer="Pixelplex inc. <dev@pixelplex.io>"
 
 RUN apk add --update-cache git python make gcc g++ bash
 
-RUN git clone https://github.com/vishnubob/wait-for-it.git
 RUN git config --global http.sslverify "false"
 
 RUN npm config set unsafe-perm true
@@ -13,13 +12,16 @@ WORKDIR /home/
 
 ENV NODE_CONFIG_DIR "../config"
 
-ADD package.json .
+ADD package*.json .
 
 RUN npm install
-
 ADD . .
 RUN npm run build
 
+RUN git clone https://github.com/vishnubob/wait-for-it.git
+
 WORKDIR /home/dist/
+
+RUN ls -la
 
 CMD ["node", "server.js"]

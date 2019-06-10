@@ -58,7 +58,6 @@ typings/
 
 .data
 
-package-lock.json
 .migrate
 config/local.json
 apidoc
