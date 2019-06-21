@@ -1,6 +1,8 @@
 import * as ECHO from '../../../constants/echo.constants';
 import { relationResponse, RelationParameters  } from '../../../utils/validators';
 import { IOperationRelation } from '../../../interfaces/IOperation';
+import { TDoc } from '../../../types/mongoose';
+import { IBlock } from '../../../interfaces/IBlock';
 // FIXME: fix types
 // @ts-ignore
 export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
@@ -9,6 +11,7 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 	abstract parse<Y extends ECHO.KNOWN_OPERATION>(
 		body: ECHO.OPERATION_PROPS<Y>,
 		result: ECHO.OPERATION_RESULT<Y>,
+		dBlock: TDoc<IBlock>,
 	): IOperationRelation | Promise<IOperationRelation>;
 
 	validateRelation(params: RelationParameters) {

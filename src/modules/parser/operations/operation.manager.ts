@@ -31,6 +31,7 @@ import { ITransactionExtended } from '../../../interfaces/ITransaction';
 import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
 import { dateFromUtcIso } from '../../../utils/format';
+import { IBlock } from '../../../interfaces/IBlock';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -109,7 +110,7 @@ export default class OperationManager {
 			_relation: null,
 		};
 		if (this.map[id]) {
-			operation._relation = await this.parseKnownOperation(id, body, result);
+			operation._relation = await this.parseKnownOperation(id, body, result, dTx._block);
 		} else {
 			logger.warn(`Operation ${id} is not supported`);
 			const feePayer = OPERATION.FEE_PAYER_FIELD[id];
@@ -128,9 +129,10 @@ export default class OperationManager {
 		id: T,
 		body: ECHO.OPERATION_PROPS<T>,
 		result: ECHO.OPERATION_RESULT<T>,
+		dBlock: TDoc<IBlock>,
 	): Promise<IOperationRelation> {
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
-		const relation = <IOperationRelation>await this.map[id].parse(body, result);
+		const relation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
 		await this.balanceService.takeFee(relation.from[0], body.fee);
 		return relation;
 	}

@@ -35,4 +35,9 @@ export default class ContractRepository extends AbstractRepository<IContract> {
 		return dContract;
 	}
 
+	async updateAndEmit(dContract: TDoc<IContract>) {
+		await dContract.save();
+		return dContract;
+	}
+
 }

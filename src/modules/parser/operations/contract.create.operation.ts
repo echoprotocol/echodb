@@ -9,6 +9,8 @@ import * as CONTRACT from '../../../constants/contract.constants';
 import * as ECHO from '../../../constants/echo.constants';
 import { ethAddrToEchoId } from '../../../utils/format';
 import { IContract } from '../../../interfaces/IContract';
+import { TDoc } from '../../../types/mongoose';
+import { IBlock } from '../../../interfaces/IBlock';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CREATE;
 
@@ -26,7 +28,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>, dBlock: TDoc<IBlock>) {
 		const [, contractResult] = await this.echoRepository.getContractResult(result);
 		const { exec_res: {
 			new_address: hexAddr,
@@ -39,6 +41,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			});
 		}
 		const contract: IContract = await this.fullfillContract({
+			_block: dBlock,
 			id: ethAddrToEchoId(hexAddr),
 			_registrar: await this.accountRepository.findById(body.registrar),
 			eth_accuracy: body.eth_accuracy,

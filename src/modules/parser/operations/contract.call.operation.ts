@@ -37,9 +37,12 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		const dContract = await this.contractRepository.findById(body.callee);
 		if (dContract) {
 			const amount = new BN(body.value.amount);
+			const dAccount = await this.accountRepository.findById(body.registrar);
+			const [dAsset] = await Promise.all([
+				this.assetRepository.findById(body.value.asset_id),
+				this.contractService.updateContractCallingAccounts(dContract, dAccount._id),
+			]);
 			if (amount) {
-				const dAsset = await this.assetRepository.findById(body.value.asset_id);
-				const dAccount = await this.accountRepository.findById(body.registrar);
 				await this.contractBalanceRepository.updateOrCreateByOwnerAndAsset(
 					dContract,
 					dAsset,

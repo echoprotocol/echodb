@@ -16,6 +16,10 @@ export default abstract class AbstractResolver {
 		return isMongoObjectId(value) ? repository.findByMongoId(value) : value;
 	}
 
+	resolveArrayMongoField(value: MongoId[], repository: AbstractRepository) {
+		return value.every((v) => isMongoObjectId(v)) ? value.map((v) => repository.findByMongoId(v)) : value;
+	}
+
 	parseError(errorMap: MethodErrorMap, error: Error) {
 		if (!(error instanceof ProcessingError)) throw error;
 		const details = errorMap[error.message];

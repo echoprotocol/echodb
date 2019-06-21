@@ -77,7 +77,7 @@ export default class ContractService {
 			this.contractRepository.find(query, null, { limit: count, skip: offset }),
 			this.contractRepository.count(query),
 		]);
-		return { items, total };
+		return { total, items };
 	}
 
 	// FIXME: refactor
@@ -220,6 +220,16 @@ export default class ContractService {
 				);
 				break;
 		}
+	}
+
+	async updateContractCallingAccounts(dContract: TDoc<IContract>, mongoAccountId: MongoId<IAccount>) {
+		if (Array.isArray(dContract._calling_accounts)) {
+			dContract._calling_accounts.push(mongoAccountId);
+		} else {
+			dContract._calling_accounts = [mongoAccountId];
+		}
+
+		this.contractRepository.updateAndEmit(dContract);
 	}
 
 }

@@ -1,4 +1,5 @@
 import AccountRepository from '../../../repositories/account.repository';
+import BlockRepository from '../../../repositories/block.repository';
 import AbstractResolver, { handleError } from './abstract.resolver';
 import Contract from '../types/contract.type';
 import ContractService, { ERROR as CONTRACT_SERVICE_ERROR } from '../../../services/contract.service';
@@ -33,10 +34,12 @@ interface IContractHistoryUpdatedSubscriptionFilter {
 @Resolver(Contract)
 export default class ContractResolver extends AbstractResolver {
 	@inject static accountRepository: AccountRepository;
+	@inject static blockRepository: BlockRepository;
 	@inject static contractService: ContractService;
 
 	constructor(
 		private accountRepository: AccountRepository,
+		private blockRepository: BlockRepository,
 		private contractService: ContractService,
 	) {
 		super();
@@ -60,6 +63,16 @@ export default class ContractResolver extends AbstractResolver {
 	@FieldResolver()
 	registrar(@Root('_registrar') id: Contract['_registrar']) {
 		return this.resolveMongoField(id, this.accountRepository);
+	}
+
+	@FieldResolver()
+	calling_accounts(@Root('_calling_accounts') ids: Contract['_calling_accounts']) {
+		return this.resolveArrayMongoField(ids, this.accountRepository);
+	}
+
+	@FieldResolver()
+	block(@Root('_block') id: Contract['_block']) {
+		return this.resolveMongoField(id, this.blockRepository);
 	}
 
 	@FieldResolver()

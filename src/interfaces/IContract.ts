@@ -15,5 +15,7 @@ export interface IContract {
 	supported_asset_id: string;
 	type: CONTRACT.TYPE;
 	token_info?: ITokenInfo;
+	_block: MongoId;
+	_calling_accounts?: MongoId[];
 	problem: boolean;
 }
