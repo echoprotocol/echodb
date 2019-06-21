@@ -224,6 +224,9 @@ export default class ContractService {
 
 	async updateContractCallingAccounts(dContract: TDoc<IContract>, mongoAccountId: MongoId<IAccount>) {
 		if (Array.isArray(dContract._calling_accounts)) {
+			if (dContract._calling_accounts.some((id) => id.toString() === mongoAccountId.toString())) {
+				return;
+			}
 			dContract._calling_accounts.push(mongoAccountId);
 		} else {
 			dContract._calling_accounts = [mongoAccountId];
