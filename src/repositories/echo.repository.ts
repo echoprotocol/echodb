@@ -18,8 +18,7 @@ export default class EchoRepository {
 		try {
 			return await this.echoConnection.echo.api.getBlock(blockNum);
 		} catch (error) {
-			// TODO: raven
-			throw error;
+			throw this.ravenHelper.error(error, 'echoRepository#getBlock');
 		}
 	}
 

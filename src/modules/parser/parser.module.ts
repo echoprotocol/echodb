@@ -57,21 +57,29 @@ export default class ParserModule extends AbstractModule {
 	}
 
 	async parseBlock({ block, map }: IBlockWithVOps) {
-		const dBlock = await this.blockRepository.create(block);
-		for (const [txIndex, tx] of block.transactions.entries()) {
-			logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
-			const dTx = <TDoc<ITransactionExtended>>await this.transactionRepository.create({ ...tx, _block: dBlock });
-			for (const [opIndex, operation] of tx.operations.entries()) {
-				await this.operationManager.parse(operation, tx.operation_results[opIndex], dTx);
-			}
-			if (map.has(txIndex)) {
-				for (const { op, result } of map.get(txIndex)) {
-					await this.operationManager.parse(op, result, dTx);
+		try {
+			const dBlock = await this.blockRepository.create(block);
+			for (const [txIndex, tx] of block.transactions.entries()) {
+				logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
+				const dTx = <TDoc<ITransactionExtended>>await this.transactionRepository.create({
+					...tx,
+					_block: dBlock,
+				});
+				for (const [opIndex, operation] of tx.operations.entries()) {
+					await this.operationManager.parse(operation, tx.operation_results[opIndex], dTx);
 				}
+				if (map.has(txIndex)) {
+					for (const { op, result } of map.get(txIndex)) {
+						await this.operationManager.parse(op, result, dTx);
+					}
+				}
+				this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 			}
-			this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
+			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
+		} catch (error) {
+			logger.error(error);
+			return;
 		}
-		this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
 	}
 
 	async syncAllAccounts() { // use request limiter to retry failed

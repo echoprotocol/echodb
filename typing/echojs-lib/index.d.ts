@@ -32,7 +32,7 @@ declare module 'echojs-lib' {
 			num_witness: number;
 			num_committee: number;
 			votes: unknown[];
-		   extensions: unknown[];
+			extensions: unknown[];
 		};
 		statistics: string;
 		whitelisting_accounts: unknown[];
@@ -43,6 +43,7 @@ declare module 'echojs-lib' {
 		owner_special_authority: [number, {}];
 		active_special_authority: [number, {}];
 		top_n_control_flags: number;
+		extensions: unknown[];
 	}
 
 	export interface Asset {

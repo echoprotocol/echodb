@@ -375,6 +375,7 @@ interface ContractCreateOperation {
 	code: string;
 	supported_asset_id?: string;
 	eth_accuracy: true;
+	extensions: ExtensionsArr;
 }
 
 interface ContractCallOperation {
@@ -383,4 +384,5 @@ interface ContractCallOperation {
 	value: IAmount;
 	code: string;
 	callee: string;
+	extensions: ExtensionsArr;
 }
