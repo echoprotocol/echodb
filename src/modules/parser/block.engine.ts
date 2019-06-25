@@ -107,11 +107,15 @@ export default class BlockEngine extends EventEmitter {
 	}
 
 	private async pureGet(num: number) {
-		const [block, blockAndVOps] = await Promise.all([
-			this.echoRepository.getBlock(num),
-			this.echoRepository.getBlockVirtualOperationsMap(num),
-		]);
-		return { block, map: blockAndVOps } as IBlockWithVOps;
+		try {
+			const [block, blockAndVOps] = await Promise.all([
+				this.echoRepository.getBlock(num),
+				this.echoRepository.getBlockVirtualOperationsMap(num),
+			]);
+			return { block, map: blockAndVOps } as IBlockWithVOps;
+		} catch (error) {
+			logger.error(error);
+		}
 	}
 
 	// speedometer
