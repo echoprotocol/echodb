@@ -8,7 +8,7 @@ services:
 
 
   mongo:
-    image: mongo:latest
+    image: mongo:4.0
     container_name: "echodb.mongo.${STAGE}"
     volumes:
       - ~/.docker-ci/mongo-db/echodb.${STAGE}:/data/db
