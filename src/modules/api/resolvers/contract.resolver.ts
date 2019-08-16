@@ -109,10 +109,12 @@ export default class ContractResolver extends AbstractResolver {
 		},
 	})
 	contractHistoryUpdated(
-		@Root() dContract: Payload<REDIS.EVENT.NEW_OPERATION>,
-		@Args() _: ContractHistoryUpdatedSubscribeForm,
+		@Root() dOperation: Payload<REDIS.EVENT.NEW_OPERATION>,
+		@Args() args: ContractHistoryUpdatedSubscribeForm,
 	) {
-		return dContract;
+		const { contracts } = args;
+		const contractId = contracts.find((id) => dOperation._relation.contracts.includes(id));
+		return this.contractService.getContract(contractId);
 	}
 
 }

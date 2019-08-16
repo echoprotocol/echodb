@@ -17,6 +17,10 @@ export default abstract class AbstractResolver {
 	}
 
 	resolveArrayMongoField(value: MongoId[], repository: AbstractRepository) {
+		if (!value || !Array.isArray(value)) {
+			return value;
+		}
+
 		return value.every((v) => isMongoObjectId(v)) ? value.map((v) => repository.findByMongoId(v)) : value;
 	}
 
