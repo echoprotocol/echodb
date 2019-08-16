@@ -5,13 +5,8 @@ import { Schema } from 'mongoose';
 
 export default AbstractModel<IAccount>(MODEL.NAME.ACCOUNT, {
 	id: String,
-	membership_expiration_date: String,
 	registrar: String,
-	referrer: String,
-	lifetime_referrer: String,
 	network_fee_percentage: Number,
-	lifetime_referrer_fee_percentage: Number,
-	referrer_rewards_percentage: Number,
 	name: String,
 	active: {
 		weight_threshold: Number,
@@ -23,7 +18,6 @@ export default AbstractModel<IAccount>(MODEL.NAME.ACCOUNT, {
 	options: {
 		voting_account: String,
 		delegating_account: String,
-		num_witness: Number,
 		num_committee: Number,
 		votes: [Schema.Types.Mixed],
 	   extensions: [Schema.Types.Mixed],

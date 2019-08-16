@@ -2,7 +2,7 @@ import { ok } from 'assert';
 
 const SHORT_TO_ECHO: { [x: string]: string } = {
 	'00': '2',
-	'01': '14',
+	'01': '9',
 };
 // TODO: throw UtilError
 export function ethAddrToEchoId(addr: string) {
