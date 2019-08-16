@@ -14,23 +14,23 @@ export default class Contract {
 	id: string;
 
 	_registrar: TDoc<IAccount>;
-	@Field(() => Account)
+	@Field(() => Account, { nullable: true })
 	registrar: Account;
 
-	@Field()
+	@Field({ nullable: true })
 	eth_accuracy: boolean;
 
 	@Field({ nullable: true })
 	supported_asset_id: string;
 
-	@Field()
+	@Field({ nullable: true })
 	type: CONTRACT.TYPE;
 
 	@Field(() => Token, { nullable: true })
 	token: Token;
 
 	_block: TDoc<IBlock>;
-	@Field(() => Block)
+	@Field(() => Block, { nullable: true })
 	block: Block;
 
 	_calling_accounts: TDoc<IAccount>[];
