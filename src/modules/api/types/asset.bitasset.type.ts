@@ -10,7 +10,6 @@ export default class AssetBitasset {
 	@Field() force_settled_volume: number;
 	@Field() settlement_fund: number;
 	@Field(() => [String]) feeds: unknown[];
-	@Field() is_prediction_market: boolean;
 	@Field(() => AssetBitassetOptions) options: AssetBitassetOptions;
 	@Field(() => AssetBitassetFeed) current_feed: AssetBitassetFeed;
 	@Field(() => AssetPrice) settlement_price: AssetPrice;

@@ -55,7 +55,6 @@ export default class AssetCreateOperation extends AbstractOperation<OP_ID> {
 				...bitAssetDefaultFields,
 				id: assetData.bitasset.id,
 				current_feed_publication_time:  dateFromUtcIso(assetData.bitasset.current_feed_publication_time),
-				is_prediction_market: body.is_prediction_market,
 				options: body.bitasset_opts,
 			} : null,
 			id: result,

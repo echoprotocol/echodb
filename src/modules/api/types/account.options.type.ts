@@ -10,9 +10,6 @@ export default class AccountOptions {
 	delegating_account: string;
 
 	@Field()
-	num_witness: number;
-
-	@Field()
 	num_committee: number;
 
 	@Field(() => [String])

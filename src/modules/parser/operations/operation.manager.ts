@@ -1,5 +1,4 @@
 import AbstractOperation from './abstract.operation';
-import AccountUpgradeOperation from './account.upgrade.operation';
 import BalanceService from '../../../services/balance.service';
 import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
@@ -13,11 +12,8 @@ import AssetBitassetUpdateOperation from './asset.bitasset.update.operation';
 import AssetIssueOperation from './asset.issue.operation';
 import AssetReserverOperation from './asset.reserve.operation';
 import AssetFundFeePoolOperation from './asset.fund.fee.pool.operation';
-import AssetSettleOperation from './asset.settle.operation';
 import AssetPublishFeedOperation from './asset.publish.feed.operation';
-import AssetSettleCancelOperation from './asset.settle.cancel.operation';
 import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
-import AssetGlobalSettleOperation from './asset.global.settle.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
@@ -55,13 +51,9 @@ export default class OperationManager {
 		assetBitassetUpdateOperation: AssetBitassetUpdateOperation,
 		assetIssueOperation: AssetIssueOperation,
 		assetReserveOperation: AssetReserverOperation,
-		assetSettleOperation: AssetSettleOperation,
 		assetFundFeePoolOperation: AssetFundFeePoolOperation,
 		assetPublishFeedOperation: AssetPublishFeedOperation,
-		assetSettleCancelOperation: AssetSettleCancelOperation,
 		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
-		assetGlobalSettleOperation: AssetGlobalSettleOperation,
-		accountUpgradeOperation: AccountUpgradeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
@@ -78,14 +70,10 @@ export default class OperationManager {
 			contractCallOperation,
 			assetIssueOperation,
 			assetReserveOperation,
-			assetSettleOperation,
 			assetFundFeePoolOperation,
 			assetPublishFeedOperation,
-			assetSettleCancelOperation,
 			assetClaimFeesOperation,
 			assetUpdateFeedProducersOperation,
-			assetGlobalSettleOperation,
-			accountUpgradeOperation,
 			transferOperation,
 			contractTransferOperation,
 		];

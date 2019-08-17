@@ -3,17 +3,17 @@ import { Block, BlockVirtualOperation } from 'echojs-lib';
 export interface IBlock {
 	previous: string;
 	timestamp: string;
-	witness: string;
 	account: string;
+	delegate: string;
 	transaction_merkle_root: string;
 	state_root_hash: string;
 	result_root_hash: string;
 	extensions: unknown[];
-	witness_signature: string;
 	ed_signature: string;
 	verifications: unknown[];
 	round: number;
 	rand: string;
+	vm_root: string[];
 	cert: {
 		_rand: string;
 		_block_hash: string;

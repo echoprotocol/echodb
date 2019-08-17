@@ -1,12 +1,7 @@
 export interface IAccount {
 	id: string;
-	membership_expiration_date: string;
 	registrar: string;
-	referrer: string;
-	lifetime_referrer: string;
 	network_fee_percentage: number;
-	lifetime_referrer_fee_percentage: number;
-	referrer_rewards_percentage: number;
 	name: string;
 	active: {
 		weight_threshold: number;
@@ -18,7 +13,6 @@ export interface IAccount {
 	options: {
 		voting_account: string;
 		delegating_account: string;
-		num_witness: number;
 		num_committee: number;
 		votes: unknown[];
 		extensions: unknown[];
