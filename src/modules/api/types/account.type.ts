@@ -6,13 +6,8 @@ import { ObjectType, Field } from 'type-graphql';
 @ObjectType()
 export default class Account {
 	@Field(() => AccountId) id: string;
-	@Field() membership_expiration_date: string;
 	@Field(() => Account) registrar: string;
-	@Field(() => Account) referrer: string;
-	@Field(() => Account) lifetime_referrer: string;
 	@Field() network_fee_percentage: number;
-	@Field() lifetime_referrer_fee_percentage: number;
-	@Field() referrer_rewards_percentage: number;
 	@Field() name: string;
 	@Field() owner: AccountAuthority;
 	@Field() active: AccountAuthority;
