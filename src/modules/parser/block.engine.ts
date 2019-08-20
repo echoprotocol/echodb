@@ -42,8 +42,8 @@ export default class BlockEngine extends EventEmitter {
 	}
 
 	// TODO: enable caching when second iterator on live stage
-	private subscribeToNewBlock() {
-		this.echoRepository.subscribeToNewBlock((num: number) => {
+	private async subscribeToNewBlock() {
+		await this.echoRepository.subscribeToNewBlock((num: number) => {
 			this.last = num;
 			this.ee.emit(EVENT.NEW_BLOCK);
 		});
@@ -55,13 +55,27 @@ export default class BlockEngine extends EventEmitter {
 		await this.infoRepository.set(INFO.KEY.BLOCK_TO_PARSE_NUMBER, this.current);
 	}
 
+	// private async *fastParsing(): AsyncIterableIterator<IBlockWithVOps> {
+	// 	console.log(1);
+	// 	this.stage = STAGE.HISTORY;
+	// 	this.enableSpeedo();
+	// 	while (this.current < this.last) {
+	// 		this.caching(this.current);
+	// 		yield this.get(this.current);
+	// 	}
+	//
+	// 	this.disableSpeedo();
+	// 	this.stage = STAGE.LIVE;
+	// 	logger.info(`${STAGE.LIVE} stage has come`);
+	// }
+
 	public async *start(current?: number): AsyncIterableIterator<IBlockWithVOps> {
 		this.current = current
 			? current
 			: await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
 		this.last = await this.echoRepository.getLastBlockNum(); // Not needed
-		this.subscribeToNewBlock();
-
+		await this.subscribeToNewBlock();
+		// this.fastParsing();
 		this.stage = STAGE.HISTORY;
 		this.enableSpeedo();
 		while (this.current < this.last) {
@@ -74,6 +88,20 @@ export default class BlockEngine extends EventEmitter {
 		logger.info(`${STAGE.LIVE} stage has come`);
 		while (true) {
 			await this.waitForNewBlock();
+			console.log('LAST', this.last, 'CURRENT', this.current);
+			if ((this.last - this.current) > 1) {
+				// this.fastParsing();
+				this.stage = STAGE.HISTORY;
+				this.enableSpeedo();
+				while (this.current < this.last) {
+					this.caching(this.current);
+					yield this.get(this.current);
+				}
+
+				this.disableSpeedo();
+				this.stage = STAGE.LIVE;
+				logger.info(`${STAGE.LIVE} stage has come`);
+			}
 			yield this.pureGet(this.current);
 		}
 	}

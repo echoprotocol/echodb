@@ -154,15 +154,18 @@ export default class EchoRepository {
 	}
 
 	// FIXME: refactor
-	subscribeToNewBlock(cb: (num: number) => void) {
-		this.echoConnection.echo.subscriber.setStatusSubscribe(ECHO.CONNECT_STATUS, () => {
-			this.echoConnection.echo.api.getObject('2.1.0');
-		});
-		this.echoConnection.echo.api.getObject('2.1.0');
+	async subscribeToNewBlock(cb: (num: number) => void) {
 		this.echoConnection.echo.subscriber.setGlobalSubscribe((data: any) => {
+			if (data[0].id === '2.1.0') {
+				console.log(data[0].head_block_number);
+			}
 			if (!data || !data[0] || data[0].id !== '2.1.0') return;
 			cb(data[0].head_block_number);
 		});
+		this.echoConnection.echo.subscriber.setStatusSubscribe(ECHO.CONNECT_STATUS, async () => {
+			await this.echoConnection.echo.api.getObject('2.1.0');
+		});
+		await this.echoConnection.echo.api.getObject('2.1.0');
 	}
 
 	getContractResult(resultId: string) {
