@@ -20,14 +20,8 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 		const dAccount = await this.accountRepository.findById(result)
 			|| await this.accountRepository.create({
 				id: result,
-				// TODO: set real expire date
-				membership_expiration_date: new Date().toISOString(),
 				registrar: body.registrar,
-				referrer: body.referrer,
-				lifetime_referrer: body.referrer,
 				network_fee_percentage: 2000,
-				lifetime_referrer_fee_percentage: 3000,
-				referrer_rewards_percentage: body.referrer_percent,
 				name: body.name,
 				active: body.active,
 				echorand_key: body.echorand_key,
@@ -44,7 +38,7 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 		this.redisConnection.emit(REDIS.EVENT.NEW_ACCOUNT, dAccount);
 		return this.validateRelation({
 			from: [body.registrar],
-			accounts: [result, body.referrer],
+			accounts: [result],
 			assets: [body.fee.asset_id],
 		});
 	}

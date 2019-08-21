@@ -11,13 +11,8 @@ declare module 'echojs-lib' {
 
 	export interface Account {
 		id: string;
-		membership_expiration_date: string;
 		registrar: string;
-		referrer: string;
-		lifetime_referrer: string;
 		network_fee_percentage: number;
-		lifetime_referrer_fee_percentage: number;
-		referrer_rewards_percentage: number;
 		name: string;
 		active: {
 			weight_threshold: number;
@@ -29,7 +24,6 @@ declare module 'echojs-lib' {
 		options: {
 			voting_account: string;
 			delegating_account: string;
-			num_witness: number;
 			num_committee: number;
 			votes: unknown[];
 			extensions: unknown[];
@@ -39,7 +33,6 @@ declare module 'echojs-lib' {
 		blacklisting_accounts: unknown[];
 		whitelisted_accounts: unknown[];
 		blacklisted_accounts: unknown[];
-		cashback_vb: string;
 		owner_special_authority: [number, {}];
 		active_special_authority: [number, {}];
 		top_n_control_flags: number;
@@ -54,10 +47,12 @@ declare module 'echojs-lib' {
 
 	export interface BlockHeader { // virtual export
 		previous: string;
+		round: number;
 		timestamp: string;
-		witness: string;
 		account: string;
+		delegate: string;
 		transaction_merkle_root: string;
+		vm_root: string[];
 		state_root_hash: string;
 		result_root_hash: string;
 		extensions: unknown[];
@@ -80,17 +75,17 @@ declare module 'echojs-lib' {
 	export interface Block{ // virtual export
 		previous: string;
 		timestamp: string;
-		witness: string;
 		account: string;
+		delegate: string;
 		transaction_merkle_root: string;
 		state_root_hash: string;
 		result_root_hash: string;
 		extensions: unknown[];
-		witness_signature: string;
 		ed_signature: string;
 		verifications: unknown[];
 		round: number;
 		rand: string;
+		vm_root: string[];
 		cert: {
 			_rand: string;
 			_block_hash: string;
@@ -105,12 +100,8 @@ declare module 'echojs-lib' {
 		force_settled_volume: number;
 		settlement_fund: number;
 		feeds: unknown[];
-		is_prediction_market: boolean;
 		options: {
 			short_backing_asset: string;
-			maximum_force_settlement_volume: number;
-			force_settlement_offset_percent: number;
-			force_settlement_delay_sec: number;
 			feed_lifetime_sec: number;
 			minimum_feeds: number;
 		};
@@ -129,8 +120,6 @@ declare module 'echojs-lib' {
 		issuer: string;
 		options: {
 			max_supply: string;
-			market_fee_percent: number;
-			max_market_fee: string;
 			issuer_permissions: number;
 			flags: number;
 			core_exchange_rate: {
@@ -145,8 +134,6 @@ declare module 'echojs-lib' {
 			};
 			whitelist_authorities: unknown[];
 			blacklist_authorities: unknown[];
-			whitelist_markets: unknown[];
-			blacklist_markets: unknown[];
 			description: string;
 		};
 		dynamic_asset_data_id: string;
@@ -171,7 +158,6 @@ declare module 'echojs-lib' {
 		accounts_registered_this_interval: number;
 		recently_missed_count: number;
 		current_aslot: number;
-		recent_slots_filled: string;
 		dynamic_flags: number;
 		last_irreversible_block_num: number;
 	}

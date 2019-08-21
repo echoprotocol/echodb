@@ -56,20 +56,6 @@ export default class AccountResolver extends AbstractResolver {
 		return this.accountRepository.findById(<string>id);
 	}
 
-	@FieldResolver(() => Account)
-	referrer(@Root('referrer') id: string | Document) {
-		if (isMongoObjectId(id)) return this.accountRepository.findByMongoId(id);
-		if (this.accountRepository.isChild(id)) return id;
-		return this.accountRepository.findById(<string>id);
-	}
-
-	@FieldResolver(() => Account)
-	lifetime_referrer(@Root('lifetime_referrer') id: string | Document) {
-		if (isMongoObjectId(id)) return this.accountRepository.findByMongoId(id);
-		if (this.accountRepository.isChild(id)) return id;
-		return this.accountRepository.findById(<string>id);
-	}
-
 	// Subscription
 	@Subscription(() => Account, {
 		topics: REDIS.EVENT.ACCOUNT_UPDATED,
