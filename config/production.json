@@ -1,0 +1,11 @@
+{
+	"db": {
+		"host": "mongo",
+		"port": "27017",
+		"protocol": "mongodb"
+	},
+	"redis": {
+		"host": "redis",
+		"channel": "echodb"
+	}
+}

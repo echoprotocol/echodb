@@ -1,10 +1,17 @@
 {
 	"raven": {
-		"enabled": true,
-		"config": "https://84b04d393039417694c270e2811d9fbb@sentry.pixelplex.by/22"
+		"enabled": false,
+		"config": ""
 	},
 	"api": {
 		"playground": true,
 		"introspection": true
+	},
+	"logger": {
+		"categories": {
+			"default": {
+				"level": "all"
+			}
+		}
 	}
 }
