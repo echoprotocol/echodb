@@ -1,5 +1,5 @@
 {
-	"env": "NODE_ENV",
+	"env": "NODE_APP_INSTANCE",
 	"echo": {
 		"url": "ECHO_URL"
 	},
