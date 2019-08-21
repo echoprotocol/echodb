@@ -1,64 +1,41 @@
 stages:
-  - test
   - build
-
-test:
-  image: node:10.15-alpine
-  stage: test
-  variables:
-    DATABASE_TEST_URL: "mongodb://mongo/dbname"
-  services:
-    - mongo
-  cache:
-    key: $CI_COMMIT_REF_NAME
-    paths:
-    - node_modules
-  script:
-    - npm config set unsafe-perm true
-    - apk --no-cache add make gcc g++ python git
-    - npm i
-    - npm run audit
-    - npm run lint
-#    - npm run test
-  tags:
-    - docker
+  - deploy
 
 
-build.develop:
+build:
   stage: build
   variables:
-    NODE_APP_INSTANCE: development
-    NODE_ENV: development
-    STAGE: develop
-    API_PORT: 16456
-    MONGODB_PORT: 16457
+    NODE_APP_INSTANCE: $CI_COMMIT_REF_NAME
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build -t 645.echodb .
-    - docker-compose -p 645.echodb.develop up -d
-  only:
-    - develop
-  tags:
-    - pp-develop
-  environment:
-    name: develop
-    url: https://645-echodb.pixelplex-test.by
-
-
-build.master:
-  stage: build
-  variables:
-    NODE_APP_INSTANCE: master
-    NODE_ENV: master
-    STAGE: master
-    API_PORT: 26456
-    MONGODB_PORT: 26457
-  script:
-    - docker build -t 645.echodb .
-    - docker-compose -p 645.echodb.develop up -d
+    - docker build --cache-from $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   only:
     - master
+    - develop
   tags:
-    - pp-stage
-  environment:
-    name: master
-    url: https://645-echodb.pixelplexlabs.com
+    - echo-linux
+
+
+deploy:
+  stage: deploy
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - if [ "$CI_COMMIT_REF_NAME" != "master" ]; then export PORT=36456; fi
+    - if [ "$CI_COMMIT_REF_NAME" != "master" ]; then export MONGODB_ADDR="127.0.0.1:36457"; fi
+  variables:
+    CI_FULL_REGISTRY: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    PORT: 26456
+    NODE_APP_INSTANCE: $CI_COMMIT_REF_NAME
+    NODE_ENV: production
+    MONGODB_ADDR: 127.0.0.1:26457
+  script:
+    - docker-compose -p echodb-$CI_COMMIT_REF_NAME up -d
+  only:
+    - develop
+    - master
+  tags:
+    - echo-linux

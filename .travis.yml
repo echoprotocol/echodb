@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - "10"
+
+
+stages:
+  - audit
+  - test
+
+
+jobs:
+  include:
+    - stage: audit
+      if: tag IS blank
+      name: "Test lint and audit"
+      script:
+        - npm run lint
+        - audit-ci --moderate
+    - stage: test
+      if: branch = master
+      name: "Run unit testing"
+      script:
+        - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then npm test; fi'
