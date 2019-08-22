@@ -1,0 +1,9 @@
+{
+	"echo": {
+		"url": "wss://devnet.echo-dev.io/ws"
+	},
+	"raven": {
+		"enabled": true,
+		"config": "https://84b04d393039417694c270e2811d9fbb@sentry.pixelplex.by/22"
+	}
+}

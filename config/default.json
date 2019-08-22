@@ -1,11 +1,10 @@
 {
-	"env": "development",
 	"db": {
 		"user": "",
 		"password": "",
 		"host": "127.0.0.1",
 		"port": "27017",
-		"database": "",
+		"database": "echodb",
 		"protocol": "mongodb"
 	},
 	"redis": {
@@ -38,7 +37,7 @@
 				"appenders": [
 					"console"
 				],
-				"level": "all"
+				"level": "info"
 			},
 			"parser.block": {
 				"appenders": [

@@ -11,10 +11,11 @@ RUN npm config set unsafe-perm true
 WORKDIR /home/
 
 ENV NODE_CONFIG_DIR "../config"
+ENV NODE_ENV "production"
 
 ADD package*.json ./
 
-RUN npm install
+RUN NODE_ENV=development npm install
 ADD . .
 RUN npm run build
 
