@@ -44,10 +44,8 @@ export default class ParserModule extends AbstractModule {
 			await this.syncAllAccounts();
 			await this.syncCoreAsset();
 		}
-		console.log('from', from);
 		for await (const block of this.blockEngine.start(from)) {
 			try {
-				console.log('init', block.block.round);
 				await this.parseBlock(block);
 				await this.blockEngine.finished();
 			} catch (error) {
