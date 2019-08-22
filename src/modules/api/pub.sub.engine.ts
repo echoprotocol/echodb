@@ -80,26 +80,26 @@ export default class PubSubEngine extends EventEmitter {
 	}
 
 	private async transformBalance(dBalance: TDoc<IBalance>): Promise<TDoc<IBalanceExtended>> {
-		this.resolveRelationField(dBalance, '_account', this.accountRepository);
+		await this.resolveRelationField(dBalance, '_account', this.accountRepository);
 		if (dBalance.type === BALANCE.TYPE.TOKEN) {
-			this.resolveRelationField(dBalance, '_contract', this.contractRepository);
+			await this.resolveRelationField(dBalance, '_contract', this.contractRepository);
 		}
 		if (dBalance.type === BALANCE.TYPE.ASSET) {
-			this.resolveRelationField(dBalance, '_asset', this.assetRepository);
+			await this.resolveRelationField(dBalance, '_asset', this.assetRepository);
 		}
 		return <TDoc<IBalanceExtended>>dBalance;
 	}
 
 	private async transformTransfer(dTransfer: TDoc<ITransfer>): Promise<TDoc<ITransferExtended>> {
-		this.resolveRelationField(dTransfer, '_fromAccount', this.accountRepository);
-		this.resolveRelationField(dTransfer, '_fromContract', this.contractRepository);
-		this.resolveRelationField(dTransfer, '_toAccount', this.accountRepository);
-		this.resolveRelationField(dTransfer, '_toContract', this.contractRepository);
+		await this.resolveRelationField(dTransfer, '_fromAccount', this.accountRepository);
+		await this.resolveRelationField(dTransfer, '_fromContract', this.contractRepository);
+		await this.resolveRelationField(dTransfer, '_toAccount', this.accountRepository);
+		await this.resolveRelationField(dTransfer, '_toContract', this.contractRepository);
 		if (dTransfer.valueType === BALANCE.TYPE.TOKEN) {
-			this.resolveRelationField(dTransfer, '_contract', this.contractRepository);
+			await this.resolveRelationField(dTransfer, '_contract', this.contractRepository);
 		}
 		if (dTransfer.valueType === BALANCE.TYPE.ASSET) {
-			this.resolveRelationField(dTransfer, '_asset', this.assetRepository);
+			await this.resolveRelationField(dTransfer, '_asset', this.assetRepository);
 		}
 		return <TDoc<ITransferExtended>>dTransfer;
 	}
@@ -112,7 +112,7 @@ export default class PubSubEngine extends EventEmitter {
 	}
 
 	private async transformContractBalance(dBalance: TDoc<IContractBalance>): Promise<TDoc<IContractBalanceExtended>> {
-		this.resolveRelationField(dBalance, '_owner', this.contractRepository);
+		await this.resolveRelationField(dBalance, '_owner', this.contractRepository);
 		return <TDoc<IContractBalanceExtended>>dBalance;
 	}
 

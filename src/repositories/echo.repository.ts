@@ -68,6 +68,11 @@ export default class EchoRepository {
 			// FIXME: use constant
 			ERC20.METHOD.HASH.BALANCE_OF + encode({ value: address, type: 'address' }),
 		);
+
+		if (!hexValue) {
+			return '';
+		}
+
 		return decode(hexValue, ERC20.METHOD.RESULT_TYPE.BALANCE_OF).toString();
 	}
 
@@ -149,12 +154,15 @@ export default class EchoRepository {
 	}
 
 	// FIXME: refactor
-	subscribeToNewBlock(cb: (num: number) => void) {
+	async subscribeToNewBlock(cb: (num: number) => void) {
 		this.echoConnection.echo.subscriber.setGlobalSubscribe((data: any) => {
 			if (!data || !data[0] || data[0].id !== '2.1.0') return;
 			cb(data[0].head_block_number);
 		});
-		this.echoConnection.echo.api.getObject('2.1.0');
+		this.echoConnection.echo.subscriber.setStatusSubscribe(ECHO.CONNECT_STATUS, async () => {
+			await this.echoConnection.echo.api.getObject('2.1.0');
+		});
+		await this.echoConnection.echo.api.getObject('2.1.0');
 	}
 
 	getContractResult(resultId: string) {
