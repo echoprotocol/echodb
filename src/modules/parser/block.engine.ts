@@ -42,8 +42,8 @@ export default class BlockEngine extends EventEmitter {
 	}
 
 	// TODO: enable caching when second iterator on live stage
-	private subscribeToNewBlock() {
-		this.echoRepository.subscribeToNewBlock((num: number) => {
+	private async subscribeToNewBlock() {
+		await this.echoRepository.subscribeToNewBlock((num: number) => {
 			this.last = num;
 			this.ee.emit(EVENT.NEW_BLOCK);
 		});
@@ -60,19 +60,20 @@ export default class BlockEngine extends EventEmitter {
 			? current
 			: await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
 		this.last = await this.echoRepository.getLastBlockNum(); // Not needed
-		this.subscribeToNewBlock();
-
-		this.stage = STAGE.HISTORY;
-		this.enableSpeedo();
-		while (this.current < this.last) {
-			this.caching(this.current);
-			yield this.get(this.current);
-		}
-
-		this.disableSpeedo();
-		this.stage = STAGE.LIVE;
-		logger.info(`${STAGE.LIVE} stage has come`);
+		await this.subscribeToNewBlock();
 		while (true) {
+			if ((this.last - this.current) > 1) {
+				this.stage = STAGE.HISTORY;
+				this.enableSpeedo();
+				while (this.current < this.last) {
+					this.caching(this.current);
+					yield this.get(this.current);
+				}
+
+				this.disableSpeedo();
+				this.stage = STAGE.LIVE;
+				logger.info(`${STAGE.LIVE} stage has come`);
+			}
 			await this.waitForNewBlock();
 			yield this.pureGet(this.current);
 		}

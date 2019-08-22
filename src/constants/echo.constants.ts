@@ -1,6 +1,8 @@
 import { AccountId, AssetId, ContractResultId } from '../types/echo';
 export const CORE_ASSET = '1.3.0';
 
+export const CONNECT_STATUS = 'connect';
+
 export enum OPERATION_ID {
 	TRANSFER,
 	ACCOUNT_CREATE,

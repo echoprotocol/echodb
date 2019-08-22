@@ -215,6 +215,7 @@ declare module 'echojs-lib' {
 
 	export class Subscriber {
 		setGlobalSubscribe(cb: Function): void;
+		setStatusSubscribe(status: string, cb: Function): void;
 		setBlockApplySubscribe(cb: (block: Block) => void): void;
 	}
 
