@@ -40,7 +40,7 @@ Run the `api` module in local environment with hot-reloading
 
 The MIT License (MIT)
 
-Copyright (c) ECHO DEVELOPMENT LTD
+Copyright (c) Echo Technological Solutions LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
