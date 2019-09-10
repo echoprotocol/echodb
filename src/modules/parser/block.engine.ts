@@ -1,5 +1,6 @@
 import EchoRepository from '../../repositories/echo.repository';
 import InfoRepository from '../../repositories/info.repository';
+import BlockRepository from '../../repositories/block.repository';
 import * as INFO from '../../constants/info.constants';
 import * as config from 'config';
 import { IBlockWithVOps } from '../../interfaces/IBlock';
@@ -32,6 +33,7 @@ export default class BlockEngine extends EventEmitter {
 	constructor(
 		private echoRepository: EchoRepository,
 		private infoRepository: InfoRepository,
+		private blockRepository: BlockRepository,
 	) {
 		super();
 	}
@@ -75,6 +77,10 @@ export default class BlockEngine extends EventEmitter {
 				logger.info(`${STAGE.LIVE} stage has come`);
 			}
 			await this.waitForNewBlock();
+			if (!this.current || this.current < 0 || this.current > this.last) {
+				const block = await this.blockRepository.getLastRound();
+				this.current = block[0].round;
+			}
 			yield this.pureGet(this.current);
 		}
 	}
@@ -115,7 +121,7 @@ export default class BlockEngine extends EventEmitter {
 			]);
 			return { block, map: blockAndVOps } as IBlockWithVOps;
 		} catch (error) {
-			logger.error(error);
+			logger.error(`Block ${num}`, error);
 		}
 	}
 

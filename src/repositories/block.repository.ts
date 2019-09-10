@@ -14,4 +14,8 @@ export default class BlockRepository extends AbstractRepository<IBlock> {
 		return super.findOne({ round });
 	}
 
+	getLastRound() {
+		return super.find({ $query: {} }, null, { sort: { round: -1 }, limit: 1 });
+	}
+
 }
