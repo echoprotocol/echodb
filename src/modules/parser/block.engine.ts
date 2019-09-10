@@ -36,6 +36,10 @@ export default class BlockEngine extends EventEmitter {
 		super();
 	}
 
+	public getCurrentBlockNum() {
+		return this.current;
+	}
+
 	private waitForNewBlock() {
 		return new Promise<number>((resolve) =>
 			this.ee.once(EVENT.NEW_BLOCK, () => resolve()));
@@ -115,7 +119,7 @@ export default class BlockEngine extends EventEmitter {
 			]);
 			return { block, map: blockAndVOps } as IBlockWithVOps;
 		} catch (error) {
-			logger.error(error);
+			logger.error(`Block ${num}`, error);
 		}
 	}
 
