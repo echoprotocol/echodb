@@ -1,6 +1,5 @@
 import EchoRepository from '../../repositories/echo.repository';
 import InfoRepository from '../../repositories/info.repository';
-import BlockRepository from '../../repositories/block.repository';
 import * as INFO from '../../constants/info.constants';
 import * as config from 'config';
 import { IBlockWithVOps } from '../../interfaces/IBlock';
@@ -22,7 +21,7 @@ const BATCH_SIZE = 10;
 
 export default class BlockEngine extends EventEmitter {
 	private last: number;
-	private current: number;
+	public current: number;
 	private blockCache = new Map<number, Promise<IBlockWithVOps>>();
 	private maxCacheSize = config.parser.cacheSize;
 	private speedoTimeout: NodeJS.Timeout;
@@ -33,7 +32,6 @@ export default class BlockEngine extends EventEmitter {
 	constructor(
 		private echoRepository: EchoRepository,
 		private infoRepository: InfoRepository,
-		private blockRepository: BlockRepository,
 	) {
 		super();
 	}
@@ -77,10 +75,6 @@ export default class BlockEngine extends EventEmitter {
 				logger.info(`${STAGE.LIVE} stage has come`);
 			}
 			await this.waitForNewBlock();
-			if (!this.current || this.current < 0 || this.current > this.last) {
-				const block = await this.blockRepository.getLastRound();
-				this.current = block[0].round;
-			}
 			yield this.pureGet(this.current);
 		}
 	}
