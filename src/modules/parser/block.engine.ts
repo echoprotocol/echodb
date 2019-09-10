@@ -21,7 +21,7 @@ const BATCH_SIZE = 10;
 
 export default class BlockEngine extends EventEmitter {
 	private last: number;
-	public current: number;
+	private current: number;
 	private blockCache = new Map<number, Promise<IBlockWithVOps>>();
 	private maxCacheSize = config.parser.cacheSize;
 	private speedoTimeout: NodeJS.Timeout;
@@ -34,6 +34,10 @@ export default class BlockEngine extends EventEmitter {
 		private infoRepository: InfoRepository,
 	) {
 		super();
+	}
+
+	public getCurrentBlockNum() {
+		return this.current;
 	}
 
 	private waitForNewBlock() {

@@ -77,7 +77,7 @@ export default class ParserModule extends AbstractModule {
 			}
 			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
 		} catch (error) {
-			logger.error(`Block ${this.blockEngine.current}`, error);
+			logger.error(`Block ${this.blockEngine.getCurrentBlockNum()}`, error);
 			return;
 		}
 	}
