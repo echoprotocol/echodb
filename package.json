@@ -8,9 +8,12 @@
 	"homepage": "https://github.com/echoprotocol/echodb",
 	"license": "MIT",
 	"author": {
-		"url": "https://pixelplex.io",
 		"name": "PixelPlex, Inc.",
-		"email": "dev@pixelplex.io"
+		"email": "info@pixelplex.io",
+		"url": "https://pixelplex.io"
+	},
+	"bugs": {
+		"url": "https://github.com/echoprotocol/echodb/issues"
 	},
 	"private": true,
 	"scripts": {
