@@ -13,4 +13,5 @@ export const NAME = {
 	CONTRACT: 'contract',
 	CONTRACT_BALANCE: 'contract_balance',
 	BALANCE: 'balance',
+	PROPOSAL: 'proposal',
 };
