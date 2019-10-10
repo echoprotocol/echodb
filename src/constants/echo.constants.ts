@@ -65,6 +65,9 @@ export type Operations = {
 	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
 	[OPERATION_ID.PROPOSAL_CREATE]: ProposalCreateOperation;
 	[OPERATION_ID.PROPOSAL_UPDATE]: ProposalUpdateOperation;
+	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
+	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
 };
 
 export type OperationResult = {
@@ -87,6 +90,7 @@ export type OperationResult = {
 	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
 	[OPERATION_ID.PROPOSAL_CREATE]: string;
 	[OPERATION_ID.PROPOSAL_UPDATE]: unknown;
+	[OPERATION_ID.PROPOSAL_DELETE]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -346,3 +350,28 @@ interface ProposalUpdateOperation {
 	extensions: ExtensionsArr,
 }
 
+interface ProposalDeleteOperation {
+	fee: IAmount,
+	fee_paying_account: string,
+	using_owner_authority: boolean,
+	proposal: string,
+	extensions: ExtensionsArr,
+}
+
+interface CommitteeMemberCreateOperation {
+	fee: IAmount,
+	committee_member_account: string;
+	url: string,
+	eth_address: string,
+	btc_public_key: string,
+	extensions: ExtensionsArr,
+}
+
+interface CommitteMemberUpdateOperation {
+	fee: IAmount,
+	committee_member: string,
+	committee_member_account: string,
+	new_url: string,
+	new_eth_address: string,
+	new_btc_public_key: string,
+}

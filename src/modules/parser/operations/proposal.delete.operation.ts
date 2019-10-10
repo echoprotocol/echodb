@@ -1,10 +1,10 @@
 import AbstractOperation from './abstract.operation';
 import * as ECHO from '../../../constants/echo.constants';
 
-type OP_ID = ECHO.OPERATION_ID.PROPOSAL_UPDATE;
+type OP_ID = ECHO.OPERATION_ID.PROPOSAL_DELETE;
 
 export default class ProposalUpdater extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.PROPOSAL_UPDATE;
+    id = ECHO.OPERATION_ID.PROPOSAL_UPDATE;
 
 	constructor() {
 		super();
