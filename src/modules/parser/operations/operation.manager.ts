@@ -18,7 +18,7 @@ import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
 import ProposalCreateOperation from './proposal.create.operation';
-import ProposalUpdateOperation from './proposal.update.opertaion';
+import ProposalUpdateOperation from './proposal.update.operation';
 import ProposalDeleteOperation from './proposal.delete.operation';
 import CommitteeMemberCreateOperation from './committee.member.create.operation';
 import CommitteeMemberUpdateOperation from './committee.member.update.operation';
