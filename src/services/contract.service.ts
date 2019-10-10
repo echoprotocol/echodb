@@ -136,7 +136,7 @@ export default class ContractService {
 					});
 					relations.from.push(from);
 					relations.to.push(to);
-					await this.handleTokenTransfer(dContract, from, to, amount);	
+					await this.handleTokenTransfer(dContract, from, to, amount);
 			}
 		}
 
@@ -173,7 +173,7 @@ export default class ContractService {
 					valueType: BALANCE.TYPE.TOKEN,
 				},
 				dFrom,
-				dTo
+				dTo,
 			),
 			(async () => {
 				if (dContract.problem) return;
