@@ -63,6 +63,11 @@ export type Operations = {
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
+	[OPERATION_ID.VESTING_BALANCE_CREATE]: VestingBalanceCreate;
+	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: VestingBalanceWithdraw;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: CommitteeMemberUpdateGlobalParametersProps
+	[OPERATION_ID.BALANCE_CLAIM]: BalanceClaimOperation;
+	[OPERATION_ID.OVERRIDE_TRANSFER]: OverrideTransfer;
 };
 
 export type OperationResult = {
@@ -83,6 +88,11 @@ export type OperationResult = {
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
 	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
+	[OPERATION_ID.VESTING_BALANCE_CREATE]: unknown;
+	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: unknown;
+	[OPERATION_ID.BALANCE_CLAIM]: unknown;
+	[OPERATION_ID.OVERRIDE_TRANSFER]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -318,5 +328,120 @@ interface ContractCallOperation {
 	value: IAmount;
 	code: string;
 	callee: string;
+	extensions: ExtensionsArr;
+}
+
+export interface IPolicy {
+	begin_timestamp: String;
+	vesting_cliff_seconds: Number;
+	vesting_duration_seconds: Number;
+}
+interface VestingBalanceCreate{
+	fee: IAmount;
+	creator: string;
+	owner: string;
+	amount: IAmount;
+	policy: IPolicy;
+	extensions: ExtensionsArr;
+}
+
+interface VestingBalanceWithdraw {
+	fee: IAmount;
+	vesting_balance: String;
+	owner: string;
+	amount: IAmount;
+	extensions: ExtensionsArr;
+}
+
+export interface IEth {
+	method: String;
+	gas: Number;
+}
+export interface INewParameters {
+	current_fees: {
+		parameters: [];
+		scale: Number;
+	};
+	block_interval: Number;
+	maintenance_interval: Number;
+	maintenance_duration_seconds: Number;
+	committee_proposal_review_period: Number;
+	maximum_transaction_size: Number;
+	maximum_block_size: Number;
+	maximum_time_until_expiration: Number;
+	maximum_proposal_lifetime: Number;
+	maximum_asset_whitelist_authorities: Number;
+	maximum_asset_feed_publishers: Number;
+	maximum_committee_count: Number;
+	maximum_authority_membership: Number;
+	reserve_percent_of_fee: Number;
+	network_percent_of_fee: Number;
+	max_predicate_opcode: Number;
+	accounts_per_fee_scale: Number;
+	account_fee_scale_bitshifts: Number;
+	max_authority_depth: Number;
+	echorand_config: {
+		_time_net_1mb: Number;
+		_time_net_256b: Number;
+		_creator_count: Number;
+		_verifier_count: Number;
+		_ok_threshold: Number;
+		_max_bba_steps: Number;
+		_gc1_delay: Number;
+	};
+	sidechain_config: {
+		eth_contract_address: String;
+		eth_committee_update_method : IEth;
+		eth_gen_address_method : IEth;
+		eth_withdraw_method : IEth;
+		eth_update_addr_method : IEth;
+		eth_withdraw_token_method : IEth;
+		eth_collect_tokens_method : IEth;
+		eth_committee_updated_topic: String;
+		eth_gen_address_topic: String;
+		eth_deposit_topic: String;
+		eth_withdraw_topic: String;
+		erc20_deposit_topic: String;
+		ETH_asset_id: String;
+		fines : {
+			generate_eth_address: Number;
+		}
+		waiting_blocks: Number;
+	};
+	erc20_config: {
+		contract_code: String;
+		create_token_fee: Number;
+		transfer_topic: String;
+		check_balance_method: IEth;
+		burn_method: IEth;
+		issue_method: IEth;
+	};
+	gas_price: {
+		price: Number;
+		gas_amount: Number;
+	};
+	extensions: ExtensionsArr;
+}
+interface CommitteeMemberUpdateGlobalParametersProps{
+	fee: IAmount;
+	new_parameters: INewParameters;
+	extensions: ExtensionsArr;
+}
+
+interface BalanceClaimOperation {
+	fee: IAmount;
+	deposit_to_account: string;
+	balance_to_claim: String;
+	balance_owner_key: string;
+    total_claimed: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface OverrideTransfer {
+	fee: IAmount;
+	issuer: String;
+	from: string;
+	to: string;
+	amount: IAmount;
 	extensions: ExtensionsArr;
 }
