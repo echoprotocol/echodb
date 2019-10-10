@@ -22,8 +22,12 @@ export default class ProposalCreateOperation extends AbstractOperation<OP_ID> {
             proposed_ops: body.proposed_ops,
             expiration_time: body.expiration_time,
             review_period_seconds: body.review_period_seconds,
+            active_approvals_to_add: [],
+            active_apprivals_to_remove: [],
+            owner_approvals_to_remove: [],
+            key_approvals_to_add: [],
+            key_approvals_to_remove: [],
         });
-
         return this.validateRelation({
             from: [body.fee_paying_account],
             assets: [body.fee.asset_id],

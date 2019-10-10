@@ -64,6 +64,7 @@ export type Operations = {
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
 	[OPERATION_ID.PROPOSAL_CREATE]: ProposalCreateOperation;
+	[OPERATION_ID.PROPOSAL_UPDATE]: ProposalUpdateOperation;
 };
 
 export type OperationResult = {
@@ -85,6 +86,7 @@ export type OperationResult = {
 	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
 	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
 	[OPERATION_ID.PROPOSAL_CREATE]: string;
+	[OPERATION_ID.PROPOSAL_UPDATE]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -331,3 +333,16 @@ interface ProposalCreateOperation {
 	review_period_seconds: number,
 	extensions: ExtensionsArr,
 }
+
+interface ProposalUpdateOperation {
+	fee: IAmount,
+	fee_paying_account: string,
+	proposal: string,
+	active_approvals_to_add: AccountId[],
+	active_apprivals_to_remove: AccountId[],
+	owner_approvals_to_remove: AccountId[],
+	key_approvals_to_add: string[],
+	key_approvals_to_remove: string[],
+	extensions: ExtensionsArr,
+}
+

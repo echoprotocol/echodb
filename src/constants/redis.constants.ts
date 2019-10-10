@@ -27,6 +27,7 @@ export enum EVENT {
 	ACCOUNT_OWNER_CHANGED = 'account_owner_changed',
 	BALANCE_UPDATED = 'balance_updated',
 	CONTRACT_BALANCE_UPDATED = 'contract_balance_updated',
+	PROPOSAL_UPDATED = 'proposal_updated',
 }
 
 export const EVENT_LIST = Object.values(EVENT);
@@ -48,6 +49,7 @@ export type EVENT_PAYLOAD = {
 	[EVENT.ASSET_UPDATED]: TDoc<IAsset>;
 	[EVENT.BALANCE_UPDATED]: TDoc<IBalance>;
 	[EVENT.CONTRACT_BALANCE_UPDATED]: TDoc<IContractBalance>;
+	[EVENT.PROPOSAL_UPDATED]: TDoc<IProposal>;
 };
 
 export enum KEY {

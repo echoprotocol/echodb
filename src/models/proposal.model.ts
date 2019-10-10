@@ -9,4 +9,9 @@ export default AbstractModel<IProposal>(MODEL.NAME.PROPOSAL, {
     proposed_ops: [Schema.Types.Mixed],
     expiration_time: String,
     review_period_seconds: Number,
+    active_approvals_to_add: [Schema.Types.Mixed],
+	active_apprivals_to_remove: [Schema.Types.Mixed],
+	owner_approvals_to_remove: [Schema.Types.Mixed],
+	key_approvals_to_add: [Schema.Types.Mixed],
+	key_approvals_to_remove: [Schema.Types.Mixed],
 });
