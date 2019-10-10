@@ -15,8 +15,9 @@ export default class ProposalCreateOperation extends AbstractOperation<OP_ID> {
 		super();
     }
     
-    async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
+    async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
         this.proposalRepository.createAndEmit({
+            id: result,
             fee_paying_account: body.fee_paying_account,
             proposed_ops: body.proposed_ops,
             expiration_time: body.expiration_time,
