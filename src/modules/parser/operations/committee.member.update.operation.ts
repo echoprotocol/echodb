@@ -3,7 +3,7 @@ import * as ECHO from '../../../constants/echo.constants';
 
 type OP_ID = ECHO.OPERATION_ID.COMMITTEE_MEMBER_UPDATE;
 
-export default class CommitteMemberUpdate extends AbstractOperation<OP_ID> {
+export default class CommitteeMemberUpdateOperation extends AbstractOperation<OP_ID> {
     id = ECHO.OPERATION_ID.COMMITTEE_MEMBER_UPDATE;
     
     constructor() {
