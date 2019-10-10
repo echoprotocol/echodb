@@ -91,6 +91,8 @@ export type OperationResult = {
 	[OPERATION_ID.PROPOSAL_CREATE]: string;
 	[OPERATION_ID.PROPOSAL_UPDATE]: unknown;
 	[OPERATION_ID.PROPOSAL_DELETE]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
