@@ -136,16 +136,7 @@ export default class ContractService {
 					});
 					relations.from.push(from);
 					relations.to.push(to);
-					await this.handleTokenTransfer(dContract, from, to, amount);
-					break;
-				case ERC20.EVENT_HASH.APPROVAL:
-					const [owner, spender, amount] = [params[0], params[1], record.data].map((hex, index) => {
-						return <string>decode(hex, [ERC20.EVENT_RESULT[ERC20.EVENT_NAME.APPROVAL][index]]);
-					});
-					relations.from.push(from);
-					relations.to.push(to);
-					await this.handleTokenApproval(dContract, owner, spender, amount);
-					break;
+					await this.handleTokenTransfer(dContract, from, to, amount);	
 			}
 		}
 
@@ -209,30 +200,6 @@ export default class ContractService {
 				]);
 			})(),
 		]);
-	}
-
-	async handleTokenApproval(
-		dContract: TDoc<IContract>,
-		owner: AccountId | ContractId,
-		spender: AccountId | ContractId,
-		amount: string | number,
-	) {
-		const senderType = this.transferRepository.determineParticipantType(owner);
-		const receiverType = this.transferRepository.determineParticipantType(spender);
-		const [dFrom, dTo] = await Promise.all([
-			this.transferService.fetchParticipant(owner, senderType),
-			this.transferService.fetchParticipant(spender, receiverType),
-		]);
-		// await this.transferRepository.createAndEmit(
-		// 	{
-		// 		relationType: this.transferRepository.determineRelationType(owner, spender),
-		// 		amount: amount.toString(),
-		// 		_contract: dContract,
-		// 		valueType: BALANCE.TYPE.TOKEN,
-		// 	},
-		// 	dFrom,
-		// 	dTo
-		// )
 	}
 
 	async updateOrCreateToken(
