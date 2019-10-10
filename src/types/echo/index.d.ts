@@ -4,3 +4,4 @@ export type ContractResultId = string; // 1.10.*
 export type AssetId = string; // 1.3.*
 export type BitassetDataId = string;
 export type BitassetId = string;
+export type Amount = string;

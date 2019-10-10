@@ -1,16 +1,20 @@
-import AbstractResolver, { validateSubscriptionArgs } from './abstract.resolver';
+import AbstractResolver, { validateSubscriptionArgs, validateArgs } from './abstract.resolver';
 import AccountRepository from '../../../repositories/account.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import AssetRepository from '../../../repositories/asset.repository';
 import Transfer from '../types/transfer.type';
+import PaginatedResponse from '../types/paginated.response.type';
 import TransferRepository from '../../../repositories/transfer.repository';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import * as TRANSFER from '../../../constants/transfer.constants';
-import { TransferSubscribeForm } from '../forms/transfer.forms';
-import { Resolver, Args, FieldResolver, Root, Subscription } from 'type-graphql';
+import { TransferSubscribeForm, GetTransfersHistoryForm } from '../forms/transfer.forms';
+import { Resolver, Args, FieldResolver, Root, Subscription, Query } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
+import TransferService from '../../../services/transfer.service';
+
+const paginatedTransfers = PaginatedResponse(Transfer);
 
 interface ITransferSubscriptionFilterArgs {
 	payload: Payload<REDIS.EVENT.NEW_TRANSFER>;
@@ -22,12 +26,14 @@ export default class TransferResolver extends AbstractResolver {
 	@inject static assetRepository: AssetRepository;
 	@inject static contractRepository: ContractRepository;
 	@inject static transferrepository: TransferRepository;
+	@inject static transferService: TransferService;
 
 	constructor(
 		private accountRepository: AccountRepository,
 		private assetRepository: AssetRepository,
 		private contractRepository: ContractRepository,
 		private transferRepository: TransferRepository,
+		private transferService: TransferService,
 	) {
 		super();
 	}
@@ -90,6 +96,29 @@ export default class TransferResolver extends AbstractResolver {
 		@Args() _: TransferSubscribeForm,
 	) {
 		return dTransfer;
+	}
+
+	// Query
+	@Query(() => paginatedTransfers)
+	@validateArgs(GetTransfersHistoryForm)
+	getTransferHistory(
+		@Args() {
+			count,
+			offset,
+			from,
+			to,
+			contracts,
+			relationTypes,
+			valueTypes,
+			amounts,
+			sort,
+		}: GetTransfersHistoryForm,
+	) {
+		return this.transferService.getHistory(
+			count,
+			offset,
+			{ from, to, contracts, relationTypes, valueTypes, amounts, sort },
+		);
 	}
 
 	static transferCreateFilter(

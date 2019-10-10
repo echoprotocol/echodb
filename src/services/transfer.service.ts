@@ -4,7 +4,11 @@ import TransferRepository from 'repositories/transfer.repository';
 import BalanceRepository from 'repositories/balance.repository';
 import ContractBalanceRepository from 'repositories/contract.balance.repository';
 import * as TRANSFER from '../constants/transfer.constants';
-import { AccountId, ContractId } from '../types/echo';
+import * as API from '../constants/api.constants';
+import * as ECHO from '../constants/echo.constants';
+import * as BALANCE from '../constants/balance.constants';
+
+import { AccountId, ContractId, Amount } from '../types/echo';
 import { IAccount } from '../interfaces/IAccount';
 import { IContract } from '../interfaces/IContract';
 import { TDoc, MongoId } from '../types/mongoose';
@@ -14,6 +18,28 @@ type ParticipantDocTypeMap = {
 	[TRANSFER.PARTICIPANT_TYPE.ACCOUNT]: TDoc<IAccount>;
 	[TRANSFER.PARTICIPANT_TYPE.CONTRACT]: TDoc<IContract>;
 };
+
+export enum KEY {
+	FROM = 'from',
+	TO = 'to',
+	CONTRACTS = 'contracts',
+	VALUE_TYPE = 'valueTypes',
+	RELATION_TYPE = 'relationTypes',
+	AMOUNT = 'amounts',
+	SORT = 'sort',
+}
+
+interface GetTransactionParameters {
+	[KEY.FROM]?: AccountId[];
+	[KEY.TO]?: AccountId[];
+	[KEY.CONTRACTS]?: ContractId[];
+	[KEY.VALUE_TYPE]?: BALANCE.TYPE[];
+	[KEY.RELATION_TYPE]?: TRANSFER.TYPE[];
+	[KEY.AMOUNT]?: Amount[];
+	[KEY.SORT]?: API.SORT_DESTINATION;
+}
+
+type Query = { [x: string]: Query[] | { $in: (ECHO.OPERATION_ID | string)[] } | { $or: Query[] } };
 
 export default class TransferService {
 
@@ -61,6 +87,51 @@ export default class TransferService {
 				);
 				break;
 		}
+	}
+
+	async getHistory(count: number, offset: number, params: GetTransactionParameters) {
+		const query: Query = {};
+		const addressesQuery: Query[] = [];
+		const addressesFromQuery: Query[] = [];
+		const addressesToQuery: Query[] = [];
+
+		if (params.relationTypes) query.relationType = { $in: params.relationTypes };
+		if (params.valueTypes) query.valueTypes = { $in: params.valueTypes };
+		if (params.amounts) query.amounts = { $in: params.amounts };
+		if (params.contracts) query.contracts = { $in: params.contracts };
+		if (params.from) {
+			addressesFromQuery.push(
+				{ _fromAccount: { $in: params.from } },
+				{ _fromContract: { $in: params.from } },
+			)
+			addressesQuery.push({ $or: addressesFromQuery })
+			// query._fromAccount = { $in: params.from };
+			// query._fromContract = { $in: params.from };
+		}
+		if (params.to) {
+			addressesToQuery.push(
+				{ _toAccount: { $in: params.from } },
+				{ _toContract: { $in: params.from } },
+			)
+			addressesQuery.push({ $or: addressesToQuery })
+			// query._toAccount = { $in: params.to };
+			// query._toContract = { $in: params.to };
+		}
+
+		if (addressesQuery.length) {
+			query.$and = [{ $or: addressesQuery }];
+		}
+
+		const sortDestination = params.sort === API.SORT_DESTINATION.ASC ? 1 : -1;
+		const [items, total] = await Promise.all([
+			this.transferRepository.find(
+				query,
+				null,
+				{ skip: offset, limit: count, sort: { timestamp: sortDestination } },
+			),
+			this.transferRepository.count(query),
+		]);
+		return { total, items };
 	}
 
 }
