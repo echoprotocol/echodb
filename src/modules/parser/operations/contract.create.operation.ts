@@ -30,11 +30,6 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>, dBlock: TDoc<IBlock>) {
 		const [, contractResult] = await this.echoRepository.getContractResult(result);
-		console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-		console.log(body);
-		console.log('#####################################');
-		console.log(result);
-		console.log('**************************************');
 		const { exec_res: {
 			new_address: hexAddr,
 			code_deposit: codeDeposit,

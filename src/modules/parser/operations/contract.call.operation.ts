@@ -34,7 +34,6 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
-		console.log(body)
 		const dContract = await this.contractRepository.findById(body.callee);
 		if (dContract) {
 			const amount = new BN(body.value.amount);
