@@ -23,6 +23,7 @@ import ProposalDeleteOperation from './proposal.delete.operation';
 import CommitteeMemberCreateOperation from './committee.member.create.operation';
 import CommitteeMemberUpdateOperation from './committee.member.update.operation';
 import AccountAddressCreateOperation from './account.address.create.operation';
+import TransferToAddressOperation from './transfer.to.address';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -69,6 +70,7 @@ export default class OperationManager {
 		committeeMemberCreateOperation: CommitteeMemberCreateOperation,
 		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
 		accountAddressCreateOperation: AccountAddressCreateOperation,
+		transferToAddressOperation: TransferToAddressOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -94,6 +96,7 @@ export default class OperationManager {
 			committeeMemberCreateOperation,
 			committeeMemberUpdateOperation,
 			accountAddressCreateOperation,
+			transferToAddressOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

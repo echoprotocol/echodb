@@ -69,6 +69,7 @@ export type Operations = {
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
 	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: AccountAddressCreateOperation;
+	[OPERATION_ID.TRANSFER_TO_ADDRESS]: TransferToAddressOperation;
 };
 
 export type OperationResult = {
@@ -95,6 +96,7 @@ export type OperationResult = {
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: unknown;
 	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: string;
+	[OPERATION_ID.TRANSFER_TO_ADDRESS]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -386,3 +388,12 @@ interface AccountAddressCreateOperation {
 	label: string;
 	extensions: ExtensionsArr;
 }
+
+interface TransferToAddressOperation {
+	fee: IAmount;
+	from: string;
+	to: string;
+	amount: IAmount;
+	extensions: ExtensionsArr;
+}
+
