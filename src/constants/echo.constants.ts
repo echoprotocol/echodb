@@ -68,6 +68,7 @@ export type Operations = {
 	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
+	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: AccountAddressCreateOperation;
 };
 
 export type OperationResult = {
@@ -93,6 +94,7 @@ export type OperationResult = {
 	[OPERATION_ID.PROPOSAL_DELETE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: unknown;
+	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: string;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -376,4 +378,11 @@ interface CommitteMemberUpdateOperation {
 	new_url: string;
 	new_eth_address: string;
 	new_btc_public_key: string;
+}
+
+interface AccountAddressCreateOperation {
+	fee: IAmount;
+	owner: string;
+	label: string;
+	extensions: ExtensionsArr;
 }

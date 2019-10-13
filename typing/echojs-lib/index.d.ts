@@ -36,6 +36,7 @@ declare module 'echojs-lib' {
 		owner_special_authority: [number, {}];
 		active_special_authority: [number, {}];
 		top_n_control_flags: number;
+		addresses: string[];
 		extensions: unknown[];
 	}
 
@@ -193,7 +194,7 @@ declare module 'echojs-lib' {
 	class API {
 		constructor(cache: Cache, wsApi: WSAPI);
 		getObjects(objectIds: string[], force = false): Promise<object[]>;
-		async getObject(objectId: string, force = false): object;
+		async getObject(objectId: string, force = false): any;
 		// getBitAssetData
 		// getDynamicAssetData
 		getBlockHeader(blockNum: number): Promise<BlockHeader>;
