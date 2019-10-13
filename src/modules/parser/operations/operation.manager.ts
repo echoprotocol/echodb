@@ -23,7 +23,7 @@ import ProposalDeleteOperation from './proposal.delete.operation';
 import CommitteeMemberCreateOperation from './committee.member.create.operation';
 import CommitteeMemberUpdateOperation from './committee.member.update.operation';
 import AccountAddressCreateOperation from './account.address.create.operation';
-import TransferToAddressOperation from './transfer.to.address';
+import TransferToAddressOperation from './transfer.to.address.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
