@@ -84,6 +84,7 @@ export type Operations = {
 	[OPERATION_ID.TRANSFER_TO_ADDRESS]: TransferToAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: SidechainEthCreateAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: SidechainEthDepositOperation;
 };
 
 export type OperationResult = {
@@ -113,6 +114,7 @@ export type OperationResult = {
 	[OPERATION_ID.TRANSFER_TO_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -426,5 +428,14 @@ interface SidechainEthApproveAddressOperation {
 	malicious_committeemen: string[];
 	account: string;
 	eth_addr: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthDepositOperation {
+	fee: IAmount;
+	committee_member_id: string;
+	deposit_id: number,
+	account: string;
+	value: number;
 	extensions: ExtensionsArr;
 }
