@@ -84,7 +84,6 @@ export default class OperationManager {
 			blockRewardOperation,
 		];
 		for (const operation of operations) {
-			console.log(operation.id);
 			if (!operation.status) return;
 			this.map[operation.id] = operation;
 		}
