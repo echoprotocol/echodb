@@ -464,7 +464,7 @@ interface BalanceClaimOperation {
 	deposit_to_account: string;
 	balance_to_claim: string;
 	balance_owner_key: string;
-    total_claimed: IAmount;
+	total_claimed: IAmount;
 	extensions: ExtensionsArr;
 }
 

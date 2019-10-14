@@ -13,7 +13,7 @@ export default class CommitteeMemberUpdateGlobalParametersOperation extends Abst
     async parse (body: ECHO.OPERATION_PROPS<OP_ID>) {
         return this.validateRelation({
 			from: [],
-			assets: [body.fee.asset_id]
+			assets: [body.fee.asset_id],
 		});
     }
 }

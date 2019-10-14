@@ -10,30 +10,30 @@ type OP_ID = ECHO.OPERATION_ID.VESTING_BALANCE_CREATE;
 export default class VestingBalanceCreateOperation extends AbstractOperation<OP_ID> {
     id = ECHO.OPERATION_ID.VESTING_BALANCE_CREATE;
 
-    constructor (
+    constructor(
         private balanceRepository: BalanceRepository,
         private assetRepository: AssetRepository,
         private accountRepository: AccountRepository,
     ) {
-        super ();
+        super();
     }
-    async parse (body: ECHO.OPERATION_PROPS<OP_ID>) {
+    async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
         const [dFrom, dAsset] = await Promise.all([
-			this.accountRepository.findById(body.creator),
-			this.assetRepository.findById(body.amount.asset_id),
-		]);
+            this.accountRepository.findById(body.creator),
+            this.assetRepository.findById(body.amount.asset_id),
+        ]);
         const amount = new BN(body.amount.amount).toString(10);
         await this.balanceRepository.updateOrCreateByAccountAndAsset(
             dFrom,
             dAsset,
             new BN(amount).negated().toString(10),
-			{ append: true },
-        )
+            { append: true },
+        );
 
         return this.validateRelation({
             from: [body.creator],
             to: [body.owner],
-			assets: [body.fee.asset_id],
-		});
+            assets: [body.fee.asset_id],
+        });
     }
 }
