@@ -2,7 +2,6 @@ import AbstractOperation from './abstract.operation';
 import BalanceService from '../../../services/balance.service';
 import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
-import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import AssetCreateOperation from './asset.create.operation';
 import TransferOperation from './transfer.operation';
@@ -14,6 +13,7 @@ import AssetReserverOperation from './asset.reserve.operation';
 import AssetFundFeePoolOperation from './asset.fund.fee.pool.operation';
 import AssetPublishFeedOperation from './asset.publish.feed.operation';
 import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
+import BalanceFreezeOperation from './balance.freeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
@@ -22,6 +22,14 @@ import OverrideTransferOperation from './override.transfer.operation';
 import CommitteeMemberUpdateGlobalParametersOperation from './committee.member.update.global.parameters.operation';
 import VestingBalanceWithdrawOperation from './vesting.balance.withdraw.operation';
 import VestingBalanceCreateOperation from './vesting.balance.create.operation';
+import ProposalCreateOperation from './proposal.create.operation';
+import ProposalUpdateOperation from './proposal.update.operation';
+import ProposalDeleteOperation from './proposal.delete.operation';
+import CommitteeMemberCreateOperation from './committee.member.create.operation';
+import CommitteeMemberUpdateOperation from './committee.member.update.operation';
+import AccountAddressCreateOperation from './account.address.create.operation';
+import TransferToAddressOperation from './transfer.to.address.operation';
+import SidechainEthCreateAddressOperation from './sidechain.eth.create.address.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -48,7 +56,6 @@ export default class OperationManager {
 		transferOperation: TransferOperation,
 		accountCreateOperation: AccountCreateOperation,
 		accountUpdateOperation: AccountUpdateOperation,
-		accountTransferOperation: AccountTransferOperation,
 		accountWhitelistOperation: AccountWhitelistOperation,
 		assetCreateOperation: AssetCreateOperation,
 		assetClaimFeesOperation: AssetClaimFeesOperation,
@@ -59,6 +66,7 @@ export default class OperationManager {
 		assetFundFeePoolOperation: AssetFundFeePoolOperation,
 		assetPublishFeedOperation: AssetPublishFeedOperation,
 		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
+		balanceFreezeOperation: BalanceFreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
@@ -67,15 +75,23 @@ export default class OperationManager {
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
 		vestingBalanceCreateOperation: VestingBalanceCreateOperation,
 		vestingBalanceWithdrawOperation: VestingBalanceWithdrawOperation,
+		proposalCreateOperation: ProposalCreateOperation,
+		proposalUpdateOperation: ProposalUpdateOperation,
+		proposalDeleteOperation: ProposalDeleteOperation,
+		committeeMemberCreateOperation: CommitteeMemberCreateOperation,
+		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
+		accountAddressCreateOperation: AccountAddressCreateOperation,
+		transferToAddressOperation: TransferToAddressOperation,
+		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
-			accountTransferOperation,
 			accountUpdateOperation,
 			accountWhitelistOperation,
 			assetCreateOperation,
 			assetUpdateOperation,
 			assetBitassetUpdateOperation,
+			balanceFreezeOperation,
 			contractCreateOperation,
 			contractCallOperation,
 			assetIssueOperation,
@@ -91,6 +107,14 @@ export default class OperationManager {
 			committeeMemberUpdateGlobalParametersOperation,
 			vestingBalanceCreateOperation,
 			vestingBalanceWithdrawOperation,
+			proposalCreateOperation,
+			proposalUpdateOperation,
+			proposalDeleteOperation,
+			committeeMemberCreateOperation,
+			committeeMemberUpdateOperation,
+			accountAddressCreateOperation,
+			transferToAddressOperation,
+			sidechainEthCreateAddressOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

@@ -36,6 +36,7 @@ declare module 'echojs-lib' {
 		owner_special_authority: [number, {}];
 		active_special_authority: [number, {}];
 		top_n_control_flags: number;
+		addresses: string[];
 		extensions: unknown[];
 	}
 
@@ -160,6 +161,7 @@ declare module 'echojs-lib' {
 		current_aslot: number;
 		dynamic_flags: number;
 		last_irreversible_block_num: number;
+		last_rand_quantity: number;
 	}
 
 	export interface ContractResult {
@@ -168,7 +170,6 @@ declare module 'echojs-lib' {
 			new_address: string;
 			output: string;
 			code_deposit: 'None' | unknown;
-			gas_refunded: number;
 			gas_for_deposit: number;
 			deposit_size: number;
 		};
@@ -193,7 +194,7 @@ declare module 'echojs-lib' {
 	class API {
 		constructor(cache: Cache, wsApi: WSAPI);
 		getObjects(objectIds: string[], force = false): Promise<object[]>;
-		async getObject(objectId: string, force = false): object;
+		async getObject(objectId: string, force = false): any;
 		// getBitAssetData
 		// getDynamicAssetData
 		getBlockHeader(blockNum: number): Promise<BlockHeader>;
