@@ -24,8 +24,10 @@ import CommitteeMemberCreateOperation from './committee.member.create.operation'
 import CommitteeMemberUpdateOperation from './committee.member.update.operation';
 import AccountAddressCreateOperation from './account.address.create.operation';
 import TransferToAddressOperation from './transfer.to.address.operation';
-import SidechainEthDepositOperation from './sidechain.eth.deposit.operation';
 import SidechainEthCreateAddressOperation from './sidechain.eth.create.address.operation';
+import SidechainEthApproveAddressOperation from './sidechain.eth.approve.address.operation';
+import SidechainEthDepositOperation from './sidechain.eth.deposit.operation';
+import SidechainEthWithdrawOperation from './sidechain.eth.withdraw.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -75,6 +77,8 @@ export default class OperationManager {
 		transferToAddressOperation: TransferToAddressOperation,
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
 		sidechainEthDepositOperation: SidechainEthDepositOperation,
+		sidechainEthWithdrawOperation: SidechainEthWithdrawOperation,
+		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -103,6 +107,8 @@ export default class OperationManager {
 			transferToAddressOperation,
 			sidechainEthCreateAddressOperation,
 			sidechainEthDepositOperation,
+			sidechainEthWithdrawOperation,
+			sidechainEthApproveAddressOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

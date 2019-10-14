@@ -1,10 +1,10 @@
 import AbstractOperation from './abstract.operation';
 import * as ECHO from '../../../constants/echo.constants';
 
-type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT;
+type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ETH_WITHDRAW;
 
-export default class SidechainEthDepositOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT;
+export default class SidechainEthWithdrawOperation extends AbstractOperation<OP_ID> {
+	id = ECHO.OPERATION_ID.SIDECHAIN_ETH_WITHDRAW;
 
 	constructor() {
 		super();
