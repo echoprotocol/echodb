@@ -4,7 +4,7 @@ import * as ECHO from '../../../constants/echo.constants';
 type OP_ID = ECHO.OPERATION_ID.PROPOSAL_DELETE;
 
 export default class ProposalDeleteOperation extends AbstractOperation<OP_ID> {
-    id = ECHO.OPERATION_ID.PROPOSAL_DELETE;
+	id = ECHO.OPERATION_ID.PROPOSAL_DELETE;
 
 	constructor() {
 		super();
