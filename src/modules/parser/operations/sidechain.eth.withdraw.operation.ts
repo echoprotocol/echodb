@@ -12,7 +12,7 @@ export default class SidechainEthWithdrawOperation extends AbstractOperation<OP_
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		return this.validateRelation({
-			from: [body.committee_member_id],
+			from: [body.account],
 			assets: [body.fee.asset_id],
 		});
 	}
