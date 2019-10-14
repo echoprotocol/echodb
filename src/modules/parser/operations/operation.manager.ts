@@ -17,6 +17,11 @@ import BalanceFreezeOperation from './balance.freeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
+import ProposalCreateOperation from './proposal.create.operation';
+import ProposalUpdateOperation from './proposal.update.operation';
+import ProposalDeleteOperation from './proposal.delete.operation';
+import CommitteeMemberCreateOperation from './committee.member.create.operation';
+import CommitteeMemberUpdateOperation from './committee.member.update.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -57,6 +62,11 @@ export default class OperationManager {
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
+		proposalCreateOperation: ProposalCreateOperation,
+		proposalUpdateOperation: ProposalUpdateOperation,
+		proposalDeleteOperation: ProposalDeleteOperation,
+		committeeMemberCreateOperation: CommitteeMemberCreateOperation,
+		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -76,6 +86,11 @@ export default class OperationManager {
 			assetUpdateFeedProducersOperation,
 			transferOperation,
 			contractTransferOperation,
+			proposalCreateOperation,
+			proposalUpdateOperation,
+			proposalDeleteOperation,
+			committeeMemberCreateOperation,
+			committeeMemberUpdateOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
