@@ -2,7 +2,6 @@ import AbstractOperation from './abstract.operation';
 import BalanceService from '../../../services/balance.service';
 import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
-import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import AssetCreateOperation from './asset.create.operation';
 import TransferOperation from './transfer.operation';
@@ -14,6 +13,7 @@ import AssetReserverOperation from './asset.reserve.operation';
 import AssetFundFeePoolOperation from './asset.fund.fee.pool.operation';
 import AssetPublishFeedOperation from './asset.publish.feed.operation';
 import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
+import BalanceFreezeOperation from './balance.freeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
@@ -43,7 +43,6 @@ export default class OperationManager {
 		transferOperation: TransferOperation,
 		accountCreateOperation: AccountCreateOperation,
 		accountUpdateOperation: AccountUpdateOperation,
-		accountTransferOperation: AccountTransferOperation,
 		accountWhitelistOperation: AccountWhitelistOperation,
 		assetCreateOperation: AssetCreateOperation,
 		assetClaimFeesOperation: AssetClaimFeesOperation,
@@ -54,18 +53,19 @@ export default class OperationManager {
 		assetFundFeePoolOperation: AssetFundFeePoolOperation,
 		assetPublishFeedOperation: AssetPublishFeedOperation,
 		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
+		balanceFreezeOperation: BalanceFreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
-			accountTransferOperation,
 			accountUpdateOperation,
 			accountWhitelistOperation,
 			assetCreateOperation,
 			assetUpdateOperation,
 			assetBitassetUpdateOperation,
+			balanceFreezeOperation,
 			contractCreateOperation,
 			contractCallOperation,
 			assetIssueOperation,
