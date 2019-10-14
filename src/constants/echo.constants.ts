@@ -347,7 +347,7 @@ interface VestingBalanceCreate{
 
 interface VestingBalanceWithdraw {
 	fee: IAmount;
-	vesting_balance: String;
+	vesting_balance: string;
 	owner: string;
 	amount: IAmount;
 	extensions: ExtensionsArr;

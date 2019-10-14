@@ -29,9 +29,10 @@ export default class VestingBalanceCreateOperation extends AbstractOperation<OP_
             new BN(amount).negated().toString(),
 			{ append: true },
         )
+
         return this.validateRelation({
-			from: [body.creator],
-			to: [body.owner],
+            from: [body.creator],
+            to: [body.owner],
 			assets: [body.fee.asset_id],
 		});
     }
