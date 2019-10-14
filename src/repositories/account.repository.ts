@@ -28,6 +28,6 @@ export default class AccountRepository extends AbstractRepository<IAccount> {
 	}
 
 	findByAddress(address: string) {
-		return super.findOne({ addresses: { $elemMatch: { address }}});
+		return super.findOne({ addresses: { $elemMatch: { address } } });
 	}
 }

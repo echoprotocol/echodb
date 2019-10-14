@@ -26,8 +26,8 @@ export default class TransferToAddressOperation extends AbstractOperation<OP_ID>
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const [dFrom, dTo, dAsset] = await Promise.all([
-            this.accountRepository.findById(body.from),
-            this.accountRepository.findByAddress(body.to),            
+			this.accountRepository.findById(body.from),
+			this.accountRepository.findByAddress(body.to),
 			this.assetRepository.findById(body.amount.asset_id),
 		]);
 		const amount = new BN(body.amount.amount).toString();
