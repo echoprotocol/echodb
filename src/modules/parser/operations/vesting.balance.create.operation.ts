@@ -22,11 +22,11 @@ export default class VestingBalanceCreateOperation extends AbstractOperation<OP_
 			this.accountRepository.findById(body.creator),
 			this.assetRepository.findById(body.amount.asset_id),
 		]);
-        const amount = new BN(body.amount.amount).toString();
+        const amount = new BN(body.amount.amount).toString(10);
         await this.balanceRepository.updateOrCreateByAccountAndAsset(
             dFrom,
             dAsset,
-            new BN(amount).negated().toString(),
+            new BN(amount).negated().toString(10),
 			{ append: true },
         )
 

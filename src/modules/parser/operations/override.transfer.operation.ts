@@ -25,7 +25,7 @@ export default class OverrideTransferOperation extends AbstractOperation<OP_ID> 
 			this.accountRepository.findManyByIds([body.from, body.to]),
 			this.assetRepository.findById(body.amount.asset_id),
 		]);
-		const amount = new BN(body.amount.amount).toString();
+		const amount = new BN(body.amount.amount).toString(10);
 		await this.transferBalance(dFrom, dTo, dAsset, amount);
         return this.validateRelation({
 			from: [body.from],
@@ -38,13 +38,13 @@ export default class OverrideTransferOperation extends AbstractOperation<OP_ID> 
 			this.balanceRepository.updateOrCreateByAccountAndAsset(
 				from,
 				dAsset,
-				new BN(amount).negated().toString(),
+				new BN(amount).negated().toString(10),
 				{ append: true },
 			),
 			this.balanceRepository.updateOrCreateByAccountAndAsset(
 				to,
 				dAsset,
-				new BN(amount).toString(),
+				new BN(amount).toString(10),
 				{ append: true },
 			),
 		]);

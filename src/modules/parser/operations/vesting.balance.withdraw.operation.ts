@@ -22,11 +22,11 @@ export default class VestingBalanceWithdrawOperation extends AbstractOperation<O
 			this.accountRepository.findById(body.owner),
 			this.assetRepository.findById(body.amount.asset_id),
 		]);
-        const amount = new BN(body.amount.amount).toString();
+        const amount = new BN(body.amount.amount).toString(10);
         await this.balanceRepository.updateOrCreateByAccountAndAsset(
             dTo,
             dAsset,
-            new BN(amount).toString(),
+            new BN(amount).toString(10),
             { append: true },
         );
         return this.validateRelation({
