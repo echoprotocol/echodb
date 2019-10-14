@@ -28,6 +28,7 @@ import SidechainEthCreateAddressOperation from './sidechain.eth.create.address.o
 import SidechainEthApproveAddressOperation from './sidechain.eth.approve.address.operation';
 import SidechainEthDepositOperation from './sidechain.eth.deposit.operation';
 import SidechainEthWithdrawOperation from './sidechain.eth.withdraw.operation';
+import SidechainEthApproveWithdrawOperation from './sidechain.eth.approve.withdraw.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -78,7 +79,8 @@ export default class OperationManager {
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
 		sidechainEthDepositOperation: SidechainEthDepositOperation,
 		sidechainEthWithdrawOperation: SidechainEthWithdrawOperation,
-		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation
+		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation,
+		sidechainEthApproveWithdrawOperation: SidechainEthApproveWithdrawOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -109,6 +111,7 @@ export default class OperationManager {
 			sidechainEthDepositOperation,
 			sidechainEthWithdrawOperation,
 			sidechainEthApproveAddressOperation,
+			sidechainEthApproveWithdrawOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

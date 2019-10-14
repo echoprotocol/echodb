@@ -86,6 +86,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: SidechainEthDepositOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: SidechainEthWithdrawOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
 };
 
 export type OperationResult = {
@@ -117,6 +118,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -449,4 +451,10 @@ interface SidechainEthWithdrawOperation {
 	value: number;
 	extensions: ExtensionsArr;
 }
-;
+
+interface SidechainEthApproveWithdraw {
+	fee: IAmount;
+	committee_member_id: string;
+	withdraw_id: number;
+	extensions: ExtensionsArr;
+}
