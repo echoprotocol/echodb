@@ -32,6 +32,7 @@ export default class BalanceFreezeOperation extends AbstractOperation<OP_ID> {
 		);
 		return this.validateRelation({
 			from: [body.account],
+			accounts: [body.account],
 			assets: [body.fee.asset_id, body.amount.asset_id],
 		});
 	}
