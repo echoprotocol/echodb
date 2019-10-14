@@ -1,6 +1,6 @@
 {
 	"echo": {
-		"url": "wss://testnet.echo-dev.io/ws"
+		"url": "ws://195.201.164.54:36311/ws"
 	},
 	"raven": {
 		"enabled": true,
