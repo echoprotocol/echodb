@@ -24,6 +24,7 @@ import CommitteeMemberCreateOperation from './committee.member.create.operation'
 import CommitteeMemberUpdateOperation from './committee.member.update.operation';
 import AccountAddressCreateOperation from './account.address.create.operation';
 import TransferToAddressOperation from './transfer.to.address.operation';
+import SidechainEthDepositOperation from './sidechain.eth.deposit.operation';
 import SidechainEthCreateAddressOperation from './sidechain.eth.create.address.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
@@ -73,6 +74,7 @@ export default class OperationManager {
 		accountAddressCreateOperation: AccountAddressCreateOperation,
 		transferToAddressOperation: TransferToAddressOperation,
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
+		sidechainEthDepositOperation: SidechainEthDepositOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -100,6 +102,7 @@ export default class OperationManager {
 			accountAddressCreateOperation,
 			transferToAddressOperation,
 			sidechainEthCreateAddressOperation,
+			sidechainEthDepositOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
