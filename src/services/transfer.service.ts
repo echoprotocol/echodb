@@ -5,7 +5,7 @@ import BalanceRepository from 'repositories/balance.repository';
 import ContractBalanceRepository from 'repositories/contract.balance.repository';
 import * as TRANSFER from '../constants/transfer.constants';
 import * as API from '../constants/api.constants';
-import * as ECHO from '../constants/echo.constants';
+// import * as ECHO from '../constants/echo.constants';
 import * as BALANCE from '../constants/balance.constants';
 
 import { AccountId, ContractId, Amount } from '../types/echo';
@@ -39,7 +39,7 @@ interface GetTransactionParameters {
 	[KEY.SORT]?: API.SORT_DESTINATION;
 }
 
-type Query = { [x: string]: Query[] | { $in: (ECHO.OPERATION_ID | string)[] } | { $or: Query[] } };
+type Query = { [x: string]: Query[] | { $in: string[] } | { $or: Query[] } | any };
 
 export default class TransferService {
 
@@ -49,7 +49,7 @@ export default class TransferService {
 		private transferRepository: TransferRepository,
 		private balanceRepository: BalanceRepository,
 		private contractBalanceRepository: ContractBalanceRepository,
-	) {}
+	) { }
 
 	fetchParticipant<T extends TRANSFER.PARTICIPANT_TYPE>(
 		id: AccountId | ContractId,
@@ -90,48 +90,194 @@ export default class TransferService {
 	}
 
 	async getHistory(count: number, offset: number, params: GetTransactionParameters) {
-		const query: Query = {};
-		const addressesQuery: Query[] = [];
-		const addressesFromQuery: Query[] = [];
-		const addressesToQuery: Query[] = [];
 
-		if (params.relationTypes) query.relationType = { $in: params.relationTypes };
-		if (params.valueTypes) query.valueTypes = { $in: params.valueTypes };
-		if (params.amounts) query.amounts = { $in: params.amounts };
-		if (params.contracts) query.contracts = { $in: params.contracts };
-		if (params.from) {
-			addressesFromQuery.push(
-				{ _fromAccount: { $in: params.from } },
-				{ _fromContract: { $in: params.from } },
-			)
-			addressesQuery.push({ $or: addressesFromQuery })
-			// query._fromAccount = { $in: params.from };
-			// query._fromContract = { $in: params.from };
-		}
-		if (params.to) {
-			addressesToQuery.push(
-				{ _toAccount: { $in: params.from } },
-				{ _toContract: { $in: params.from } },
-			)
-			addressesQuery.push({ $or: addressesToQuery })
-			// query._toAccount = { $in: params.to };
-			// query._toContract = { $in: params.to };
-		}
 
-		if (addressesQuery.length) {
-			query.$and = [{ $or: addressesQuery }];
-		}
+
+
+
+
+		// db.getCollection('transfers').aggregate([
+
+		// 	{
+		// 		$match: {
+		// 			$and: [
+		// 				{
+		// 					$or: [
+		// 						{
+		// 							'_fromContract.id': { $in: ['1.2.566'] }
+		// 						},
+		// 						{
+		// 							'_fromAccount.id': '1.2.566'
+		// 						}
+		// 					]
+		// 				},
+		// 				{
+		// 					'_contract.id': {
+		// 						$in: ['1.9.517']
+		// 					}
+		// 				},
+		// 				{
+		// 					'valueType': 'token'
+		// 				}
+		// 			]
+		// 		}
+		// 	},
+		// 	{
+		// 		$unwind: { path: '$_fromAccount', preserveNullAndEmptyArrays: true }
+		// 	},
+		// 	{
+		// 		$unwind: { path: '$_toAccount', preserveNullAndEmptyArrays: true }
+		// 	},
+		// 	{
+		// 		$unwind: { path: '$_fromContract', preserveNullAndEmptyArrays: true }
+		// 	},
+		// 	{
+		// 		$unwind: { path: '$_toContract', preserveNullAndEmptyArrays: true }
+		// 	},
+		// 	{
+		// 		$unwind: { path: '$_contract', preserveNullAndEmptyArrays: true }
+		// 	}
+		// ])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		const query: Query[] = [
+			{
+				$lookup: {
+					from: 'accounts',
+					localField: '_fromAccount',
+					foreignField: '_id',
+					as: '_fromAccount'
+				}
+			},
+			{
+				$lookup: {
+					from: 'accounts',
+					localField: '_toAccount',
+					foreignField: '_id',
+					as: '_toAccount'
+				}
+			},
+			{
+				$lookup: {
+					from: 'contracts',
+					localField: '_fromContract',
+					foreignField: '_id',
+					as: '_fromContract'
+				}
+			},
+			{
+				$lookup: {
+					from: 'contracts',
+					localField: '_toContract',
+					foreignField: '_id',
+					as: '_toContract'
+				}
+			},
+			{
+				$lookup: {
+					from: 'contracts',
+					localField: '_fromContract',
+					foreignField: '_id',
+					as: '_fromContract'
+				}
+			},
+			{
+				$lookup: {
+					from: 'contracts',
+					localField: '_contract',
+					foreignField: '_id',
+					as: '_contract'
+				}
+			},
+		];
+
+		
+		const match: Query = {};
+		const otherParams: Query = {};
+		// const addressesQuery: Query[] = [];
+		// const addressesFromQuery: Query[] = [];
+		// const addressesToQuery: Query[] = [];
+
+		if (params.relationTypes) match.relationType = { $in: params.relationTypes };
+		if (params.valueTypes) match.valueType = { $in: params.valueTypes };
+		if (params.amounts) match.amount = { $in: params.amounts };
+
+
+		// if (params.contracts) match._contract = { $in: params.contracts };
+		// if (params.from) {
+		// 	addressesFromQuery.push(
+		// 		{ '_fromAccount.id': { $in: params.from } },
+		// 		{ '_fromContract.id': { $in: params.from } },
+		// 	)
+		// 	addressesQuery.push({ $or: addressesFromQuery })
+		// 	// match._fromAccount = { $in: params.from };
+		// 	// match._fromContract = { $in: params.from };
+		// }
+		// if (params.from) {
+		// 	addressesFromQuery.push(
+		// 		{ '_fromAccount.id': { $in: params.from } },
+		// 		{ '_fromContract.id': { $in: params.from } },
+		// 	)
+		// 	addressesQuery.push({ $or: addressesFromQuery })
+		// 	// match._fromAccount = { $in: params.from };
+		// 	// match._fromContract = { $in: params.from };
+		// }
+		// if (params.to) {
+		// 	addressesToQuery.push(
+		// 		{ _toAccount: { $in: params.from } },
+		// 		{ _toContract: { $in: params.from } },
+		// 	)
+		// 	addressesQuery.push({ $or: addressesToQuery })
+		// 	// match._toAccount = { $in: params.to };
+		// 	// match._toContract = { $in: params.to };
+		// }
+
+		// if (addressesQuery.length) {
+		// 	match.$and = [{ $or: addressesQuery }];
+		// }
+
+		const unwind/*: Query[]*/ = ['$_fromAccount', '$_toAccount', '$_fromContract', '$_toContract', '$_contract']
+			.map((path) => ({ $unwind: { path, preserveNullAndEmptyArrays: true } }))
 
 		const sortDestination = params.sort === API.SORT_DESTINATION.ASC ? 1 : -1;
-		const [items, total] = await Promise.all([
-			this.transferRepository.find(
-				query,
-				null,
-				{ skip: offset, limit: count, sort: { timestamp: sortDestination } },
-			),
-			this.transferRepository.count(query),
+
+		// query.push(match)
+		query.push(...unwind)
+		query.push({ $skip : offset })
+		query.push({ $limit : count })
+		query.push({ $sort: { timestamp: sortDestination } })
+
+		// console.log('match')
+		// console.log(match)
+		const [items] = await Promise.all([
+			this.transferRepository.aggregate(query),
 		]);
-		return { total, items };
+		console.log('items: ', items)
+		return { total: 0, items };
 	}
 
 }

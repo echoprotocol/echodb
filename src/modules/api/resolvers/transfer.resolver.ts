@@ -5,6 +5,7 @@ import AssetRepository from '../../../repositories/asset.repository';
 import Transfer from '../types/transfer.type';
 import PaginatedResponse from '../types/paginated.response.type';
 import TransferRepository from '../../../repositories/transfer.repository';
+import TransferService from '../../../services/transfer.service';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import * as TRANSFER from '../../../constants/transfer.constants';
@@ -12,7 +13,6 @@ import { TransferSubscribeForm, GetTransfersHistoryForm } from '../forms/transfe
 import { Resolver, Args, FieldResolver, Root, Subscription, Query } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
-import TransferService from '../../../services/transfer.service';
 
 const paginatedTransfers = PaginatedResponse(Transfer);
 
@@ -25,7 +25,7 @@ export default class TransferResolver extends AbstractResolver {
 	@inject static accountRepository: AccountRepository;
 	@inject static assetRepository: AssetRepository;
 	@inject static contractRepository: ContractRepository;
-	@inject static transferrepository: TransferRepository;
+	@inject static transferRepository: TransferRepository;
 	@inject static transferService: TransferService;
 
 	constructor(
@@ -36,6 +36,29 @@ export default class TransferResolver extends AbstractResolver {
 		private transferService: TransferService,
 	) {
 		super();
+	}
+
+	// Query
+	@Query(() => paginatedTransfers)
+	@validateArgs(GetTransfersHistoryForm)
+	getTransferHistory(
+		@Args() {
+			count,
+			offset,
+			from,
+			to,
+			contracts,
+			relationTypes,
+			valueTypes,
+			amounts,
+			sort,
+		}: GetTransfersHistoryForm,
+	) {
+		return this.transferService.getHistory(
+			count,
+			offset,
+			{ from, to, contracts, relationTypes, valueTypes, amounts, sort },
+		);
 	}
 
 	// FieldResolver
@@ -98,34 +121,11 @@ export default class TransferResolver extends AbstractResolver {
 		return dTransfer;
 	}
 
-	// Query
-	@Query(() => paginatedTransfers)
-	@validateArgs(GetTransfersHistoryForm)
-	getTransferHistory(
-		@Args() {
-			count,
-			offset,
-			from,
-			to,
-			contracts,
-			relationTypes,
-			valueTypes,
-			amounts,
-			sort,
-		}: GetTransfersHistoryForm,
-	) {
-		return this.transferService.getHistory(
-			count,
-			offset,
-			{ from, to, contracts, relationTypes, valueTypes, amounts, sort },
-		);
-	}
-
 	static transferCreateFilter(
 		{ payload: dTransfer, args: { from, to, assets, contracts } }: ITransferSubscriptionFilterArgs,
 	) {
-		const sender = this.transferrepository.getSender(dTransfer);
-		const receiver = this.transferrepository.getReceiver(dTransfer);
+		const sender = this.transferRepository.getSender(dTransfer);
+		const receiver = this.transferRepository.getReceiver(dTransfer);
 		if (from && !from.includes(sender.id)) return false;
 		if (to && !to.includes(receiver.id)) return false;
 		if (assets || contracts) {
