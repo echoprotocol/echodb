@@ -5,10 +5,10 @@ import AssetRepository from '../../../repositories/asset.repository';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 
-type OP_ID = ECHO.OPERATION_ID.ASSET_BITASSET_UPDATE;
+type OP_ID = ECHO.OPERATION_ID.ASSET_UPDATE_BITASSET;
 
 export default class AssetBitassetUpdateOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.ASSET_BITASSET_UPDATE;
+	id = ECHO.OPERATION_ID.ASSET_UPDATE_BITASSET;
 
 	constructor(
 		readonly redisConnection: RedisConnection,

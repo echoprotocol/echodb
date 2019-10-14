@@ -161,6 +161,7 @@ declare module 'echojs-lib' {
 		current_aslot: number;
 		dynamic_flags: number;
 		last_irreversible_block_num: number;
+		last_rand_quantity: number;
 	}
 
 	export interface ContractResult {
@@ -169,7 +170,6 @@ declare module 'echojs-lib' {
 			new_address: string;
 			output: string;
 			code_deposit: 'None' | unknown;
-			gas_refunded: number;
 			gas_for_deposit: number;
 			deposit_size: number;
 		};
