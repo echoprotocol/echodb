@@ -14,6 +14,7 @@ import AssetFundFeePoolOperation from './asset.fund.fee.pool.operation';
 import AssetPublishFeedOperation from './asset.publish.feed.operation';
 import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
 import BalanceFreezeOperation from './balance.freeze.operation';
+import BalanceUnfreezeOperation from './balance.unfreeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
@@ -28,6 +29,7 @@ import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
 import { dateFromUtcIso } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
+import BlockRewardOperation from './block.reward.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -54,9 +56,11 @@ export default class OperationManager {
 		assetPublishFeedOperation: AssetPublishFeedOperation,
 		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
 		balanceFreezeOperation: BalanceFreezeOperation,
+		balanceUnfreezeOperation: BalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
+		blockRewardOperation: BlockRewardOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -66,6 +70,7 @@ export default class OperationManager {
 			assetUpdateOperation,
 			assetBitassetUpdateOperation,
 			balanceFreezeOperation,
+			balanceUnfreezeOperation,
 			contractCreateOperation,
 			contractCallOperation,
 			assetIssueOperation,
@@ -76,8 +81,10 @@ export default class OperationManager {
 			assetUpdateFeedProducersOperation,
 			transferOperation,
 			contractTransferOperation,
+			blockRewardOperation,
 		];
 		for (const operation of operations) {
+			console.log(operation.id);
 			if (!operation.status) return;
 			this.map[operation.id] = operation;
 		}
