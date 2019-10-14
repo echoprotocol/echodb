@@ -27,4 +27,7 @@ export default class AccountRepository extends AbstractRepository<IAccount> {
 		return ids.map((id) => dAccountsMap.get(id));
 	}
 
+	findByAddress(address: string) {
+		return super.findOne({ addresses: { $elemMatch: { address } } });
+	}
 }
