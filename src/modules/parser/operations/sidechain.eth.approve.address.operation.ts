@@ -13,6 +13,7 @@ export default class SidechainEthApproveAddress extends AbstractOperation<OP_ID>
     async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
         return this.validateRelation({
             from: [body.committee_member_id],
+            accounts: body.malicious_committeemen,
             assets: [body.fee.asset_id],
         });
     }
