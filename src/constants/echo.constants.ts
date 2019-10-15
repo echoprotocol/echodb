@@ -91,6 +91,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: SidechainEthWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
+	[OPERATION_ID.CONTRACT_WHITELIST]: ContractWhitelistOperation;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
 };
 
@@ -126,6 +127,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
+	[OPERATION_ID.CONTRACT_WHITELIST]: unknown;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
 };
 
@@ -453,7 +455,7 @@ interface SidechainEthApproveAddressOperation {
 interface SidechainEthDepositOperation {
 	fee: IAmount;
 	committee_member_id: string;
-	deposit_id: number,
+	deposit_id: number;
 	account: string;
 	value: number;
 	extensions: ExtensionsArr;
@@ -480,6 +482,17 @@ interface ContractFundPoolOperation {
 	contract: string;
 	value: IAmount;
 
+}
+
+interface ContractWhitelistOperation {
+	fee: IAmount;
+	sender: string;
+	contract: string;
+	add_to_whitelist: string[];
+	remove_from_whitelist: string[];
+	add_to_blacklist: string[];
+	remove_from_blacklist: string[];
+	extensions: ExtensionsArr;
 }
 interface BlockRewardOperation {
 	fee: undefined;

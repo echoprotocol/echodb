@@ -30,12 +30,12 @@ export default class ProposalUpdateOperation extends AbstractOperation<OP_ID> {
 				dAsset,
 				new BN(amount).negated().toString(),
 				{ append: true },
-			)
+			),
 		]);
 		return this.validateRelation({
 			from: [body.sender],
 			assets: [body.fee.asset_id, body.value.asset_id],
-			contracts: [body.contract]
+			contracts: [body.contract],
 		});
 	}
 }
