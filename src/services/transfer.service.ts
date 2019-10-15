@@ -13,6 +13,7 @@ import { IAccount } from '../interfaces/IAccount';
 import { IContract } from '../interfaces/IContract';
 import { TDoc, MongoId } from '../types/mongoose';
 import { IAsset } from 'interfaces/IAsset';
+import { inspect } from 'util';
 
 type ParticipantDocTypeMap = {
 	[TRANSFER.PARTICIPANT_TYPE.ACCOUNT]: TDoc<IAccount>;
@@ -143,27 +144,6 @@ export default class TransferService {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		const query: Query[] = [
 			{
 				$lookup: {
@@ -215,37 +195,33 @@ export default class TransferService {
 			},
 		];
 
-		
-		const match: Query = {};
+		const match: Query = {
+			$and: []
+		};
 		const otherParams: Query = {};
-		// const addressesQuery: Query[] = [];
-		// const addressesFromQuery: Query[] = [];
+		
 		// const addressesToQuery: Query[] = [];
 
-		if (params.relationTypes) match.relationType = { $in: params.relationTypes };
-		if (params.valueTypes) match.valueType = { $in: params.valueTypes };
-		if (params.amounts) match.amount = { $in: params.amounts };
+		if (params.relationTypes) {
+			match.$and.push({ relationType: { $in: params.relationTypes } });
+		}
 
+		if (params.valueTypes) {
+			match.$and.push({ valueType: { $in: params.valueTypes } });
+		}
 
-		// if (params.contracts) match._contract = { $in: params.contracts };
-		// if (params.from) {
-		// 	addressesFromQuery.push(
-		// 		{ '_fromAccount.id': { $in: params.from } },
-		// 		{ '_fromContract.id': { $in: params.from } },
-		// 	)
-		// 	addressesQuery.push({ $or: addressesFromQuery })
-		// 	// match._fromAccount = { $in: params.from };
-		// 	// match._fromContract = { $in: params.from };
-		// }
-		// if (params.from) {
-		// 	addressesFromQuery.push(
-		// 		{ '_fromAccount.id': { $in: params.from } },
-		// 		{ '_fromContract.id': { $in: params.from } },
-		// 	)
-		// 	addressesQuery.push({ $or: addressesFromQuery })
-		// 	// match._fromAccount = { $in: params.from };
-		// 	// match._fromContract = { $in: params.from };
-		// }
+		if (params.amounts) {
+			match.$and.push({ amount: { $in: params.amounts } });
+		}
+
+		// if (params.contracts) otherParams._contract = { $in: params.contracts };
+		if (params.from) {
+			const addressesFromQuery: Query[] = [
+				{ '_fromAccount.id': { $in: params.from } },
+				{ '_fromContract.id': { $in: params.from } },
+			];
+			match.$and.push({ $or: addressesFromQuery });
+		}
 		// if (params.to) {
 		// 	addressesToQuery.push(
 		// 		{ _toAccount: { $in: params.from } },
@@ -256,23 +232,26 @@ export default class TransferService {
 		// 	// match._toContract = { $in: params.to };
 		// }
 
-		// if (addressesQuery.length) {
-		// 	match.$and = [{ $or: addressesQuery }];
-		// }
+
+		if (Object.keys(otherParams).length) {
+			match.$and.push({ $or: otherParams })
+		}
 
 		const unwind/*: Query[]*/ = ['$_fromAccount', '$_toAccount', '$_fromContract', '$_toContract', '$_contract']
 			.map((path) => ({ $unwind: { path, preserveNullAndEmptyArrays: true } }))
 
 		const sortDestination = params.sort === API.SORT_DESTINATION.ASC ? 1 : -1;
 
-		// query.push(match)
-		query.push(...unwind)
-		query.push({ $skip : offset })
-		query.push({ $limit : count })
-		query.push({ $sort: { timestamp: sortDestination } })
+		if (match.$and.length) {
+			query.push({ $match: match })
+		};
 
-		// console.log('match')
-		// console.log(match)
+		query.push(...unwind);
+		query.push({ $skip : offset });
+		query.push({ $limit : count });
+		query.push({ $sort: { timestamp: sortDestination } });
+
+		console.log(inspect(query, false, null, true))
 		const [items] = await Promise.all([
 			this.transferRepository.aggregate(query),
 		]);

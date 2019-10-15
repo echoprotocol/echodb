@@ -13,6 +13,7 @@ export default AbstractModel<ITransfer>(MODEL.NAME.TANSFER, {
 	_contract: { ref: MODEL.NAME.CONTRACT, $type: Schema.Types.ObjectId },
 	_asset: { ref: MODEL.NAME.ASSET, $type: Schema.Types.ObjectId },
 	amount: String,
+	timestamp: Date,
 	relationType: { enum: Object.values(TRANSFER.TYPE), $type: String },
 	valueType: { enum: Object.values(BALANCE.TYPE), $type: String },
 }, {
