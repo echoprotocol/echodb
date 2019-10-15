@@ -17,8 +17,8 @@ export default class Operation {
 	@Field({ nullable: true })
 	result: string;
 
-	@Field({ nullable: true })
-	block: Block;
+	@Field(() => Block, { nullable: true })
+	block: MongoId;
 
 	@Field({ nullable: true })
 	virtual: boolean;

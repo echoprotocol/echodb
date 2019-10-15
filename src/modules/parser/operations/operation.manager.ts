@@ -100,7 +100,7 @@ export default class OperationManager {
 			id,
 			body,
 			result,
-			block: dBlock ? dBlock : null,
+			block: dBlock ? dBlock._id : null,
 			virtual: !!dBlock,
 			_tx: dTx,
 			timestamp: dateFromUtcIso(dTx ? dTx._block.timestamp : dBlock.timestamp),
