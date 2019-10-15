@@ -56,7 +56,7 @@ export enum OPERATION_ID {
 	SIDECHAIN_BTC_WITHDRAW,
 	SIDECHAIN_BTC_APPROVE_WITHDRAW,
 	SIDECHAIN_BTC_AGGREGATE,
-	BLOCK_REWARD_OPERATION,
+	BLOCK_REWARD_OPERATION, // VIRTUAL
 }
 
 export type Operations = {
@@ -348,7 +348,8 @@ interface ContractCallOperation {
 }
 
 interface BlockRewardOperation {
-	fee: IAmount;
-	rewards: {[accountId: string]: number};
+	fee: undefined;
+	reciever: AccountId;
+	amount: number;
 	extensions: ExtensionsArr;
 }
