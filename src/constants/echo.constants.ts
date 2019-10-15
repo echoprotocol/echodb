@@ -92,7 +92,8 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
 	[OPERATION_ID.CONTRACT_WHITELIST]: ContractWhitelistOperation;
-	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: SidechainEthIssue;
+	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: SidechainEthIssueOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_BURN]: SidechainEthBurnOperation;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
 };
 
@@ -131,6 +132,7 @@ export type OperationResult = {
 	[OPERATION_ID.CONTRACT_WHITELIST]: unknown;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_BURN]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -497,11 +499,19 @@ interface ContractWhitelistOperation {
 	extensions: ExtensionsArr;
 }
 
-interface SidechainEthIssue {
+interface SidechainEthIssueOperation {
 	fee: IAmount;
 	value: IAmount;
 	account: string;
 	deposit_id: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthBurnOperation {
+	fee: IAmount;
+	value: IAmount;
+	account: string;
+	withdraw_id: string;
 	extensions: ExtensionsArr;
 }
 

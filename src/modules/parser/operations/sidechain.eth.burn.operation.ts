@@ -5,10 +5,10 @@ import AssetRepository from 'repositories/asset.repository';
 import AccountRepository from 'repositories/account.repository';
 import * as ECHO from '../../../constants/echo.constants';
 
-type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ETH_ISSUE;
+type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ETH_BURN;
 
-export default class SidechainEthIssueOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.SIDECHAIN_ETH_ISSUE;
+export default class SidechainEthBurnOperation extends AbstractOperation<OP_ID> {
+	id = ECHO.OPERATION_ID.SIDECHAIN_ETH_BURN;
 
 	constructor(
         private balanceRepository: BalanceRepository,
@@ -27,7 +27,7 @@ export default class SidechainEthIssueOperation extends AbstractOperation<OP_ID>
 		await this.balanceRepository.updateOrCreateByAccountAndAsset(
 				dFrom,
 				dAsset,
-				new BN(amount).toString(),
+				new BN(amount).negated().toString(),
 				{ append: true },
 			);
 		return this.validateRelation({
