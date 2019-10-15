@@ -5,35 +5,34 @@ import AssetRepository from 'repositories/asset.repository';
 import AccountRepository from 'repositories/account.repository';
 import * as ECHO from '../../../constants/echo.constants';
 
-type OP_ID = ECHO.OPERATION_ID.CONTRACT_FUND_POOL;
+type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ETH_ISSUE;
 
-export default class ProposalUpdateOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.CONTRACT_FUND_POOL;
+export default class SidechainEthDepositOperation extends AbstractOperation<OP_ID> {
+	id = ECHO.OPERATION_ID.SIDECHAIN_ETH_ISSUE;
 
 	constructor(
-		private balanceRepository: BalanceRepository,
+        private balanceRepository: BalanceRepository,
 		private assetRepository: AssetRepository,
 		private accountRepository: AccountRepository,
-	) {
+    ) {
 		super();
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
-		const [dFrom, dAsset] = await Promise.all([
-			this.accountRepository.findById(body.sender),
+        const [dFrom, dAsset] = await Promise.all([
+			this.accountRepository.findById(body.account),
 			this.assetRepository.findById(body.value.asset_id),
 		]);
 		const amount = new BN(body.value.amount).toString();
 		await this.balanceRepository.updateOrCreateByAccountAndAsset(
 				dFrom,
 				dAsset,
-				new BN(amount).negated().toString(),
+				new BN(amount).toString(),
 				{ append: true },
 			);
 		return this.validateRelation({
-			from: [body.sender],
-			assets: [body.fee.asset_id, body.value.asset_id],
-			contracts: [body.contract],
+            assets: [body.fee.asset_id, body.value.asset_id],
+            accounts: [body.account]
 		});
 	}
 }
