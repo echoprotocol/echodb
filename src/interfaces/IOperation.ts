@@ -1,13 +1,12 @@
 import * as ECHO from '../constants/echo.constants';
 import { AccountId, AssetId, ContractId } from '../types/echo';
-import { MongoId, TDoc } from '../types/mongoose';
-import { IBlock } from './IBlock';
+import { MongoId } from '../types/mongoose';
 
 export type IOperation<T extends ECHO.OPERATION_ID = ECHO.OPERATION_ID> = {
 	id: T;
 	body: T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_PROPS<T> : unknown;
 	result: T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<T> : unknown;
-	block: TDoc<IBlock>;
+	block: MongoId;
 	virtual: boolean;
 	_tx: MongoId;
 	timestamp: Date;
