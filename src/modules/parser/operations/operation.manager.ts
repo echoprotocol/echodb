@@ -14,6 +14,7 @@ import AssetFundFeePoolOperation from './asset.fund.fee.pool.operation';
 import AssetPublishFeedOperation from './asset.publish.feed.operation';
 import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
 import BalanceFreezeOperation from './balance.freeze.operation';
+import BalanceUnfreezeOperation from './balance.unfreeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
@@ -41,6 +42,7 @@ import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
 import { dateFromUtcIso } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
+import BlockRewardOperation from './block.reward.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -67,6 +69,7 @@ export default class OperationManager {
 		assetPublishFeedOperation: AssetPublishFeedOperation,
 		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
 		balanceFreezeOperation: BalanceFreezeOperation,
+		balanceUnfreezeOperation: BalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
@@ -83,6 +86,7 @@ export default class OperationManager {
 		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation,
 		sidechainEthApproveWithdrawOperation: SidechainEthApproveWithdrawOperation,
 		contractFundPoolOperation: ContractFundPoolOperation,
+		blockRewardOperation: BlockRewardOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -92,6 +96,7 @@ export default class OperationManager {
 			assetUpdateOperation,
 			assetBitassetUpdateOperation,
 			balanceFreezeOperation,
+			balanceUnfreezeOperation,
 			contractCreateOperation,
 			contractCallOperation,
 			assetIssueOperation,
@@ -115,6 +120,7 @@ export default class OperationManager {
 			sidechainEthApproveAddressOperation,
 			sidechainEthApproveWithdrawOperation,
 			contractFundPoolOperation,
+			blockRewardOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
@@ -127,17 +133,20 @@ export default class OperationManager {
 		[id, body]: [T, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_PROPS<T> : unknown],
 		[_, result]: [unknown, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<T> : unknown],
 		dTx: TDoc<ITransactionExtended>,
+		dBlock?: TDoc<IBlock>,
 	) {
 		const operation: IOperation<T> = {
 			id,
 			body,
 			result,
+			block: dBlock ? dBlock._id : null,
+			virtual: !!dBlock,
 			_tx: dTx,
-			timestamp: dateFromUtcIso(dTx._block.timestamp),
+			timestamp: dateFromUtcIso(dTx ? dTx._block.timestamp : dBlock.timestamp),
 			_relation: null,
 		};
 		if (this.map[id]) {
-			operation._relation = await this.parseKnownOperation(id, body, result, dTx._block);
+			operation._relation = await this.parseKnownOperation(id, body, result, dTx ? dTx._block : dBlock);
 		} else {
 			logger.warn(`Operation ${id} is not supported`);
 			const feePayer = OPERATION.FEE_PAYER_FIELD[id];
@@ -160,7 +169,9 @@ export default class OperationManager {
 	): Promise<IOperationRelation> {
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
 		const relation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
-		await this.balanceService.takeFee(relation.from[0], body.fee);
+		if (body.fee) {
+			await this.balanceService.takeFee(relation.from[0], body.fee);
+		}
 		return relation;
 	}
 

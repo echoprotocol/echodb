@@ -26,6 +26,7 @@ export enum OPERATION_ID {
 	VESTING_BALANCE_WITHDRAW,
 	BALANCE_CLAIM,
 	BALANCE_FREEZE,
+	BALANCE_UNFREEZE,
 	OVERRIDE_TRANSFER,
 	ASSET_CLAIM_FEES,
 	CONTRACT_CREATE,
@@ -55,6 +56,7 @@ export enum OPERATION_ID {
 	SIDECHAIN_BTC_WITHDRAW,
 	SIDECHAIN_BTC_APPROVE_WITHDRAW,
 	SIDECHAIN_BTC_AGGREGATE,
+	BLOCK_REWARD_OPERATION, // VIRTUAL
 }
 
 export type Operations = {
@@ -72,6 +74,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
 	[OPERATION_ID.BALANCE_FREEZE]: BalanceFreezeOperation;
+	[OPERATION_ID.BALANCE_UNFREEZE]: BalanceUnfreezeOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
@@ -88,6 +91,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: SidechainEthWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
+	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
 };
 
 export type OperationResult = {
@@ -105,6 +109,7 @@ export type OperationResult = {
 	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
 	[OPERATION_ID.BALANCE_FREEZE]: unknown;
+	[OPERATION_ID.BALANCE_UNFREEZE]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
 	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
@@ -121,6 +126,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
+	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -341,6 +347,13 @@ interface BalanceFreezeOperation {
 	extensions: ExtensionsArr;
 }
 
+interface BalanceUnfreezeOperation {
+	account: AccountId;
+	amount: IAmount;
+	fee: IAmount;
+	extensions: ExtensionsArr;
+}
+
 interface ContractCreateOperation {
 	fee: IAmount;
 	registrar: string;
@@ -466,5 +479,11 @@ interface ContractFundPoolOperation {
 	sender: string;
 	contract: string;
 	value: IAmount;
+
+}
+interface BlockRewardOperation {
+	fee: undefined;
+	reciever: AccountId;
+	amount: number;
 	extensions: ExtensionsArr;
 }
