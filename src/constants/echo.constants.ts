@@ -87,6 +87,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: SidechainEthDepositOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: SidechainEthWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
+	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
 };
 
 export type OperationResult = {
@@ -119,6 +120,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
+	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -456,5 +458,13 @@ interface SidechainEthApproveWithdraw {
 	fee: IAmount;
 	committee_member_id: string;
 	withdraw_id: number;
+	extensions: ExtensionsArr;
+}
+
+interface ContractFundPoolOperation {
+	fee: IAmount;
+	sender: string;
+	contract: string;
+	value: IAmount;
 	extensions: ExtensionsArr;
 }
