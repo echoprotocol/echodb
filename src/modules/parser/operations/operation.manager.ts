@@ -94,17 +94,20 @@ export default class OperationManager {
 		[id, body]: [T, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_PROPS<T> : unknown],
 		[_, result]: [unknown, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<T> : unknown],
 		dTx: TDoc<ITransactionExtended>,
+		dBlock?: TDoc<IBlock>,
 	) {
 		const operation: IOperation<T> = {
 			id,
 			body,
 			result,
+			block: dBlock ? dBlock._id : null,
+			virtual: !!dBlock,
 			_tx: dTx,
-			timestamp: dateFromUtcIso(dTx._block.timestamp),
+			timestamp: dateFromUtcIso(dTx ? dTx._block.timestamp : dBlock.timestamp),
 			_relation: null,
 		};
 		if (this.map[id]) {
-			operation._relation = await this.parseKnownOperation(id, body, result, dTx._block);
+			operation._relation = await this.parseKnownOperation(id, body, result, dTx ? dTx._block : dBlock);
 		} else {
 			logger.warn(`Operation ${id} is not supported`);
 			const feePayer = OPERATION.FEE_PAYER_FIELD[id];
@@ -127,7 +130,9 @@ export default class OperationManager {
 	): Promise<IOperationRelation> {
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
 		const relation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
-		await this.balanceService.takeFee(relation.from[0], body.fee);
+		if (body.fee) {
+			await this.balanceService.takeFee(relation.from[0], body.fee);
+		}
 		return relation;
 	}
 
