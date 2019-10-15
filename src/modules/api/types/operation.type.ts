@@ -2,6 +2,7 @@ import Transaction from './transaction.type';
 import * as JsonType from 'graphql-type-json';
 import { ObjectType, Field } from 'type-graphql';
 import { MongoId } from 'types/mongoose';
+import Block from './block.type';
 
 @ObjectType()
 export default class Operation {
@@ -16,6 +17,12 @@ export default class Operation {
 	@Field({ nullable: true })
 	result: string;
 
-	@Field(() => Transaction)
+	@Field(() => Block, { nullable: true })
+	block: MongoId;
+
+	@Field({ nullable: true })
+	virtual: boolean;
+
+	@Field(() => Transaction, { nullable: true })
 	transaction: Transaction;
 }
