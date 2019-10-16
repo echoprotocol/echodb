@@ -496,5 +496,7 @@ interface ContractWhitelistOperation {
 interface BlockRewardOperation {
 	fee: undefined;
 	reciever: AccountId;
+	amount: number;
 	extensions: ExtensionsArr;
 }
+
