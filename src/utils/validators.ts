@@ -14,7 +14,7 @@ export function isMongoObjectId(value: string | number | any): value is mongoose
 
 // FIXME: refactor to use keys
 export type RelationParameters = {
-	from?: AccountId[],
+	from: AccountId[],
 	to?: AccountId | AccountId[],
 	accounts?: AccountId[],
 	contracts?: ContractId | ContractId[],
