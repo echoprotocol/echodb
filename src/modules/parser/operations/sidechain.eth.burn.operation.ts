@@ -33,7 +33,6 @@ export default class SidechainEthBurnOperation extends AbstractOperation<OP_ID> 
 		return this.validateRelation({
 			from: [body.account],
 			assets: [body.fee.asset_id, body.value.asset_id],
-			accounts: [body.account],
 		});
 	}
 }
