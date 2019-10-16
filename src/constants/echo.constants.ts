@@ -377,7 +377,7 @@ interface ContractCallOperation {
 
 interface ProposalCreateOperation {
 	fee: IAmount;
-	fee_paying_account: string;
+	fee_paying_account: AccountId;
 	proposed_ops: unknown[];
 	expiration_time: string;
 	review_period_seconds: number;
@@ -386,10 +386,10 @@ interface ProposalCreateOperation {
 
 interface ProposalUpdateOperation {
 	fee: IAmount;
-	fee_paying_account: string;
+	fee_paying_account: AccountId;
 	proposal: string;
 	active_approvals_to_add: AccountId[];
-	active_apprivals_to_remove: AccountId[];
+	active_approvals_to_remove: AccountId[];
 	owner_approvals_to_remove: AccountId[];
 	key_approvals_to_add: string[];
 	key_approvals_to_remove: string[];
@@ -398,7 +398,7 @@ interface ProposalUpdateOperation {
 
 interface ProposalDeleteOperation {
 	fee: IAmount;
-	fee_paying_account: string;
+	fee_paying_account: AccountId;
 	using_owner_authority: boolean;
 	proposal: string;
 	extensions: ExtensionsArr;
@@ -406,7 +406,7 @@ interface ProposalDeleteOperation {
 
 interface CommitteeMemberCreateOperation {
 	fee: IAmount;
-	committee_member_account: string;
+	committee_member_account: AccountId;
 	url: string;
 	eth_address: string;
 	btc_public_key: string;
@@ -415,8 +415,8 @@ interface CommitteeMemberCreateOperation {
 
 interface CommitteMemberUpdateOperation {
 	fee: IAmount;
-	committee_member: string;
-	committee_member_account: string;
+	committee_member: AccountId;
+	committee_member_account: AccountId;
 	new_url: string;
 	new_eth_address: string;
 	new_btc_public_key: string;
@@ -424,46 +424,45 @@ interface CommitteMemberUpdateOperation {
 
 interface AccountAddressCreateOperation {
 	fee: IAmount;
-	owner: string;
+	owner: AccountId;
 	label: string;
 	extensions: ExtensionsArr;
 }
 
 interface TransferToAddressOperation {
 	fee: IAmount;
-	from: string;
-	to: string;
+	from: AccountId;
+	to: AccountId;
 	amount: IAmount;
 	extensions: ExtensionsArr;
 }
 
 interface SidechainEthCreateAddressOperation {
 	fee: IAmount;
-	account: string;
+	account: AccountId;
 	extensions: ExtensionsArr;
 }
 
 interface SidechainEthApproveAddressOperation {
 	fee: IAmount;
-	committee_member_id: string;
-	malicious_committeemen: string[];
-	account: string;
-	eth_addr: string;
+	committee_member_id: AccountId;
+	malicious_committeemen: AccountId[];
+	account: AccountId;
 	extensions: ExtensionsArr;
 }
 
 interface SidechainEthDepositOperation {
 	fee: IAmount;
-	committee_member_id: string;
+	committee_member_id: AccountId;
 	deposit_id: number;
-	account: string;
+	account: AccountId;
 	value: number;
 	extensions: ExtensionsArr;
 }
 
 interface SidechainEthWithdrawOperation {
 	fee: IAmount;
-	account: string;
+	account: AccountId;
 	eth_addr: string;
 	value: number;
 	extensions: ExtensionsArr;
@@ -471,14 +470,14 @@ interface SidechainEthWithdrawOperation {
 
 interface SidechainEthApproveWithdraw {
 	fee: IAmount;
-	committee_member_id: string;
+	committee_member_id: AccountId;
 	withdraw_id: number;
 	extensions: ExtensionsArr;
 }
 
 interface ContractFundPoolOperation {
 	fee: IAmount;
-	sender: string;
+	sender: AccountId;
 	contract: string;
 	value: IAmount;
 
@@ -497,6 +496,5 @@ interface ContractWhitelistOperation {
 interface BlockRewardOperation {
 	fee: undefined;
 	reciever: AccountId;
-	amount: number;
 	extensions: ExtensionsArr;
 }
