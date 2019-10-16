@@ -75,6 +75,16 @@ export default class ParserModule extends AbstractModule {
 				}
 				this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 			}
+
+			if (map.size) {
+				logger.trace(`Parsing block #${block.round}`);
+				let mapOpsPromises = null;
+				map.forEach((mapOps) => {
+					mapOpsPromises = mapOps.map((vOp) => this.operationManager.parse(vOp.op, vOp.result, null, dBlock));
+				});
+				await Promise.all(mapOpsPromises);
+			}
+
 			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
 		} catch (error) {
 			logger.error(`Block ${this.blockEngine.getCurrentBlockNum()}`, error);

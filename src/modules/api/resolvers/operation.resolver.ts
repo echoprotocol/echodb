@@ -9,6 +9,8 @@ import { GetOperationsHistoryForm, NewOperationSubscribe } from '../forms/operat
 import { Args, Resolver, Query, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
+import Block from '../types/block.type';
+import BlockRepository from '../../../repositories/block.repository';
 
 const paginatedBlocks = PaginatedResponse(Operation);
 
@@ -23,10 +25,12 @@ interface INewOperationSubscriptionFilterArgs {
 export default class OperationResolver extends AbstractResolver {
 	@inject static operationService: OperationService;
 	@inject static transactionRepository: TranasctionRepository;
+	@inject static blockRepository: BlockRepository;
 
 	constructor(
 		private operationService: OperationService,
 		private transactionRepository: TranasctionRepository,
+		private blockRepository: BlockRepository,
 	) {
 		super();
 	}
@@ -59,6 +63,12 @@ export default class OperationResolver extends AbstractResolver {
 	@FieldResolver(() => Transaction)
 	transaction(@Root('_tx') tx: Operation['_tx']) {
 		return this.resolveMongoField(tx, this.transactionRepository);
+	}
+
+	// FieldResolver
+	@FieldResolver(() => Block)
+	block(@Root('block') block: Operation['block']) {
+		return this.resolveMongoField(block, this.blockRepository);
 	}
 
 	// Subscription
