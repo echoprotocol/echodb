@@ -36,6 +36,9 @@ import SidechainEthIssueOperation from './sidechain.eth.issue.operation';
 import SidechainEthBurnOperation from './sidechain.eth.burn.operation';
 import SidechainErc20RegisterTokenOperation from './sidechain.erc20.register.token.operation';
 import SidechainErc20DepositTokenOperation from './sidechain.erc20.deposit.token.operation';
+import SidechainErc20WithdrawTokenOperation from './sidechain.erc20.withdraw.token.operation';
+import SidechainErc20ApproveTokenWithdrawOperation from './sidechain.erc20.approve.token.withdraw.operation';
+import ContractUpdateOperation from './contract.update.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -97,6 +100,9 @@ export default class OperationManager {
 		sidechainEthBurnOperation: SidechainEthBurnOperation,
 		sidechainErc20RegisterTokenOperation: SidechainErc20RegisterTokenOperation,
 		sidechainErc20DepositTokenOperation: SidechainErc20DepositTokenOperation,
+		sidechainErc20WithdrawTokenOperation: SidechainErc20WithdrawTokenOperation,
+		sidechainErc20ApproveTokenWithdrawOperation: SidechainErc20ApproveTokenWithdrawOperation,
+		contractUpdateOperation: ContractUpdateOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -136,6 +142,9 @@ export default class OperationManager {
 			sidechainEthBurnOperation,
 			sidechainErc20RegisterTokenOperation,
 			sidechainErc20DepositTokenOperation,
+			sidechainErc20WithdrawTokenOperation,
+			sidechainErc20ApproveTokenWithdrawOperation,
+			contractUpdateOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
