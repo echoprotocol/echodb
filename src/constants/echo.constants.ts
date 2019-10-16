@@ -506,7 +506,7 @@ interface ContractWhitelistOperation {
 interface SidechainEthIssueOperation {
 	fee: IAmount;
 	value: IAmount;
-	account: string;
+	account: AccountId;
 	deposit_id: string;
 	extensions: ExtensionsArr;
 }
@@ -514,14 +514,14 @@ interface SidechainEthIssueOperation {
 interface SidechainEthBurnOperation {
 	fee: IAmount;
 	value: IAmount;
-	account: string;
+	account: AccountId;
 	withdraw_id: string;
 	extensions: ExtensionsArr;
 }
 
 interface SidechainErc20RegisterTokenOperation {
 	fee: IAmount;
-	account: string;
+	account: AccountId;
 	eth_addr: string;
 	name: string;
 	symbol: string;
@@ -531,9 +531,9 @@ interface SidechainErc20RegisterTokenOperation {
 
 interface SidechainErc20DepositTokenOperation {
 	fee: IAmount;
-	committee_member_id: string;
-	malicious_committeemen: string[];
-	account: string;
+	committee_member_id: AccountId;
+	malicious_committeemen: AccountId[];
+	account: AccountId;
 	erc20_token_addr: string;
 	value: string;
 	transaction_hash: string;
