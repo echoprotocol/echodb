@@ -508,9 +508,9 @@ interface BalanceClaimOperation {
 
 interface OverrideTransfer {
 	fee: IAmount;
-	issuer: String;
-	from: string;
-	to: string;
+	issuer: AccountId;
+	from: AccountId;
+	to: AccountId;
 	amount: IAmount;
 	extensions: ExtensionsArr;
 }

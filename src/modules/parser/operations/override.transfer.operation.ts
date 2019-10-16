@@ -30,6 +30,7 @@ export default class OverrideTransferOperation extends AbstractOperation<OP_ID> 
 		return this.validateRelation({
 			from: [body.from],
 			to: [body.to],
+			accounts: [body.issuer],
 			assets: [body.fee.asset_id],
 		});
 	}
