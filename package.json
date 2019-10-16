@@ -26,6 +26,7 @@
 		"lint:src": "npx tslint -p tsconfig.json -c tslint.json",
 		"lint:typing": "npx tslint -c tslint.json ./typing/**/*.d.ts",
 		"lint:types": "npx tslint -c tslint.json ./src/types/**/*.d.ts",
+		"lint:fix": "npx tslint --fix -p ./tsconfig.json",
 		"audit": "node_modules/audit-ci/bin/audit-ci --config audit-ci.json",
 		"test": "echo \"we need tests!\""
 	},

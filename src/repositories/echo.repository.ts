@@ -185,4 +185,12 @@ export default class EchoRepository {
 		}
 	}
 
+	async getAddressObject(objectId: string) {
+		try {
+			return await this.echoConnection.echo.api.getObject(objectId);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'parseModule#getAddress', { objectId });
+		}
+	}
+
 }
