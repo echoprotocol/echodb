@@ -31,7 +31,7 @@ export default class VestingBalanceWithdrawOperation extends AbstractOperation<O
 		return this.validateRelation({
 			from: [body.vesting_balance],
 			to: [body.owner],
-			assets: [body.fee.asset_id],
+			assets: [body.fee.asset_id, body.amount.asset_id],
 		});
 	}
 }

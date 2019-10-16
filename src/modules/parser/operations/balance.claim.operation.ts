@@ -19,7 +19,7 @@ export default class BalanceClaimOperation extends AbstractOperation<OP_ID> {
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const dAsset = await this.assetRepository.findById(body.total_claimed.asset_id);
 		const dTo = await this.accountRepository.findById(body.deposit_to_account);
-		const amount = new BN(body.balance_to_claim).toString(10);
+		const amount = new BN(body.total_claimed.amount).toString(10);
 		await this.balanceRepository.updateOrCreateByAccountAndAsset(
 			dTo,
 			dAsset,
@@ -28,7 +28,7 @@ export default class BalanceClaimOperation extends AbstractOperation<OP_ID> {
 		);
 		return this.validateRelation({
 			from: [body.deposit_to_account],
-			assets: [body.fee.asset_id],
+			assets: [body.fee.asset_id, body.total_claimed.asset_id],
 		});
 	}
 }

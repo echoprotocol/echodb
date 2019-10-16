@@ -31,7 +31,7 @@ export default class VestingBalanceCreateOperation extends AbstractOperation<OP_
 		return this.validateRelation({
 			from: [body.creator],
 			to: [body.owner],
-			assets: [body.fee.asset_id],
+			assets: [body.fee.asset_id, body.amount.asset_id],
 		});
 	}
 }

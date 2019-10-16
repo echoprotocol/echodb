@@ -163,6 +163,71 @@ export type OPERATION_RESULT<T extends keyof OperationResult> = OperationResult[
 export type Authority = [number, {}];
 type ExtensionsArr = unknown[];
 type ExtensionsObj = {};
+type NewParameters = {
+	current_fees: {
+		parameters: [];
+		scale: Number;
+	};
+	block_interval: Number;
+	maintenance_interval: Number;
+	maintenance_duration_seconds: Number;
+	committee_proposal_review_period: Number;
+	maximum_transaction_size: Number;
+	maximum_block_size: Number;
+	maximum_time_until_expiration: Number;
+	maximum_proposal_lifetime: Number;
+	maximum_asset_whitelist_authorities: Number;
+	maximum_asset_feed_publishers: Number;
+	maximum_committee_count: Number;
+	maximum_authority_membership: Number;
+	reserve_percent_of_fee: Number;
+	network_percent_of_fee: Number;
+	max_predicate_opcode: Number;
+	accounts_per_fee_scale: Number;
+	account_fee_scale_bitshifts: Number;
+	max_authority_depth: Number;
+	echorand_config: {
+		_time_net_1mb: Number;
+		_time_net_256b: Number;
+		_creator_count: Number;
+		_verifier_count: Number;
+		_ok_threshold: Number;
+		_max_bba_steps: Number;
+		_gc1_delay: Number;
+	};
+	sidechain_config: {
+		eth_contract_address: String;
+		eth_committee_update_method : IEth;
+		eth_gen_address_method : IEth;
+		eth_withdraw_method : IEth;
+		eth_update_addr_method : IEth;
+		eth_withdraw_token_method : IEth;
+		eth_collect_tokens_method : IEth;
+		eth_committee_updated_topic: String;
+		eth_gen_address_topic: String;
+		eth_deposit_topic: String;
+		eth_withdraw_topic: String;
+		erc20_deposit_topic: String;
+		ETH_asset_id: String;
+		fines : {
+			generate_eth_address: Number;
+		}
+		waiting_blocks: Number;
+	};
+	erc20_config: {
+		contract_code: String;
+		create_token_fee: Number;
+		transfer_topic: String;
+		check_balance_method: IEth;
+		burn_method: IEth;
+		issue_method: IEth;
+	};
+	gas_price: {
+		price: Number;
+		gas_amount: Number;
+	};
+	extensions: ExtensionsArr;
+}
 
 export interface IAmount {
 	amount: number | string;
@@ -426,81 +491,17 @@ export interface IEth {
 	method: String;
 	gas: Number;
 }
-export interface INewParameters {
-	current_fees: {
-		parameters: [];
-		scale: Number;
-	};
-	block_interval: Number;
-	maintenance_interval: Number;
-	maintenance_duration_seconds: Number;
-	committee_proposal_review_period: Number;
-	maximum_transaction_size: Number;
-	maximum_block_size: Number;
-	maximum_time_until_expiration: Number;
-	maximum_proposal_lifetime: Number;
-	maximum_asset_whitelist_authorities: Number;
-	maximum_asset_feed_publishers: Number;
-	maximum_committee_count: Number;
-	maximum_authority_membership: Number;
-	reserve_percent_of_fee: Number;
-	network_percent_of_fee: Number;
-	max_predicate_opcode: Number;
-	accounts_per_fee_scale: Number;
-	account_fee_scale_bitshifts: Number;
-	max_authority_depth: Number;
-	echorand_config: {
-		_time_net_1mb: Number;
-		_time_net_256b: Number;
-		_creator_count: Number;
-		_verifier_count: Number;
-		_ok_threshold: Number;
-		_max_bba_steps: Number;
-		_gc1_delay: Number;
-	};
-	sidechain_config: {
-		eth_contract_address: String;
-		eth_committee_update_method : IEth;
-		eth_gen_address_method : IEth;
-		eth_withdraw_method : IEth;
-		eth_update_addr_method : IEth;
-		eth_withdraw_token_method : IEth;
-		eth_collect_tokens_method : IEth;
-		eth_committee_updated_topic: String;
-		eth_gen_address_topic: String;
-		eth_deposit_topic: String;
-		eth_withdraw_topic: String;
-		erc20_deposit_topic: String;
-		ETH_asset_id: String;
-		fines : {
-			generate_eth_address: Number;
-		}
-		waiting_blocks: Number;
-	};
-	erc20_config: {
-		contract_code: String;
-		create_token_fee: Number;
-		transfer_topic: String;
-		check_balance_method: IEth;
-		burn_method: IEth;
-		issue_method: IEth;
-	};
-	gas_price: {
-		price: Number;
-		gas_amount: Number;
-	};
-	extensions: ExtensionsArr;
-}
+
 interface CommitteeMemberUpdateGlobalParametersProps{
 	fee: IAmount;
-	new_parameters: INewParameters;
+	new_parameters: NewParameters;
 	extensions: ExtensionsArr;
 }
 
 interface BalanceClaimOperation {
 	fee: IAmount;
 	deposit_to_account: AccountId;
-	balance_to_claim: string;
+	balance_to_claim: IAmount;
 	balance_owner_key: string;
 	total_claimed: IAmount;
 	extensions: ExtensionsArr;
