@@ -90,9 +90,6 @@ export default class ApiModule extends AbstractModule {
 			formatError: this.formatError.bind(this),
 			introspection: config.api.introspection,
 			playground: config.api.playground,
-			subscriptions: {
-				keepAlive: 10000,
-			},
 		});
 		this.gqlServer.applyMiddleware({ app: this.expressApp });
 	}
