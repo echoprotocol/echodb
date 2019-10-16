@@ -68,21 +68,15 @@ export default class OperationManager {
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
-<<<<<<< HEAD
 		proposalCreateOperation: ProposalCreateOperation,
 		proposalUpdateOperation: ProposalUpdateOperation,
 		proposalDeleteOperation: ProposalDeleteOperation,
 		committeeMemberCreateOperation: CommitteeMemberCreateOperation,
 		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
-<<<<<<< HEAD
 		accountAddressCreateOperation: AccountAddressCreateOperation,
 		transferToAddressOperation: TransferToAddressOperation,
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
-=======
-=======
 		blockRewardOperation: BlockRewardOperation,
->>>>>>> 5aac5992987f1d789fd65c62e26800846043d41f
->>>>>>> EDB-158
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -103,21 +97,15 @@ export default class OperationManager {
 			assetUpdateFeedProducersOperation,
 			transferOperation,
 			contractTransferOperation,
-<<<<<<< HEAD
 			proposalCreateOperation,
 			proposalUpdateOperation,
 			proposalDeleteOperation,
 			committeeMemberCreateOperation,
 			committeeMemberUpdateOperation,
-<<<<<<< HEAD
 			accountAddressCreateOperation,
 			transferToAddressOperation,
 			sidechainEthCreateAddressOperation,
-=======
-=======
 			blockRewardOperation,
->>>>>>> 5aac5992987f1d789fd65c62e26800846043d41f
->>>>>>> EDB-158
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
