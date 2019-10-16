@@ -240,6 +240,10 @@ export interface IPolicy {
 	vesting_duration_seconds: Number;
 }
 
+export interface IEth {
+	method: String;
+	gas: Number;
+}
 interface TransferOperation {
 	fee: IAmount;
 	from: string;
@@ -485,11 +489,6 @@ interface VestingBalanceWithdraw {
 	owner: AccountId;
 	amount: IAmount;
 	extensions: ExtensionsArr;
-}
-
-export interface IEth {
-	method: String;
-	gas: Number;
 }
 
 interface CommitteeMemberUpdateGlobalParametersProps{
