@@ -9,20 +9,20 @@ export default class ContractUpdateOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.CONTRACT_UPDATE;
 
 	constructor(
-        private contractRepository: ContractRepository,
-        private accountRepository: AccountRepository,
-    ) {
+		private contractRepository: ContractRepository,
+		private accountRepository: AccountRepository,
+	) {
 		super();
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
-        const dContract = await this.contractRepository.findById(body.contract);
-        dContract._registrar = await this.accountRepository.findById(body.new_owner);
-        dContract.save();
+		const dContract = await this.contractRepository.findById(body.contract);
+		dContract._registrar = await this.accountRepository.findById(body.new_owner);
+		dContract.save();
 		return this.validateRelation({
-            from: [body.sender],
-            accounts: [body.new_owner],
-            contracts: [body.contract],
+			from: [body.sender],
+			accounts: [body.new_owner],
+			contracts: [body.contract],
 			assets: [body.fee.asset_id],
 		});
 	}
