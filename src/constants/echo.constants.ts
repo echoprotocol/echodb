@@ -346,7 +346,7 @@ interface ContractCallOperation {
 
 interface ProposalCreateOperation {
 	fee: IAmount;
-	fee_paying_account: string;
+	fee_paying_account: AccountId;
 	proposed_ops: unknown[];
 	expiration_time: string;
 	review_period_seconds: number;
@@ -355,10 +355,10 @@ interface ProposalCreateOperation {
 
 interface ProposalUpdateOperation {
 	fee: IAmount;
-	fee_paying_account: string;
+	fee_paying_account: AccountId;
 	proposal: string;
 	active_approvals_to_add: AccountId[];
-	active_apprivals_to_remove: AccountId[];
+	active_approvals_to_remove: AccountId[];
 	owner_approvals_to_remove: AccountId[];
 	key_approvals_to_add: string[];
 	key_approvals_to_remove: string[];
@@ -367,7 +367,7 @@ interface ProposalUpdateOperation {
 
 interface ProposalDeleteOperation {
 	fee: IAmount;
-	fee_paying_account: string;
+	fee_paying_account: AccountId;
 	using_owner_authority: boolean;
 	proposal: string;
 	extensions: ExtensionsArr;
@@ -375,7 +375,7 @@ interface ProposalDeleteOperation {
 
 interface CommitteeMemberCreateOperation {
 	fee: IAmount;
-	committee_member_account: string;
+	committee_member_account: AccountId;
 	url: string;
 	eth_address: string;
 	btc_public_key: string;
@@ -384,8 +384,8 @@ interface CommitteeMemberCreateOperation {
 
 interface CommitteMemberUpdateOperation {
 	fee: IAmount;
-	committee_member: string;
-	committee_member_account: string;
+	committee_member: AccountId;
+	committee_member_account: AccountId;
 	new_url: string;
 	new_eth_address: string;
 	new_btc_public_key: string;
