@@ -3,6 +3,7 @@ import AssetId from '../types/asset.id.type';
 import PaginationForm from './pagination.form';
 import AccountId from '../types/account.id.type';
 import ContractId from '../types/contract.id.type';
+import AccountOrContractId from '../types/account.or.contract.id.type';
 import StringNumber from '../types/string.number.type';
 import * as API from '../../../constants/api.constants';
 import * as BALANCE from '../../../constants/balance.constants';
@@ -35,11 +36,11 @@ export class TransferSubscribeForm extends AbstractForm {
 @ArgsType()
 export class GetTransfersHistoryForm extends PaginationForm {
 	@rule(uniqueArraySchema)
-	@Field(() => [AccountId, ContractId], { nullable: true })
+	@Field(() => [AccountOrContractId], { nullable: true })
 	from: string[];
 
 	@rule(uniqueArraySchema)
-	@Field(() => [AccountId, ContractId], { nullable: true })
+	@Field(() => [AccountOrContractId], { nullable: true })
 	to: string[];
 
 	@rule(uniqueArraySchema)

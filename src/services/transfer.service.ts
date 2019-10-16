@@ -129,14 +129,6 @@ export default class TransferService {
 			{
 				$lookup: {
 					from: 'contracts',
-					localField: '_fromContract',
-					foreignField: '_id',
-					as: '_fromContract'
-				}
-			},
-			{
-				$lookup: {
-					from: 'contracts',
 					localField: '_contract',
 					foreignField: '_id',
 					as: '_contract'
@@ -196,7 +188,7 @@ export default class TransferService {
 			match.$and.push({ $or: otherParams })
 		}
 
-		const unwind/*: Query[]*/ = [
+		const unwind: Query[] = [
 			'$_fromAccount',
 			'$_toAccount',
 			'$_fromContract',
@@ -213,10 +205,7 @@ export default class TransferService {
 		query.push({ $limit : count });
 		query.push({ $sort: { timestamp: sortDestination } });
 
-		console.log(inspect(query, false, null, true))
-		const [items] = await Promise.all([
-			this.transferRepository.aggregate(query),
-		]);
+		const items = await this.transferRepository.aggregate(query);
 
 		return { total: items.length, items };
 	}
