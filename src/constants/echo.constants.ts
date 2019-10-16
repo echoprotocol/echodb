@@ -499,4 +499,3 @@ interface BlockRewardOperation {
 	amount: number;
 	extensions: ExtensionsArr;
 }
-
