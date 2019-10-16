@@ -27,7 +27,7 @@ export default class ContractTransferOperation extends AbstractOperation<OP_ID> 
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, _: any, dBlock: TDoc<IBlock>,) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, _: any, dBlock: TDoc<IBlock>) {
 		const [dFrom, dTo, dAsset] = await Promise.all([
 			this.contractRepository.findById(body.from),
 			this.transferService.fetchParticipant(body.to),
