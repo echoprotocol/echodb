@@ -11,6 +11,7 @@ import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
 import { IOperationRelation } from '../../../interfaces/IOperation';
 import { IContract } from '../../../interfaces/IContract';
+import { IBlock } from '../../../interfaces/IBlock';
 import AssetRepository from 'repositories/asset.repository';
 import BN from 'bignumber.js';
 
@@ -33,7 +34,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>, dBlock: TDoc<IBlock>) {
 		const dContract = await this.contractRepository.findById(body.callee);
 		if (dContract) {
 			const amount = new BN(body.value.amount);
@@ -56,7 +57,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 					{ append: true },
 				);
 			}
-			if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body, result);
+			if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body, result, dBlock);
 		} else {
 			logger.warn('contract not found, can not parse call');
 		}
@@ -71,9 +72,10 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		dContract: TDoc<IContract>,
 		body: ECHO.OPERATION_PROPS<OP_ID>,
 		result: ECHO.OPERATION_RESULT<OP_ID>,
+		dBlock: TDoc<IBlock>,
 	): Promise<IOperationRelation> {
 		const [, contractResult] = await this.echoRepository.getContractResult(result);
-		const relations = await this.contractService.handleErc20Logs(dContract, contractResult);
+		const relations = await this.contractService.handleErc20Logs(dContract, contractResult, dBlock);
 		return this.validateAndMergeRelations({
 			from: [body.registrar],
 			assets: [body.fee.asset_id],
