@@ -42,8 +42,8 @@ export enum OPERATION_ID {
 	SIDECHAIN_ETH_APPROVE_WITHDRAW,
 	CONTRACT_FUND_POOL,
 	CONTRACT_WHITELIST,
-	SIDECHAIN_ISSUE, // VIRTUAL
-	SIDECHAIN_BURN, // VIRTUAL
+	SIDECHAIN_ETH_ISSUE, // VIRTUAL
+	SIDECHAIN_ETH_BURN, // VIRTUAL
 	SIDECHAIN_ERC20_REGISTER_TOKEN,
 	SIDECHAIN_ERC20_DEPOSIT_TOKEN,
 	SIDECHAIN_ERC20_WITHDRAW_TOKEN,
@@ -92,7 +92,11 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
 	[OPERATION_ID.CONTRACT_WHITELIST]: ContractWhitelistOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: SidechainEthIssueOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_BURN]: SidechainEthBurnOperation;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: SidechainErc20RegisterTokenOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: SidechainErc20DepositTokenOperation;
 };
 
 export type OperationResult = {
@@ -129,6 +133,10 @@ export type OperationResult = {
 	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
 	[OPERATION_ID.CONTRACT_WHITELIST]: unknown;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_BURN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -492,6 +500,43 @@ interface ContractWhitelistOperation {
 	remove_from_whitelist: AccountId[];
 	add_to_blacklist: AccountId[];
 	remove_from_blacklist: AccountId[];
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthIssueOperation {
+	fee: IAmount;
+	value: IAmount;
+	account: AccountId;
+	deposit_id: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthBurnOperation {
+	fee: IAmount;
+	value: IAmount;
+	account: AccountId;
+	withdraw_id: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20RegisterTokenOperation {
+	fee: IAmount;
+	account: AccountId;
+	eth_addr: string;
+	name: string;
+	symbol: string;
+	decimals: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20DepositTokenOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	malicious_committeemen: AccountId[];
+	account: AccountId;
+	erc20_token_addr: string;
+	value: string;
+	transaction_hash: string;
 	extensions: ExtensionsArr;
 }
 
