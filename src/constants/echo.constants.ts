@@ -227,7 +227,7 @@ type NewParameters = {
 		gas_amount: Number;
 	};
 	extensions: ExtensionsArr;
-}
+};
 
 export interface IAmount {
 	amount: number | string;

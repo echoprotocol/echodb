@@ -19,8 +19,8 @@ export default class BalanceClaimOperation extends AbstractOperation<OP_ID> {
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const [dTo, dAsset] = await Promise.all([
 			this.accountRepository.findById(body.deposit_to_account),
-			this.assetRepository.findById(body.total_claimed.asset_id)
-		])
+			this.assetRepository.findById(body.total_claimed.asset_id),
+		]);
 		const amount = new BN(body.total_claimed.amount).toString(10);
 		await this.balanceRepository.updateOrCreateByAccountAndAsset(
 			dTo,
