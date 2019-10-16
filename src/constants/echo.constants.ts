@@ -83,6 +83,10 @@ export type Operations = {
 	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
+	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: AccountAddressCreateOperation;
+	[OPERATION_ID.TRANSFER_TO_ADDRESS]: TransferToAddressOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: SidechainEthCreateAddressOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
 };
 
@@ -110,6 +114,10 @@ export type OperationResult = {
 	[OPERATION_ID.PROPOSAL_DELETE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: unknown;
+	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: string;
+	[OPERATION_ID.TRANSFER_TO_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
 };
 
@@ -403,6 +411,36 @@ interface CommitteMemberUpdateOperation {
 	new_eth_address: string;
 	new_btc_public_key: string;
 }
+
+interface AccountAddressCreateOperation {
+	fee: IAmount;
+	owner: AccountId;
+	label: string;
+	extensions: ExtensionsArr;
+}
+
+interface TransferToAddressOperation {
+	fee: IAmount;
+	from: AccountId;
+	to: AccountId;
+	amount: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthCreateAddressOperation {
+	fee: IAmount;
+	account: AccountId;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthApproveAddressOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	malicious_committeemen: AccountId[];
+	account: AccountId;
+	eth_addr: string;
+}
+
 interface BlockRewardOperation {
 	fee: undefined;
 	reciever: AccountId;
