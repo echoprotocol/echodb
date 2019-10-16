@@ -15,11 +15,12 @@ import { AccountId, ContractId } from '../types/echo';
 import { IContract, ITokenInfo } from '../interfaces/IContract';
 import { IOperationRelation } from '../interfaces/IOperation';
 import { SomeOfAny } from '../types/some.of.d';
-import { escapeRegExp } from '../utils/format';
+import { escapeRegExp, dateFromUtcIso } from '../utils/format';
 import { ContractResult } from 'echojs-lib';
 import { TDoc, MongoId } from '../types/mongoose';
 import { decode } from 'echojs-contract';
 import { IAccount } from '../interfaces/IAccount';
+import { IBlock } from '../interfaces/IBlock';
 
 type GetContractsQuery = { registrar?: object, type?: CONTRACT.TYPE };
 type GetTokensQuery = { _registrar?: any, type?: any, token_info?: SomeOfAny<ITokenInfo> };
@@ -115,6 +116,7 @@ export default class ContractService {
 	async handleErc20Logs(
 		dContract: TDoc<IContract>,
 		contractResult: ContractResult,
+		dBlock: TDoc<IBlock>,
 	): Promise<Partial<IOperationRelation>> {
 		const { tr_receipt: { log: logs } } = contractResult;
 
@@ -136,7 +138,7 @@ export default class ContractService {
 					});
 					relations.from.push(from);
 					relations.to.push(to);
-					await this.handleTokenTransfer(dContract, from, to, amount);
+					await this.handleTokenTransfer(dContract, from, to, amount, dBlock);
 			}
 		}
 
@@ -155,6 +157,7 @@ export default class ContractService {
 		from: AccountId | ContractId,
 		to: AccountId | ContractId,
 		amount: string | number,
+		dBlock: TDoc<IBlock>,
 	) {
 		const senderType = this.transferRepository.determineParticipantType(from);
 		const receiverType = this.transferRepository.determineParticipantType(to);
@@ -165,12 +168,17 @@ export default class ContractService {
 			this.echoRepository.getAccountTokenBalance(dContract.id, to),
 		]);
 		await Promise.all([
-			this.transferRepository.createAndEmit({
-				relationType: this.transferRepository.determineRelationType(from, to),
-				amount: amount.toString(),
-				_contract: dContract,
-				valueType: BALANCE.TYPE.TOKEN,
-			}),
+			this.transferRepository.createAndEmit(
+				{
+					relationType: this.transferRepository.determineRelationType(from, to),
+					amount: amount.toString(),
+					_contract: dContract,
+					valueType: BALANCE.TYPE.TOKEN,
+					timestamp: dateFromUtcIso(dBlock.timestamp),
+				},
+				dFrom,
+				dTo,
+			),
 			(async () => {
 				if (dContract.problem) return;
 				const sFromAmount = fromAmount.toString();

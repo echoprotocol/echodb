@@ -26,6 +26,7 @@ export enum OPERATION_ID {
 	VESTING_BALANCE_WITHDRAW,
 	BALANCE_CLAIM,
 	BALANCE_FREEZE,
+	BALANCE_UNFREEZE,
 	OVERRIDE_TRANSFER,
 	ASSET_CLAIM_FEES,
 	CONTRACT_CREATE,
@@ -55,6 +56,7 @@ export enum OPERATION_ID {
 	SIDECHAIN_BTC_WITHDRAW,
 	SIDECHAIN_BTC_APPROVE_WITHDRAW,
 	SIDECHAIN_BTC_AGGREGATE,
+	BLOCK_REWARD_OPERATION, // VIRTUAL
 }
 
 export type Operations = {
@@ -72,6 +74,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
 	[OPERATION_ID.BALANCE_FREEZE]: BalanceFreezeOperation;
+	[OPERATION_ID.BALANCE_UNFREEZE]: BalanceUnfreezeOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
@@ -80,10 +83,14 @@ export type Operations = {
 	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
+<<<<<<< HEAD
 	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: AccountAddressCreateOperation;
 	[OPERATION_ID.TRANSFER_TO_ADDRESS]: TransferToAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: SidechainEthCreateAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
+=======
+	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
+>>>>>>> EDB-158
 };
 
 export type OperationResult = {
@@ -101,6 +108,7 @@ export type OperationResult = {
 	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
 	[OPERATION_ID.BALANCE_FREEZE]: unknown;
+	[OPERATION_ID.BALANCE_UNFREEZE]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
 	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
@@ -109,10 +117,14 @@ export type OperationResult = {
 	[OPERATION_ID.PROPOSAL_DELETE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: unknown;
+<<<<<<< HEAD
 	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: string;
 	[OPERATION_ID.TRANSFER_TO_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
+=======
+	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
+>>>>>>> EDB-158
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -333,6 +345,13 @@ interface BalanceFreezeOperation {
 	extensions: ExtensionsArr;
 }
 
+interface BalanceUnfreezeOperation {
+	account: AccountId;
+	amount: IAmount;
+	fee: IAmount;
+	extensions: ExtensionsArr;
+}
+
 interface ContractCreateOperation {
 	fee: IAmount;
 	registrar: string;
@@ -398,6 +417,7 @@ interface CommitteMemberUpdateOperation {
 	new_eth_address: string;
 	new_btc_public_key: string;
 }
+<<<<<<< HEAD
 
 interface AccountAddressCreateOperation {
 	fee: IAmount;
@@ -426,5 +446,11 @@ interface SidechainEthApproveAddressOperation {
 	malicious_committeemen: AccountId[];
 	account: string;
 	eth_addr: string;
+=======
+interface BlockRewardOperation {
+	fee: undefined;
+	reciever: AccountId;
+	amount: number;
+>>>>>>> EDB-158
 	extensions: ExtensionsArr;
 }
