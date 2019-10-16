@@ -8,7 +8,9 @@ import * as BALANCE from '../../../constants/balance.constants';
 import * as ECHO from '../../../constants/echo.constants';
 import { IAsset } from '../../../interfaces/IAsset';
 import { IAccount } from '../../../interfaces/IAccount';
+import { IBlock } from '../../../interfaces/IBlock';
 import { TDoc } from '../../../types/mongoose';
+import { dateFromUtcIso } from '../../../utils/format';
 
 type OP_ID = ECHO.OPERATION_ID.TRANSFER;
 
@@ -24,7 +26,7 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, _: any, dBlock: TDoc<IBlock>) {
 		const [[dFrom, dTo], dAsset] = await Promise.all([
 			this.accountRepository.findManyByIds([body.from, body.to]),
 			this.assetRepository.findById(body.amount.asset_id),
@@ -39,6 +41,7 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 				_toAccount: dTo,
 				_asset: dAsset,
 				valueType: BALANCE.TYPE.ASSET,
+				timestamp: dateFromUtcIso(dBlock.timestamp),
 			}),
 		]);
 		return this.validateRelation({
