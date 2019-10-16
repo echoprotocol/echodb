@@ -18,6 +18,11 @@ import BalanceUnfreezeOperation from './balance.unfreeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
+import BalanceClaimOperation from './balance.claim.operation';
+import OverrideTransferOperation from './override.transfer.operation';
+import CommitteeMemberUpdateGlobalParametersOperation from './committee.member.update.global.parameters.operation';
+import VestingBalanceWithdrawOperation from './vesting.balance.withdraw.operation';
+import VestingBalanceCreateOperation from './vesting.balance.create.operation';
 import ProposalCreateOperation from './proposal.create.operation';
 import ProposalUpdateOperation from './proposal.update.operation';
 import ProposalDeleteOperation from './proposal.delete.operation';
@@ -81,6 +86,11 @@ export default class OperationManager {
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
+		balanceClaimOperation: BalanceClaimOperation,
+		overrideTransferOperation: OverrideTransferOperation,
+		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
+		vestingBalanceCreateOperation: VestingBalanceCreateOperation,
+		vestingBalanceWithdrawOperation: VestingBalanceWithdrawOperation,
 		proposalCreateOperation: ProposalCreateOperation,
 		proposalUpdateOperation: ProposalUpdateOperation,
 		proposalDeleteOperation: ProposalDeleteOperation,
@@ -123,6 +133,11 @@ export default class OperationManager {
 			assetUpdateFeedProducersOperation,
 			transferOperation,
 			contractTransferOperation,
+			balanceClaimOperation,
+			overrideTransferOperation,
+			committeeMemberUpdateGlobalParametersOperation,
+			vestingBalanceCreateOperation,
+			vestingBalanceWithdrawOperation,
 			proposalCreateOperation,
 			proposalUpdateOperation,
 			proposalDeleteOperation,
