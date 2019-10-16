@@ -7,7 +7,7 @@ import * as ECHO from '../../../constants/echo.constants';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_FUND_POOL;
 
-export default class ProposalUpdateOperation extends AbstractOperation<OP_ID> {
+export default class ContractFundPoolOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.CONTRACT_FUND_POOL;
 
 	constructor(
