@@ -51,13 +51,14 @@ export default class TransferResolver extends AbstractResolver {
 			relationTypes,
 			valueTypes,
 			amounts,
+			assets,
 			sort,
 		}: GetTransfersHistoryForm,
 	) {
 		return this.transferService.getHistory(
 			count,
 			offset,
-			{ from, to, contracts, relationTypes, valueTypes, amounts, sort },
+			{ from, to, contracts, relationTypes, valueTypes, amounts, assets, sort },
 		);
 	}
 
@@ -107,6 +108,11 @@ export default class TransferResolver extends AbstractResolver {
 	@FieldResolver()
 	type(@Root('valueType') type: Transfer['valueType']) {
 		return type;
+	}
+
+	@FieldResolver()
+	relation(@Root('relationType') relationType: Transfer['relationType']) {
+		return relationType;
 	}
 
 	// Subscription

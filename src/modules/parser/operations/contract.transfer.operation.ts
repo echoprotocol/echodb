@@ -8,10 +8,10 @@ import * as BALANCE from '../../../constants/balance.constants';
 import * as ECHO from '../../../constants/echo.constants';
 import { IAsset } from '../../../interfaces/IAsset';
 import { IAccount } from '../../../interfaces/IAccount';
-import { IContract } from '../../../interfaces/IContract';
 import { IBlock } from '../../../interfaces/IBlock';
+import { IContract } from '../../../interfaces/IContract';
 import { TDoc } from '../../../types/mongoose';
-import { dateFromUtcIso } from '../../../utils/format'
+import { dateFromUtcIso } from '../../../utils/format';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_TRANSFER;
 

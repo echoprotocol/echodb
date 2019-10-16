@@ -46,11 +46,14 @@ export class GetTransfersHistoryForm extends PaginationForm {
 	@Field(() => [ContractId], { nullable: true })
 	contracts: string[];
 
+	@rule(uniqueArraySchema)
+	@Field(() => [AssetId], { nullable: true })
+	assets: string[];
+
 	@rule(Joi.array().items(Joi.string()))
 	@Field(() => [TRANSFER.TYPE], { nullable: true })
 	relationTypes: TRANSFER.TYPE[];
 
-	// @rule(uniqueArraySchema)
 	@rule(Joi.array().items(Joi.string()))
 	@Field(() => [BALANCE.TYPE], { nullable: true })
 	valueTypes: BALANCE.TYPE[];

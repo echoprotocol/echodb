@@ -10,7 +10,7 @@ import { IAsset } from '../../../interfaces/IAsset';
 import { IAccount } from '../../../interfaces/IAccount';
 import { IBlock } from '../../../interfaces/IBlock';
 import { TDoc } from '../../../types/mongoose';
-import { dateFromUtcIso } from '../../../utils/format'
+import { dateFromUtcIso } from '../../../utils/format';
 
 type OP_ID = ECHO.OPERATION_ID.TRANSFER;
 
@@ -41,7 +41,7 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 				_toAccount: dTo,
 				_asset: dAsset,
 				valueType: BALANCE.TYPE.ASSET,
-				timestamp: dateFromUtcIso(dBlock.timestamp)
+				timestamp: dateFromUtcIso(dBlock.timestamp),
 			}),
 		]);
 		return this.validateRelation({
