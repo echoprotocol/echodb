@@ -485,12 +485,12 @@ interface ContractFundPoolOperation {
 
 interface ContractWhitelistOperation {
 	fee: IAmount;
-	sender: string;
+	sender: AccountId;
 	contract: string;
-	add_to_whitelist: string[];
-	remove_from_whitelist: string[];
-	add_to_blacklist: string[];
-	remove_from_blacklist: string[];
+	add_to_whitelist: AccountId[];
+	remove_from_whitelist: AccountId[];
+	add_to_blacklist: AccountId[];
+	remove_from_blacklist: AccountId[];
 	extensions: ExtensionsArr;
 }
 interface BlockRewardOperation {
