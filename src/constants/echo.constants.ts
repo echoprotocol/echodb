@@ -96,6 +96,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_BURN]: SidechainEthBurnOperation;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: SidechainErc20RegisterTokenOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: SidechainErc20DepositTokenOperation;
 };
 
 export type OperationResult = {
@@ -135,6 +136,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_BURN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -524,6 +526,17 @@ interface SidechainErc20RegisterTokenOperation {
 	name: string;
 	symbol: string;
 	decimals: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20DepositTokenOperation {
+	fee: IAmount;
+	committee_member_id: string;
+	malicious_committeemen: string[];
+	account: string;
+	erc20_token_addr: string;
+	value: string;
+	transaction_hash: string;
 	extensions: ExtensionsArr;
 }
 

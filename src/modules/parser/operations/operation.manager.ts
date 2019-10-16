@@ -35,6 +35,7 @@ import ContractWhitelistOperation from './contract.whitelist.operation';
 import SidechainEthIssueOperation from './sidechain.eth.issue.operation';
 import SidechainEthBurnOperation from './sidechain.eth.burn.operation';
 import SidechainErc20RegisterTokenOperation from './sidechain.erc20.register.token.operation';
+import SidechainErc20DepositTokenOperation from './sidechain.erc20.deposit.token.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -95,6 +96,7 @@ export default class OperationManager {
 		sidechainEthIssueOperation: SidechainEthIssueOperation,
 		sidechainEthBurnOperation: SidechainEthBurnOperation,
 		sidechainErc20RegisterTokenOperation: SidechainErc20RegisterTokenOperation,
+		sidechainErc20DepositTokenOperation: SidechainErc20DepositTokenOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -132,7 +134,8 @@ export default class OperationManager {
 			contractWhitelistOperation,
 			sidechainEthIssueOperation,
 			sidechainEthBurnOperation,
-			sidechainErc20RegisterTokenOperation
+			sidechainErc20RegisterTokenOperation,
+			sidechainErc20DepositTokenOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
