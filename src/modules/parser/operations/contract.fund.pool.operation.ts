@@ -24,14 +24,12 @@ export default class ContractFundPoolOperation extends AbstractOperation<OP_ID> 
 			this.assetRepository.findById(body.value.asset_id),
 		]);
 		const amount = new BN(body.value.amount).toString();
-		await Promise.all([
-			this.balanceRepository.updateOrCreateByAccountAndAsset(
-				dFrom,
-				dAsset,
-				new BN(amount).negated().toString(),
-				{ append: true },
-			),
-		]);
+		await this.balanceRepository.updateOrCreateByAccountAndAsset(
+			dFrom,
+			dAsset,
+			new BN(amount).negated().toString(),
+			{ append: true },
+		);
 		return this.validateRelation({
 			from: [body.sender],
 			assets: [body.fee.asset_id, body.value.asset_id],
