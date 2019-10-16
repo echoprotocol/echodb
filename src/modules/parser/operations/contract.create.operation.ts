@@ -56,7 +56,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			contracts: contract.id,
 		};
 		if (contract.type === CONTRACT.TYPE.ERC20) {
-			const relations = await this.contractService.handleErc20Logs(dContract, contractResult);
+			const relations = await this.contractService.handleErc20Logs(dContract, contractResult, dBlock);
 			return this.validateAndMergeRelations(commonRelations, relations);
 		}
 		return this.validateRelation(commonRelations);
