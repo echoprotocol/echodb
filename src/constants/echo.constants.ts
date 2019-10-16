@@ -447,7 +447,7 @@ interface SidechainEthApproveAddressOperation {
 	fee: IAmount;
 	committee_member_id: AccountId;
 	malicious_committeemen: AccountId[];
-	account: AccountId;	
+	account: AccountId;
 	eth_addr: string;
 	extensions: ExtensionsArr;
 }
