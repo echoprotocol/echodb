@@ -404,10 +404,11 @@ export interface IPolicy {
 	vesting_cliff_seconds: Number;
 	vesting_duration_seconds: Number;
 }
+
 interface VestingBalanceCreate{
 	fee: IAmount;
-	creator: string;
-	owner: string;
+	creator: AccountId;
+	owner: AccountId;
 	amount: IAmount;
 	policy: IPolicy;
 	extensions: ExtensionsArr;
@@ -416,7 +417,7 @@ interface VestingBalanceCreate{
 interface VestingBalanceWithdraw {
 	fee: IAmount;
 	vesting_balance: string;
-	owner: string;
+	owner: AccountId;
 	amount: IAmount;
 	extensions: ExtensionsArr;
 }
@@ -498,7 +499,7 @@ interface CommitteeMemberUpdateGlobalParametersProps{
 
 interface BalanceClaimOperation {
 	fee: IAmount;
-	deposit_to_account: string;
+	deposit_to_account: AccountId;
 	balance_to_claim: string;
 	balance_owner_key: string;
 	total_claimed: IAmount;
@@ -515,7 +516,7 @@ interface OverrideTransfer {
 }
 interface ProposalCreateOperation {
 	fee: IAmount;
-	fee_paying_account: string;
+	fee_paying_account: AccountId;
 	proposed_ops: unknown[];
 	expiration_time: string;
 	review_period_seconds: number;
