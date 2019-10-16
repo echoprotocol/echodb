@@ -18,6 +18,11 @@ import BalanceUnfreezeOperation from './balance.unfreeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
+import ProposalCreateOperation from './proposal.create.operation';
+import ProposalUpdateOperation from './proposal.update.operation';
+import ProposalDeleteOperation from './proposal.delete.operation';
+import CommitteeMemberCreateOperation from './committee.member.create.operation';
+import CommitteeMemberUpdateOperation from './committee.member.update.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -60,7 +65,15 @@ export default class OperationManager {
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
+<<<<<<< HEAD
+		proposalCreateOperation: ProposalCreateOperation,
+		proposalUpdateOperation: ProposalUpdateOperation,
+		proposalDeleteOperation: ProposalDeleteOperation,
+		committeeMemberCreateOperation: CommitteeMemberCreateOperation,
+		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
+=======
 		blockRewardOperation: BlockRewardOperation,
+>>>>>>> 5aac5992987f1d789fd65c62e26800846043d41f
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -81,7 +94,15 @@ export default class OperationManager {
 			assetUpdateFeedProducersOperation,
 			transferOperation,
 			contractTransferOperation,
+<<<<<<< HEAD
+			proposalCreateOperation,
+			proposalUpdateOperation,
+			proposalDeleteOperation,
+			committeeMemberCreateOperation,
+			committeeMemberUpdateOperation,
+=======
 			blockRewardOperation,
+>>>>>>> 5aac5992987f1d789fd65c62e26800846043d41f
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

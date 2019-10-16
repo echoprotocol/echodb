@@ -78,6 +78,11 @@ export type Operations = {
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
+	[OPERATION_ID.PROPOSAL_CREATE]: ProposalCreateOperation;
+	[OPERATION_ID.PROPOSAL_UPDATE]: ProposalUpdateOperation;
+	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
+	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
 };
 
@@ -100,6 +105,11 @@ export type OperationResult = {
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
 	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
+	[OPERATION_ID.PROPOSAL_CREATE]: string;
+	[OPERATION_ID.PROPOSAL_UPDATE]: unknown;
+	[OPERATION_ID.PROPOSAL_DELETE]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: unknown;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
 };
 
@@ -347,6 +357,52 @@ interface ContractCallOperation {
 	extensions: ExtensionsArr;
 }
 
+interface ProposalCreateOperation {
+	fee: IAmount;
+	fee_paying_account: AccountId;
+	proposed_ops: unknown[];
+	expiration_time: string;
+	review_period_seconds: number;
+	extensions: ExtensionsArr;
+}
+
+interface ProposalUpdateOperation {
+	fee: IAmount;
+	fee_paying_account: AccountId;
+	proposal: string;
+	active_approvals_to_add: AccountId[];
+	active_approvals_to_remove: AccountId[];
+	owner_approvals_to_remove: AccountId[];
+	key_approvals_to_add: string[];
+	key_approvals_to_remove: string[];
+	extensions: ExtensionsArr;
+}
+
+interface ProposalDeleteOperation {
+	fee: IAmount;
+	fee_paying_account: AccountId;
+	using_owner_authority: boolean;
+	proposal: string;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeMemberCreateOperation {
+	fee: IAmount;
+	committee_member_account: AccountId;
+	url: string;
+	eth_address: string;
+	btc_public_key: string;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteMemberUpdateOperation {
+	fee: IAmount;
+	committee_member: AccountId;
+	committee_member_account: AccountId;
+	new_url: string;
+	new_eth_address: string;
+	new_btc_public_key: string;
+}
 interface BlockRewardOperation {
 	fee: undefined;
 	reciever: AccountId;
