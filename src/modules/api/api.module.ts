@@ -92,7 +92,7 @@ export default class ApiModule extends AbstractModule {
 			playground: config.api.playground,
 			subscriptions: {
 				keepAlive: 10000,
-			}
+			},
 		});
 		this.gqlServer.applyMiddleware({ app: this.expressApp });
 	}

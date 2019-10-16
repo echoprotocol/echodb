@@ -11,15 +11,15 @@ export default class SidechainEthBurnOperation extends AbstractOperation<OP_ID> 
 	id = ECHO.OPERATION_ID.SIDECHAIN_ETH_BURN;
 
 	constructor(
-        private balanceRepository: BalanceRepository,
+		private balanceRepository: BalanceRepository,
 		private assetRepository: AssetRepository,
 		private accountRepository: AccountRepository,
-    ) {
+	) {
 		super();
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
-        const [dFrom, dAsset] = await Promise.all([
+		const [dFrom, dAsset] = await Promise.all([
 			this.accountRepository.findById(body.account),
 			this.assetRepository.findById(body.value.asset_id),
 		]);
@@ -31,8 +31,8 @@ export default class SidechainEthBurnOperation extends AbstractOperation<OP_ID> 
 				{ append: true },
 			);
 		return this.validateRelation({
-            assets: [body.fee.asset_id, body.value.asset_id],
-            accounts: [body.account]
+			assets: [body.fee.asset_id, body.value.asset_id],
+			accounts: [body.account],
 		});
 	}
 }
