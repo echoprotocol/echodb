@@ -447,7 +447,8 @@ interface SidechainEthApproveAddressOperation {
 	fee: IAmount;
 	committee_member_id: AccountId;
 	malicious_committeemen: AccountId[];
-	account: AccountId;
+	account: AccountId;	
+	eth_addr: string;
 	extensions: ExtensionsArr;
 }
 
@@ -493,6 +494,7 @@ interface ContractWhitelistOperation {
 	remove_from_blacklist: AccountId[];
 	extensions: ExtensionsArr;
 }
+
 interface BlockRewardOperation {
 	fee: undefined;
 	reciever: AccountId;

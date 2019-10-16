@@ -122,8 +122,8 @@ export default class OperationManager {
 			sidechainEthApproveAddressOperation,
 			sidechainEthApproveWithdrawOperation,
 			contractFundPoolOperation,
-			blockRewardOperation,
 			contractWhitelistOperation,
+			blockRewardOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
