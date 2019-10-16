@@ -170,6 +170,7 @@ export default class ContractService {
 				amount: amount.toString(),
 				_contract: dContract,
 				valueType: BALANCE.TYPE.TOKEN,
+				timestamp: new Date(),
 			}),
 			(async () => {
 				if (dContract.problem) return;

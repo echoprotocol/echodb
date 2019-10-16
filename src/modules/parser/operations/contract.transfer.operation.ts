@@ -8,8 +8,10 @@ import * as BALANCE from '../../../constants/balance.constants';
 import * as ECHO from '../../../constants/echo.constants';
 import { IAsset } from '../../../interfaces/IAsset';
 import { IAccount } from '../../../interfaces/IAccount';
+import { IContract } from '../../../interfaces/IContract';
+import { IBlock } from '../../../interfaces/IBlock';
 import { TDoc } from '../../../types/mongoose';
-import { IContract } from 'interfaces/IContract';
+import { dateFromUtcIso } from '../../../utils/format'
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_TRANSFER;
 
@@ -25,7 +27,7 @@ export default class ContractTransferOperation extends AbstractOperation<OP_ID> 
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, _: any, dBlock: TDoc<IBlock>) {
 		const [dFrom, dTo, dAsset] = await Promise.all([
 			this.contractRepository.findById(body.from),
 			this.transferService.fetchParticipant(body.to),
@@ -37,6 +39,7 @@ export default class ContractTransferOperation extends AbstractOperation<OP_ID> 
 			_asset: dAsset,
 			valueType: BALANCE.TYPE.ASSET,
 			relationType: this.transferRepository.determineRelationType(body.from, body.to),
+			timestamp: dateFromUtcIso(dBlock.timestamp),
 		}, dFrom, dTo);
 
 		await this.transferBalance(dFrom, dTo, dAsset, amount);
