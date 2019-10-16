@@ -26,6 +26,7 @@ export enum OPERATION_ID {
 	VESTING_BALANCE_WITHDRAW,
 	BALANCE_CLAIM,
 	BALANCE_FREEZE,
+	BALANCE_UNFREEZE,
 	OVERRIDE_TRANSFER,
 	ASSET_CLAIM_FEES,
 	CONTRACT_CREATE,
@@ -55,6 +56,7 @@ export enum OPERATION_ID {
 	SIDECHAIN_BTC_WITHDRAW,
 	SIDECHAIN_BTC_APPROVE_WITHDRAW,
 	SIDECHAIN_BTC_AGGREGATE,
+	BLOCK_REWARD_OPERATION, // VIRTUAL
 }
 
 export type Operations = {
@@ -72,6 +74,7 @@ export type Operations = {
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
 	[OPERATION_ID.BALANCE_FREEZE]: BalanceFreezeOperation;
+	[OPERATION_ID.BALANCE_UNFREEZE]: BalanceUnfreezeOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
@@ -80,6 +83,7 @@ export type Operations = {
 	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
+	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
 };
 
 export type OperationResult = {
@@ -97,6 +101,7 @@ export type OperationResult = {
 	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
 	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
 	[OPERATION_ID.BALANCE_FREEZE]: unknown;
+	[OPERATION_ID.BALANCE_UNFREEZE]: unknown;
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
 	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
@@ -105,6 +110,7 @@ export type OperationResult = {
 	[OPERATION_ID.PROPOSAL_DELETE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: unknown;
+	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -325,6 +331,13 @@ interface BalanceFreezeOperation {
 	extensions: ExtensionsArr;
 }
 
+interface BalanceUnfreezeOperation {
+	account: AccountId;
+	amount: IAmount;
+	fee: IAmount;
+	extensions: ExtensionsArr;
+}
+
 interface ContractCreateOperation {
 	fee: IAmount;
 	registrar: string;
@@ -389,4 +402,10 @@ interface CommitteMemberUpdateOperation {
 	new_url: string;
 	new_eth_address: string;
 	new_btc_public_key: string;
+}
+interface BlockRewardOperation {
+	fee: undefined;
+	reciever: AccountId;
+	amount: number;
+	extensions: ExtensionsArr;
 }
