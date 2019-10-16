@@ -31,7 +31,7 @@ export default class OverrideTransferOperation extends AbstractOperation<OP_ID> 
 			from: [body.from],
 			to: [body.to],
 			accounts: [body.issuer],
-			assets: [body.fee.asset_id],
+			assets: [body.fee.asset_id, body.amount.asset_id],
 		});
 	}
 	async transferBalance(from: TDoc<IAccount>, to: TDoc<IAccount>, dAsset: TDoc<IAsset>, amount: string) {
