@@ -234,6 +234,12 @@ export interface IAmount {
 	asset_id: AssetId;
 }
 
+export interface IPolicy {
+	begin_timestamp: String;
+	vesting_cliff_seconds: Number;
+	vesting_duration_seconds: Number;
+}
+
 interface TransferOperation {
 	fee: IAmount;
 	from: string;
@@ -462,12 +468,6 @@ interface ContractCallOperation {
 	code: string;
 	callee: string;
 	extensions: ExtensionsArr;
-}
-
-export interface IPolicy {
-	begin_timestamp: String;
-	vesting_cliff_seconds: Number;
-	vesting_duration_seconds: Number;
 }
 
 interface VestingBalanceCreate{
