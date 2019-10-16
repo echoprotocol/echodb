@@ -87,6 +87,11 @@ export type Operations = {
 	[OPERATION_ID.TRANSFER_TO_ADDRESS]: TransferToAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: SidechainEthCreateAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: SidechainEthDepositOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: SidechainEthWithdrawOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
+	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
+	[OPERATION_ID.CONTRACT_WHITELIST]: ContractWhitelistOperation;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
 };
 
@@ -118,6 +123,11 @@ export type OperationResult = {
 	[OPERATION_ID.TRANSFER_TO_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
+	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
+	[OPERATION_ID.CONTRACT_WHITELIST]: unknown;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
 };
 
@@ -439,6 +449,50 @@ interface SidechainEthApproveAddressOperation {
 	malicious_committeemen: AccountId[];
 	account: AccountId;
 	eth_addr: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthDepositOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	deposit_id: number;
+	account: AccountId;
+	value: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthWithdrawOperation {
+	fee: IAmount;
+	account: AccountId;
+	eth_addr: string;
+	value: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthApproveWithdraw {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	withdraw_id: number;
+	extensions: ExtensionsArr;
+}
+
+interface ContractFundPoolOperation {
+	fee: IAmount;
+	sender: AccountId;
+	contract: string;
+	value: IAmount;
+
+}
+
+interface ContractWhitelistOperation {
+	fee: IAmount;
+	sender: AccountId;
+	contract: string;
+	add_to_whitelist: AccountId[];
+	remove_from_whitelist: AccountId[];
+	add_to_blacklist: AccountId[];
+	remove_from_blacklist: AccountId[];
+	extensions: ExtensionsArr;
 }
 
 interface BlockRewardOperation {

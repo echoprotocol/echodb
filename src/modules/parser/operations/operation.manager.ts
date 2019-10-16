@@ -27,6 +27,11 @@ import AccountAddressCreateOperation from './account.address.create.operation';
 import TransferToAddressOperation from './transfer.to.address.operation';
 import SidechainEthCreateAddressOperation from './sidechain.eth.create.address.operation';
 import SidechainEthApproveAddressOperation from './sidechain.eth.approve.address.operation';
+import SidechainEthDepositOperation from './sidechain.eth.deposit.operation';
+import SidechainEthWithdrawOperation from './sidechain.eth.withdraw.operation';
+import SidechainEthApproveWithdrawOperation from './sidechain.eth.approve.withdraw.operation';
+import ContractFundPoolOperation from './contract.fund.pool.operation';
+import ContractWhitelistOperation from './contract.whitelist.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -77,8 +82,13 @@ export default class OperationManager {
 		accountAddressCreateOperation: AccountAddressCreateOperation,
 		transferToAddressOperation: TransferToAddressOperation,
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
+		sidechainEthDepositOperation: SidechainEthDepositOperation,
+		sidechainEthWithdrawOperation: SidechainEthWithdrawOperation,
 		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation,
+		sidechainEthApproveWithdrawOperation: SidechainEthApproveWithdrawOperation,
+		contractFundPoolOperation: ContractFundPoolOperation,
 		blockRewardOperation: BlockRewardOperation,
+		contractWhitelistOperation: ContractWhitelistOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -107,7 +117,12 @@ export default class OperationManager {
 			accountAddressCreateOperation,
 			transferToAddressOperation,
 			sidechainEthCreateAddressOperation,
+			sidechainEthDepositOperation,
+			sidechainEthWithdrawOperation,
 			sidechainEthApproveAddressOperation,
+			sidechainEthApproveWithdrawOperation,
+			contractFundPoolOperation,
+			contractWhitelistOperation,
 			blockRewardOperation,
 		];
 		for (const operation of operations) {
