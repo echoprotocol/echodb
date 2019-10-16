@@ -401,29 +401,29 @@ interface CommitteMemberUpdateOperation {
 
 interface AccountAddressCreateOperation {
 	fee: IAmount;
-	owner: string;
+	owner: AccountId;
 	label: string;
 	extensions: ExtensionsArr;
 }
 
 interface TransferToAddressOperation {
 	fee: IAmount;
-	from: string;
-	to: string;
+	from: AccountId;
+	to: AccountId;
 	amount: IAmount;
 	extensions: ExtensionsArr;
 }
 
 interface SidechainEthCreateAddressOperation {
 	fee: IAmount;
-	account: string;
+	account: AccountId;
 	extensions: ExtensionsArr;
 }
 
 interface SidechainEthApproveAddressOperation {
 	fee: IAmount;
-	committee_member_id: string;
-	malicious_committeemen: string[];
+	committee_member_id: AccountId;
+	malicious_committeemen: AccountId[];
 	account: string;
 	eth_addr: string;
 	extensions: ExtensionsArr;
