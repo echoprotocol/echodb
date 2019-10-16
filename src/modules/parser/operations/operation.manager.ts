@@ -2,7 +2,6 @@ import AbstractOperation from './abstract.operation';
 import BalanceService from '../../../services/balance.service';
 import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
-import AccountTransferOperation from './account.transfer.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
 import AssetCreateOperation from './asset.create.operation';
 import TransferOperation from './transfer.operation';
@@ -14,6 +13,8 @@ import AssetReserverOperation from './asset.reserve.operation';
 import AssetFundFeePoolOperation from './asset.fund.fee.pool.operation';
 import AssetPublishFeedOperation from './asset.publish.feed.operation';
 import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
+import BalanceFreezeOperation from './balance.freeze.operation';
+import BalanceUnfreezeOperation from './balance.unfreeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
@@ -28,6 +29,7 @@ import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
 import { dateFromUtcIso } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
+import BlockRewardOperation from './block.reward.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -43,7 +45,6 @@ export default class OperationManager {
 		transferOperation: TransferOperation,
 		accountCreateOperation: AccountCreateOperation,
 		accountUpdateOperation: AccountUpdateOperation,
-		accountTransferOperation: AccountTransferOperation,
 		accountWhitelistOperation: AccountWhitelistOperation,
 		assetCreateOperation: AssetCreateOperation,
 		assetClaimFeesOperation: AssetClaimFeesOperation,
@@ -54,18 +55,22 @@ export default class OperationManager {
 		assetFundFeePoolOperation: AssetFundFeePoolOperation,
 		assetPublishFeedOperation: AssetPublishFeedOperation,
 		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
+		balanceFreezeOperation: BalanceFreezeOperation,
+		balanceUnfreezeOperation: BalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
+		blockRewardOperation: BlockRewardOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
-			accountTransferOperation,
 			accountUpdateOperation,
 			accountWhitelistOperation,
 			assetCreateOperation,
 			assetUpdateOperation,
 			assetBitassetUpdateOperation,
+			balanceFreezeOperation,
+			balanceUnfreezeOperation,
 			contractCreateOperation,
 			contractCallOperation,
 			assetIssueOperation,
@@ -76,6 +81,7 @@ export default class OperationManager {
 			assetUpdateFeedProducersOperation,
 			transferOperation,
 			contractTransferOperation,
+			blockRewardOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
@@ -88,17 +94,20 @@ export default class OperationManager {
 		[id, body]: [T, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_PROPS<T> : unknown],
 		[_, result]: [unknown, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<T> : unknown],
 		dTx: TDoc<ITransactionExtended>,
+		dBlock?: TDoc<IBlock>,
 	) {
 		const operation: IOperation<T> = {
 			id,
 			body,
 			result,
+			block: dBlock ? dBlock._id : null,
+			virtual: !!dBlock,
 			_tx: dTx,
-			timestamp: dateFromUtcIso(dTx._block.timestamp),
+			timestamp: dateFromUtcIso(dTx ? dTx._block.timestamp : dBlock.timestamp),
 			_relation: null,
 		};
 		if (this.map[id]) {
-			operation._relation = await this.parseKnownOperation(id, body, result, dTx._block);
+			operation._relation = await this.parseKnownOperation(id, body, result, dTx ? dTx._block : dBlock);
 		} else {
 			logger.warn(`Operation ${id} is not supported`);
 			const feePayer = OPERATION.FEE_PAYER_FIELD[id];
@@ -121,7 +130,9 @@ export default class OperationManager {
 	): Promise<IOperationRelation> {
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
 		const relation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
-		await this.balanceService.takeFee(relation.from[0], body.fee);
+		if (body.fee) {
+			await this.balanceService.takeFee(relation.from[0], body.fee);
+		}
 		return relation;
 	}
 
