@@ -130,7 +130,7 @@ export default class TransferService {
 				foreignField: '_id',
 				as: '_asset',
 			},
-		].map((subject) => ({ $lookup: subject}));
+		].map((subject) => ({ $lookup: subject }));
 
 		const match: Query = {
 			$and: [],
