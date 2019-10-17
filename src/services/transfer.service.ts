@@ -13,7 +13,6 @@ import { IAccount } from '../interfaces/IAccount';
 import { IContract } from '../interfaces/IContract';
 import { TDoc, MongoId } from '../types/mongoose';
 import { IAsset } from 'interfaces/IAsset';
-import { inspect } from 'util';
 
 type ParticipantDocTypeMap = {
 	[TRANSFER.PARTICIPANT_TYPE.ACCOUNT]: TDoc<IAccount>;
