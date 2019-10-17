@@ -20,7 +20,8 @@ export default class Transfer {
 	@Field(() => Account) from: string;
 	@Field(() => Account) to: string;
 	@Field(() => StringifiedNumber) amount: string;
-	@Field(() => Asset) asset: Asset;
-	@Field(() => Contract) contract: string;
+	@Field(() => Asset, { nullable: true }) asset: Asset;
+	@Field(() => Contract, { nullable: true }) contract: string;
 	@Field(() => BALANCE.TYPE) type: BALANCE.TYPE;
+	@Field(() => TRANSFER.TYPE) relation: TRANSFER.TYPE;
 }

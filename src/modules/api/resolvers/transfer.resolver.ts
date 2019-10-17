@@ -1,16 +1,20 @@
-import AbstractResolver, { validateSubscriptionArgs } from './abstract.resolver';
+import AbstractResolver, { validateSubscriptionArgs, validateArgs } from './abstract.resolver';
 import AccountRepository from '../../../repositories/account.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import AssetRepository from '../../../repositories/asset.repository';
 import Transfer from '../types/transfer.type';
+import PaginatedResponse from '../types/paginated.response.type';
 import TransferRepository from '../../../repositories/transfer.repository';
+import TransferService from '../../../services/transfer.service';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import * as TRANSFER from '../../../constants/transfer.constants';
-import { TransferSubscribeForm } from '../forms/transfer.forms';
-import { Resolver, Args, FieldResolver, Root, Subscription } from 'type-graphql';
+import { TransferSubscribeForm, GetTransfersHistoryForm } from '../forms/transfer.forms';
+import { Resolver, Args, FieldResolver, Root, Subscription, Query } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
+
+const paginatedTransfers = PaginatedResponse(Transfer);
 
 interface ITransferSubscriptionFilterArgs {
 	payload: Payload<REDIS.EVENT.NEW_TRANSFER>;
@@ -21,15 +25,41 @@ export default class TransferResolver extends AbstractResolver {
 	@inject static accountRepository: AccountRepository;
 	@inject static assetRepository: AssetRepository;
 	@inject static contractRepository: ContractRepository;
-	@inject static transferrepository: TransferRepository;
+	@inject static transferRepository: TransferRepository;
+	@inject static transferService: TransferService;
 
 	constructor(
 		private accountRepository: AccountRepository,
 		private assetRepository: AssetRepository,
 		private contractRepository: ContractRepository,
 		private transferRepository: TransferRepository,
+		private transferService: TransferService,
 	) {
 		super();
+	}
+
+	// Query
+	@Query(() => paginatedTransfers)
+	@validateArgs(GetTransfersHistoryForm)
+	getTransferHistory(
+		@Args() {
+			count,
+			offset,
+			from,
+			to,
+			contracts,
+			relationTypes,
+			valueTypes,
+			amounts,
+			assets,
+			sort,
+		}: GetTransfersHistoryForm,
+	) {
+		return this.transferService.getHistory(
+			count,
+			offset,
+			{ from, to, contracts, relationTypes, valueTypes, amounts, assets, sort },
+		);
 	}
 
 	// FieldResolver
@@ -80,6 +110,11 @@ export default class TransferResolver extends AbstractResolver {
 		return type;
 	}
 
+	@FieldResolver()
+	relation(@Root('relationType') relationType: Transfer['relationType']) {
+		return relationType;
+	}
+
 	// Subscription
 	@Subscription(() => Transfer, {
 		topics: validateSubscriptionArgs(REDIS.EVENT.NEW_TRANSFER, TransferSubscribeForm),
@@ -95,8 +130,8 @@ export default class TransferResolver extends AbstractResolver {
 	static transferCreateFilter(
 		{ payload: dTransfer, args: { from, to, assets, contracts } }: ITransferSubscriptionFilterArgs,
 	) {
-		const sender = this.transferrepository.getSender(dTransfer);
-		const receiver = this.transferrepository.getReceiver(dTransfer);
+		const sender = this.transferRepository.getSender(dTransfer);
+		const receiver = this.transferRepository.getReceiver(dTransfer);
 		if (from && !from.includes(sender.id)) return false;
 		if (to && !to.includes(receiver.id)) return false;
 		if (assets || contracts) {

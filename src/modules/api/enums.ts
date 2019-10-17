@@ -3,6 +3,7 @@ import * as BALANCE from '../../constants/balance.constants';
 import * as CONTRACT from '../../constants/contract.constants';
 import * as ECHO from '../../constants/echo.constants';
 import * as TOKEN from '../../constants/token.constants';
+import * as TRANSFER from '../../constants/transfer.constants';
 import { registerEnumType } from 'type-graphql';
 
 registerEnumType(API.SORT_DESTINATION, {
@@ -28,4 +29,9 @@ registerEnumType(ECHO.OPERATION_ID, {
 registerEnumType(TOKEN.TYPE, {
 	name: 'TokenTypeEnum',
 	description: 'Type of a token',
+});
+
+registerEnumType(TRANSFER.TYPE, {
+	name: 'TransferTypeEnum',
+	description: 'Type of a transfer',
 });
