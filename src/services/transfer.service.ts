@@ -92,56 +92,45 @@ export default class TransferService {
 	}
 
 	async getHistory(count: number, offset: number, params: GetTransactionParameters) {
+
 		const query: Query[] = [
 			{
-				$lookup: {
-					from: 'accounts',
-					localField: '_fromAccount',
-					foreignField: '_id',
-					as: '_fromAccount',
-				},
+				from: 'accounts',
+				localField: '_fromAccount',
+				foreignField: '_id',
+				as: '_fromAccount',
 			},
 			{
-				$lookup: {
-					from: 'accounts',
-					localField: '_toAccount',
-					foreignField: '_id',
-					as: '_toAccount',
-				},
+				from: 'accounts',
+				localField: '_toAccount',
+				foreignField: '_id',
+				as: '_toAccount',
 			},
 			{
-				$lookup: {
-					from: 'contracts',
-					localField: '_fromContract',
-					foreignField: '_id',
-					as: '_fromContract',
-				},
+				from: 'contracts',
+				localField: '_fromContract',
+				foreignField: '_id',
+				as: '_fromContract',
 			},
 			{
-				$lookup: {
-					from: 'contracts',
-					localField: '_toContract',
-					foreignField: '_id',
-					as: '_toContract',
-				},
+				from: 'contracts',
+				localField: '_toContract',
+				foreignField: '_id',
+				as: '_toContract',
 			},
 			{
-				$lookup: {
-					from: 'contracts',
-					localField: '_contract',
-					foreignField: '_id',
-					as: '_contract',
-				},
+				from: 'contracts',
+				localField: '_contract',
+				foreignField: '_id',
+				as: '_contract',
 			},
 			{
-				$lookup: {
-					from: 'assets',
-					localField: '_asset',
-					foreignField: '_id',
-					as: '_asset',
-				},
+				from: 'assets',
+				localField: '_asset',
+				foreignField: '_id',
+				as: '_asset',
 			},
-		];
+		].map((subject) => ({ $lookup: subject}));
 
 		const match: Query = {
 			$and: [],
