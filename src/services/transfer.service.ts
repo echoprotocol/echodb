@@ -98,56 +98,56 @@ export default class TransferService {
 					from: 'accounts',
 					localField: '_fromAccount',
 					foreignField: '_id',
-					as: '_fromAccount'
-				}
+					as: '_fromAccount',
+				},
 			},
 			{
 				$lookup: {
 					from: 'accounts',
 					localField: '_toAccount',
 					foreignField: '_id',
-					as: '_toAccount'
-				}
+					as: '_toAccount',
+				},
 			},
 			{
 				$lookup: {
 					from: 'contracts',
 					localField: '_fromContract',
 					foreignField: '_id',
-					as: '_fromContract'
-				}
+					as: '_fromContract',
+				},
 			},
 			{
 				$lookup: {
 					from: 'contracts',
 					localField: '_toContract',
 					foreignField: '_id',
-					as: '_toContract'
-				}
+					as: '_toContract',
+				},
 			},
 			{
 				$lookup: {
 					from: 'contracts',
 					localField: '_contract',
 					foreignField: '_id',
-					as: '_contract'
-				}
+					as: '_contract',
+				},
 			},
 			{
 				$lookup: {
 					from: 'assets',
 					localField: '_asset',
 					foreignField: '_id',
-					as: '_asset'
-				}
+					as: '_asset',
+				},
 			},
 		];
 
 		const match: Query = {
-			$and: []
+			$and: [],
 		};
 		const otherParams: Query = {};
-		
+
 		if (params.relationTypes) {
 			match.$and.push({ relationType: { $in: params.relationTypes } });
 		}
@@ -184,7 +184,7 @@ export default class TransferService {
 		}
 
 		if (Object.keys(otherParams).length) {
-			match.$and.push({ $or: otherParams })
+			match.$and.push({ $or: otherParams });
 		}
 
 		const unwind: Query[] = [
@@ -194,19 +194,19 @@ export default class TransferService {
 			'$_toContract',
 			'$_contract',
 			'$_asset',
-		].map((path) => ({ $unwind: { path, preserveNullAndEmptyArrays: true } }))
+		].map((path) => ({ $unwind: { path, preserveNullAndEmptyArrays: true } }));
 
 		const sortDestination = params.sort === API.SORT_DESTINATION.ASC ? 1 : -1;
 
 		query.push(...unwind);
-		match.$and.length && query.push({ $match: match })
+		match.$and.length && query.push({ $match: match });
 		query.push({ $skip : offset });
 		query.push({ $limit : count });
 		query.push({ $sort: { timestamp: sortDestination } });
 
 		const items = await this.transferRepository.aggregate(query);
 
-		return { total: items.length, items };
+		return { items, total: items.length };
 	}
 
 }
