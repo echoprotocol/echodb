@@ -2,13 +2,13 @@ import AbstractConnection from './abstract.connection';
 import ConnectionError from '../errors/connection.error';
 import * as config from 'config';
 import * as TIME from '../constants/time.constants';
-import { connect, disconnect, Connection } from 'mongoose';
+import { connect, disconnect, Mongoose } from 'mongoose';
 import { getLogger } from 'log4js';
 
 const logger = getLogger('db.connection');
 
 export default class DbConnection extends AbstractConnection {
-	private _connection: Connection = null;
+	private _connection: Mongoose = null;
 	get connection() { return this._connection; }
 
 	// TODO: is it needed to set promise?
