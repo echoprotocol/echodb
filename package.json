@@ -1,6 +1,6 @@
 {
 	"name": "echodb",
-	"version": "0.3.1",
+	"version": "0.4.0",
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:echoprotocol/echodb.git"
@@ -26,6 +26,7 @@
 		"lint:src": "npx tslint -p tsconfig.json -c tslint.json",
 		"lint:typing": "npx tslint -c tslint.json ./typing/**/*.d.ts",
 		"lint:types": "npx tslint -c tslint.json ./src/types/**/*.d.ts",
+		"lint:fix": "npx tslint --fix -p ./tsconfig.json",
 		"audit": "node_modules/audit-ci/bin/audit-ci --config audit-ci.json",
 		"test": "echo \"we need tests!\""
 	},
@@ -35,7 +36,7 @@
 		"bignumber.js": "^8.1.1",
 		"body-parser": "^1.18.3",
 		"config": "^3.0.1",
-		"connect-mongo": "^2.0.3",
+		"connect-mongo": "^3.1.2",
 		"cors": "^2.8.5",
 		"echojs-contract": "git+https://gitlab+deploy-token-9:f17aTdMVy2-EVxdmQpUb@gitlab.pixelplex.by/645.echo/echojs/echojs-contract.git#1.0.0",
 		"echojs-lib": "1.8.1-rc.4",

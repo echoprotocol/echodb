@@ -12,10 +12,10 @@ import { IBlock } from '../../../interfaces/IBlock';
 import { TDoc } from '../../../types/mongoose';
 import { dateFromUtcIso } from '../../../utils/format';
 
-type OP_ID = ECHO.OPERATION_ID.TRANSFER;
+type OP_ID = ECHO.OPERATION_ID.TRANSFER_TO_ADDRESS;
 
-export default class TransferOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.TRANSFER;
+export default class TransferToAddressOperation extends AbstractOperation<OP_ID> {
+	id = ECHO.OPERATION_ID.TRANSFER_TO_ADDRESS;
 
 	constructor(
 		private accountRepository: AccountRepository,
@@ -27,8 +27,9 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, _: any, dBlock: TDoc<IBlock>) {
-		const [[dFrom, dTo], dAsset] = await Promise.all([
-			this.accountRepository.findManyByIds([body.from, body.to]),
+		const [dFrom, dTo, dAsset] = await Promise.all([
+			this.accountRepository.findById(body.from),
+			this.accountRepository.findByAddress(body.to),
 			this.assetRepository.findById(body.amount.asset_id),
 		]);
 		const amount = new BN(body.amount.amount).toString();
@@ -46,7 +47,7 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 		]);
 		return this.validateRelation({
 			from: [body.from],
-			to: body.to,
+			to: dTo.id,
 			assets: [body.fee.asset_id, body.amount.asset_id],
 		});
 	}

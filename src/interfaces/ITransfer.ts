@@ -13,6 +13,7 @@ interface IBasic {
 	relationType: TRANSFER.TYPE;
 	valueType: BALANCE.TYPE;
 	amount: string;
+	timestamp: Date;
 }
 
 // asset

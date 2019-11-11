@@ -13,6 +13,7 @@ import FormError from '../../errors/form.error';
 import PubSubEngine from './pub.sub.engine';
 import TransactionResolver from './resolvers/transaction.resolver';
 import TokenResolver from './resolvers/token.resolver';
+import TransferResolver from './resolvers/transfer.resolver';
 import * as HTTP from '../../constants/http.constants';
 import * as http from 'http';
 import * as config from 'config';
@@ -50,6 +51,7 @@ export default class ApiModule extends AbstractModule {
 		private transactionResolver: TransactionResolver,
 		private assetResolver: AssetResolver,
 		private contractBalanceResolver: ContractBalanceResolver,
+		private transferResolver: TransferResolver,
 	) {
 		super();
 	}
@@ -79,6 +81,7 @@ export default class ApiModule extends AbstractModule {
 			this.transactionResolver,
 			this.tokenResolver,
 			this.assetResolver,
+			this.transferResolver,
 		];
 		const schema = await buildSchema({
 			resolvers,

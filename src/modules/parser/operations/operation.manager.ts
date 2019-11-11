@@ -18,6 +18,32 @@ import BalanceUnfreezeOperation from './balance.unfreeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import ContractTransferOperation from './contract.transfer.operation';
+import BalanceClaimOperation from './balance.claim.operation';
+import OverrideTransferOperation from './override.transfer.operation';
+import CommitteeMemberUpdateGlobalParametersOperation from './committee.member.update.global.parameters.operation';
+import VestingBalanceWithdrawOperation from './vesting.balance.withdraw.operation';
+import VestingBalanceCreateOperation from './vesting.balance.create.operation';
+import ProposalCreateOperation from './proposal.create.operation';
+import ProposalUpdateOperation from './proposal.update.operation';
+import ProposalDeleteOperation from './proposal.delete.operation';
+import CommitteeMemberCreateOperation from './committee.member.create.operation';
+import CommitteeMemberUpdateOperation from './committee.member.update.operation';
+import AccountAddressCreateOperation from './account.address.create.operation';
+import TransferToAddressOperation from './transfer.to.address.operation';
+import SidechainEthCreateAddressOperation from './sidechain.eth.create.address.operation';
+import SidechainEthApproveAddressOperation from './sidechain.eth.approve.address.operation';
+import SidechainEthDepositOperation from './sidechain.eth.deposit.operation';
+import SidechainEthWithdrawOperation from './sidechain.eth.withdraw.operation';
+import SidechainEthApproveWithdrawOperation from './sidechain.eth.approve.withdraw.operation';
+import ContractFundPoolOperation from './contract.fund.pool.operation';
+import ContractWhitelistOperation from './contract.whitelist.operation';
+import SidechainEthIssueOperation from './sidechain.eth.issue.operation';
+import SidechainEthBurnOperation from './sidechain.eth.burn.operation';
+import SidechainErc20RegisterTokenOperation from './sidechain.erc20.register.token.operation';
+import SidechainErc20DepositTokenOperation from './sidechain.erc20.deposit.token.operation';
+import SidechainErc20WithdrawTokenOperation from './sidechain.erc20.withdraw.token.operation';
+import SidechainErc20ApproveTokenWithdrawOperation from './sidechain.erc20.approve.token.withdraw.operation';
+import ContractUpdateOperation from './contract.update.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
@@ -60,7 +86,33 @@ export default class OperationManager {
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractTransferOperation: ContractTransferOperation,
+		balanceClaimOperation: BalanceClaimOperation,
+		overrideTransferOperation: OverrideTransferOperation,
+		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
+		vestingBalanceCreateOperation: VestingBalanceCreateOperation,
+		vestingBalanceWithdrawOperation: VestingBalanceWithdrawOperation,
+		proposalCreateOperation: ProposalCreateOperation,
+		proposalUpdateOperation: ProposalUpdateOperation,
+		proposalDeleteOperation: ProposalDeleteOperation,
+		committeeMemberCreateOperation: CommitteeMemberCreateOperation,
+		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
+		accountAddressCreateOperation: AccountAddressCreateOperation,
+		transferToAddressOperation: TransferToAddressOperation,
+		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
+		sidechainEthDepositOperation: SidechainEthDepositOperation,
+		sidechainEthWithdrawOperation: SidechainEthWithdrawOperation,
+		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation,
+		sidechainEthApproveWithdrawOperation: SidechainEthApproveWithdrawOperation,
+		contractFundPoolOperation: ContractFundPoolOperation,
 		blockRewardOperation: BlockRewardOperation,
+		contractWhitelistOperation: ContractWhitelistOperation,
+		sidechainEthIssueOperation: SidechainEthIssueOperation,
+		sidechainEthBurnOperation: SidechainEthBurnOperation,
+		sidechainErc20RegisterTokenOperation: SidechainErc20RegisterTokenOperation,
+		sidechainErc20DepositTokenOperation: SidechainErc20DepositTokenOperation,
+		sidechainErc20WithdrawTokenOperation: SidechainErc20WithdrawTokenOperation,
+		sidechainErc20ApproveTokenWithdrawOperation: SidechainErc20ApproveTokenWithdrawOperation,
+		contractUpdateOperation: ContractUpdateOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -81,7 +133,33 @@ export default class OperationManager {
 			assetUpdateFeedProducersOperation,
 			transferOperation,
 			contractTransferOperation,
+			balanceClaimOperation,
+			overrideTransferOperation,
+			committeeMemberUpdateGlobalParametersOperation,
+			vestingBalanceCreateOperation,
+			vestingBalanceWithdrawOperation,
+			proposalCreateOperation,
+			proposalUpdateOperation,
+			proposalDeleteOperation,
+			committeeMemberCreateOperation,
+			committeeMemberUpdateOperation,
+			accountAddressCreateOperation,
+			transferToAddressOperation,
+			sidechainEthCreateAddressOperation,
+			sidechainEthDepositOperation,
+			sidechainEthWithdrawOperation,
+			sidechainEthApproveAddressOperation,
+			sidechainEthApproveWithdrawOperation,
+			contractFundPoolOperation,
 			blockRewardOperation,
+			contractWhitelistOperation,
+			sidechainEthIssueOperation,
+			sidechainEthBurnOperation,
+			sidechainErc20RegisterTokenOperation,
+			sidechainErc20DepositTokenOperation,
+			sidechainErc20WithdrawTokenOperation,
+			sidechainErc20ApproveTokenWithdrawOperation,
+			contractUpdateOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

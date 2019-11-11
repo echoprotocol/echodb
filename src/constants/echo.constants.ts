@@ -42,8 +42,8 @@ export enum OPERATION_ID {
 	SIDECHAIN_ETH_APPROVE_WITHDRAW,
 	CONTRACT_FUND_POOL,
 	CONTRACT_WHITELIST,
-	SIDECHAIN_ISSUE, // VIRTUAL
-	SIDECHAIN_BURN, // VIRTUAL
+	SIDECHAIN_ETH_ISSUE, // VIRTUAL
+	SIDECHAIN_ETH_BURN, // VIRTUAL
 	SIDECHAIN_ERC20_REGISTER_TOKEN,
 	SIDECHAIN_ERC20_DEPOSIT_TOKEN,
 	SIDECHAIN_ERC20_WITHDRAW_TOKEN,
@@ -78,7 +78,33 @@ export type Operations = {
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
 	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
+	[OPERATION_ID.VESTING_BALANCE_CREATE]: VestingBalanceCreate;
+	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: VestingBalanceWithdraw;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: CommitteeMemberUpdateGlobalParametersProps
+	[OPERATION_ID.BALANCE_CLAIM]: BalanceClaimOperation;
+	[OPERATION_ID.OVERRIDE_TRANSFER]: OverrideTransfer;
+	[OPERATION_ID.PROPOSAL_CREATE]: ProposalCreateOperation;
+	[OPERATION_ID.PROPOSAL_UPDATE]: ProposalUpdateOperation;
+	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
+	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
+	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: AccountAddressCreateOperation;
+	[OPERATION_ID.TRANSFER_TO_ADDRESS]: TransferToAddressOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: SidechainEthCreateAddressOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: SidechainEthDepositOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: SidechainEthWithdrawOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
+	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
+	[OPERATION_ID.CONTRACT_WHITELIST]: ContractWhitelistOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: SidechainEthIssueOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_BURN]: SidechainEthBurnOperation;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: SidechainErc20RegisterTokenOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: SidechainErc20DepositTokenOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: SidechainErc20WithdrawTokenOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: SidechainErc20ApproveTokenWithdrawOperation;
+	[OPERATION_ID.CONTRACT_UPDATE]: ContractUpdateOperation;
 };
 
 export type OperationResult = {
@@ -100,7 +126,33 @@ export type OperationResult = {
 	[OPERATION_ID.CONTRACT_CREATE]: string;
 	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
 	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
+	[OPERATION_ID.VESTING_BALANCE_CREATE]: unknown;
+	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: unknown;
+	[OPERATION_ID.BALANCE_CLAIM]: unknown;
+	[OPERATION_ID.OVERRIDE_TRANSFER]: unknown;
+	[OPERATION_ID.PROPOSAL_CREATE]: string;
+	[OPERATION_ID.PROPOSAL_UPDATE]: unknown;
+	[OPERATION_ID.PROPOSAL_DELETE]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: unknown;
+	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: string;
+	[OPERATION_ID.TRANSFER_TO_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
+	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
+	[OPERATION_ID.CONTRACT_WHITELIST]: unknown;
 	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_BURN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: unknown;
+	[OPERATION_ID.CONTRACT_UPDATE]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -111,12 +163,87 @@ export type OPERATION_RESULT<T extends keyof OperationResult> = OperationResult[
 export type Authority = [number, {}];
 type ExtensionsArr = unknown[];
 type ExtensionsObj = {};
+type NewParameters = {
+	current_fees: {
+		parameters: [];
+		scale: Number;
+	};
+	block_interval: Number;
+	maintenance_interval: Number;
+	maintenance_duration_seconds: Number;
+	committee_proposal_review_period: Number;
+	maximum_transaction_size: Number;
+	maximum_block_size: Number;
+	maximum_time_until_expiration: Number;
+	maximum_proposal_lifetime: Number;
+	maximum_asset_whitelist_authorities: Number;
+	maximum_asset_feed_publishers: Number;
+	maximum_committee_count: Number;
+	maximum_authority_membership: Number;
+	reserve_percent_of_fee: Number;
+	network_percent_of_fee: Number;
+	max_predicate_opcode: Number;
+	accounts_per_fee_scale: Number;
+	account_fee_scale_bitshifts: Number;
+	max_authority_depth: Number;
+	echorand_config: {
+		_time_net_1mb: Number;
+		_time_net_256b: Number;
+		_creator_count: Number;
+		_verifier_count: Number;
+		_ok_threshold: Number;
+		_max_bba_steps: Number;
+		_gc1_delay: Number;
+	};
+	sidechain_config: {
+		eth_contract_address: String;
+		eth_committee_update_method : IEth;
+		eth_gen_address_method : IEth;
+		eth_withdraw_method : IEth;
+		eth_update_addr_method : IEth;
+		eth_withdraw_token_method : IEth;
+		eth_collect_tokens_method : IEth;
+		eth_committee_updated_topic: String;
+		eth_gen_address_topic: String;
+		eth_deposit_topic: String;
+		eth_withdraw_topic: String;
+		erc20_deposit_topic: String;
+		ETH_asset_id: String;
+		fines : {
+			generate_eth_address: Number;
+		}
+		waiting_blocks: Number;
+	};
+	erc20_config: {
+		contract_code: String;
+		create_token_fee: Number;
+		transfer_topic: String;
+		check_balance_method: IEth;
+		burn_method: IEth;
+		issue_method: IEth;
+	};
+	gas_price: {
+		price: Number;
+		gas_amount: Number;
+	};
+	extensions: ExtensionsArr;
+};
 
 export interface IAmount {
 	amount: number | string;
 	asset_id: AssetId;
 }
 
+export interface IPolicy {
+	begin_timestamp: String;
+	vesting_cliff_seconds: Number;
+	vesting_duration_seconds: Number;
+}
+
+export interface IEth {
+	method: String;
+	gas: Number;
+}
 interface TransferOperation {
 	fee: IAmount;
 	from: string;
@@ -344,6 +471,227 @@ interface ContractCallOperation {
 	value: IAmount;
 	code: string;
 	callee: string;
+	extensions: ExtensionsArr;
+}
+
+interface VestingBalanceCreate{
+	fee: IAmount;
+	creator: AccountId;
+	owner: AccountId;
+	amount: IAmount;
+	policy: IPolicy;
+	extensions: ExtensionsArr;
+}
+
+interface VestingBalanceWithdraw {
+	fee: IAmount;
+	vesting_balance: string;
+	owner: AccountId;
+	amount: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeMemberUpdateGlobalParametersProps{
+	fee: IAmount;
+	new_parameters: NewParameters;
+	extensions: ExtensionsArr;
+}
+
+interface BalanceClaimOperation {
+	fee: IAmount;
+	deposit_to_account: AccountId;
+	balance_to_claim: IAmount;
+	balance_owner_key: string;
+	total_claimed: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface OverrideTransfer {
+	fee: IAmount;
+	issuer: AccountId;
+	from: AccountId;
+	to: AccountId;
+	amount: IAmount;
+	extensions: ExtensionsArr;
+}
+interface ProposalCreateOperation {
+	fee: IAmount;
+	fee_paying_account: AccountId;
+	proposed_ops: unknown[];
+	expiration_time: string;
+	review_period_seconds: number;
+	extensions: ExtensionsArr;
+}
+
+interface ProposalUpdateOperation {
+	fee: IAmount;
+	fee_paying_account: AccountId;
+	proposal: string;
+	active_approvals_to_add: AccountId[];
+	active_approvals_to_remove: AccountId[];
+	owner_approvals_to_remove: AccountId[];
+	key_approvals_to_add: string[];
+	key_approvals_to_remove: string[];
+	extensions: ExtensionsArr;
+}
+
+interface ProposalDeleteOperation {
+	fee: IAmount;
+	fee_paying_account: AccountId;
+	using_owner_authority: boolean;
+	proposal: string;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeMemberCreateOperation {
+	fee: IAmount;
+	committee_member_account: AccountId;
+	url: string;
+	eth_address: string;
+	btc_public_key: string;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteMemberUpdateOperation {
+	fee: IAmount;
+	committee_member: AccountId;
+	committee_member_account: AccountId;
+	new_url: string;
+	new_eth_address: string;
+	new_btc_public_key: string;
+}
+
+interface AccountAddressCreateOperation {
+	fee: IAmount;
+	owner: AccountId;
+	label: string;
+	extensions: ExtensionsArr;
+}
+
+interface TransferToAddressOperation {
+	fee: IAmount;
+	from: AccountId;
+	to: AccountId;
+	amount: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthCreateAddressOperation {
+	fee: IAmount;
+	account: AccountId;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthApproveAddressOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	malicious_committeemen: AccountId[];
+	account: AccountId;
+	eth_addr: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthDepositOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	deposit_id: number;
+	account: AccountId;
+	value: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthWithdrawOperation {
+	fee: IAmount;
+	account: AccountId;
+	eth_addr: string;
+	value: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthApproveWithdraw {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	withdraw_id: number;
+	extensions: ExtensionsArr;
+}
+
+interface ContractFundPoolOperation {
+	fee: IAmount;
+	sender: AccountId;
+	contract: string;
+	value: IAmount;
+
+}
+
+interface ContractWhitelistOperation {
+	fee: IAmount;
+	sender: AccountId;
+	contract: string;
+	add_to_whitelist: AccountId[];
+	remove_from_whitelist: AccountId[];
+	add_to_blacklist: AccountId[];
+	remove_from_blacklist: AccountId[];
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthIssueOperation {
+	fee: IAmount;
+	value: IAmount;
+	account: AccountId;
+	deposit_id: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthBurnOperation {
+	fee: IAmount;
+	value: IAmount;
+	account: AccountId;
+	withdraw_id: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20RegisterTokenOperation {
+	fee: IAmount;
+	account: AccountId;
+	eth_addr: string;
+	name: string;
+	symbol: string;
+	decimals: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20DepositTokenOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	malicious_committeemen: AccountId[];
+	account: AccountId;
+	erc20_token_addr: string;
+	value: string;
+	transaction_hash: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20WithdrawTokenOperation {
+	fee: IAmount;
+	account: AccountId;
+	to: string;
+	erc20_token: string;
+	value: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20ApproveTokenWithdrawOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	withdraw_id: number;
+	extensions: ExtensionsArr;
+}
+
+interface ContractUpdateOperation {
+	fee: IAmount;
+	sender: AccountId;
+	contract: string;
+	new_owner: AccountId;
 	extensions: ExtensionsArr;
 }
 
