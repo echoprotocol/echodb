@@ -54,7 +54,7 @@ export default class ContractService {
 	}
 
 	isERC20Code(bytecode: string): boolean {
-		for (const hash of Object.values(ERC20.METHOD.HASH_LIST)) {
+		for (const hash of Object.values(ERC20.METHOD.REQUIRED_HASH_LIST)) {
 			if (!bytecode.includes(hash)) return false;
 		}
 		return true;
