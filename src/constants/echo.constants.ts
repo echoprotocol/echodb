@@ -88,16 +88,16 @@ export type Operations = {
 	[OPERATION_ID.BALANCE_UNFREEZE]: BalanceUnfreezeOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
-	[OPERATION_ID.CONTRACT_INTERNAL_CREATE]: unknown;
-	[OPERATION_ID.CONTRACT_INTERNAL_CALL]: unknown;
-	[OPERATION_ID.CONTRACT_SELFDESTRUCT]: unknown;
+	[OPERATION_ID.CONTRACT_INTERNAL_CREATE]: ContractInternalCreate;
+	[OPERATION_ID.CONTRACT_INTERNAL_CALL]: ContractInternalCall;
+	[OPERATION_ID.CONTRACT_SELFDESTRUCT]: ContractSelfdestruct;
 	[OPERATION_ID.VESTING_BALANCE_CREATE]: VestingBalanceCreate;
 	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: VestingBalanceWithdraw;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: CommitteeMemberUpdateGlobalParametersProps
-	[OPERATION_ID.COMMITTEE_MEMBER_ACTIVATE]: unknown;
-	[OPERATION_ID.COMMITTEE_MEMBER_DEACTIVATE]: unknown;
-	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_DEPOSIT]: unknown;
-	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_WITHDRAW]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_ACTIVATE]: CommitteeMemberActivate;
+	[OPERATION_ID.COMMITTEE_MEMBER_DEACTIVATE]: CommitteeMemberDeactivate;
+	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_DEPOSIT]: CommitteeFrozenBalanceDeposit;
+	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_WITHDRAW]: CommitteeFrozenBalanceWithdraw;
 	[OPERATION_ID.BALANCE_CLAIM]: BalanceClaimOperation;
 	[OPERATION_ID.PROPOSAL_UPDATE]: ProposalUpdateOperation;
 	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
@@ -116,15 +116,15 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: SidechainErc20DepositTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: SidechainErc20WithdrawTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: SidechainErc20ApproveTokenWithdrawOperation;
-	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: unknown;
-	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_DEPOSIT]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: SidechainErc20Issue;
+	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: SidechainErc20Burn;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS]: SidechainBtcCreateAddress;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT]: SidechainBtcCreateIntermediateDeposit;
+	[OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT]: SidechainBtcIntermediateDeposit;
+	[OPERATION_ID.SIDECHAIN_BTC_DEPOSIT]: SidechainBtcDeposit;
+	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: SidechainBtcWithdraw;
+	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: SidechainBtcAggregate;
+	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: SidechainBtcApproveAggregate;
 	[OPERATION_ID.CONTRACT_UPDATE]: ContractUpdateOperation;
 	[OPERATION_ID.BLOCK_REWARD]: BlockRewardOperation;
 };
@@ -504,6 +504,33 @@ interface ContractCallOperation {
 	extensions: ExtensionsArr;
 }
 
+interface ContractInternalCreate {
+	fee: IAmount;
+	caller: string;
+	new_contract: string;
+	value: IAmount;
+	eth_accuracy: boolean;
+	supported_asset_id?: string;
+	extensions: ExtensionsArr;
+}
+
+interface ContractInternalCall {
+	fee: IAmount;
+	caller: string;
+	callee: string;
+	method: string;
+	value: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface ContractSelfdestruct {
+	fee: IAmount;
+	contract: string;
+	recipient: string;
+	amounts: IAmount[];
+	extensions: ExtensionsArr;
+}
+
 interface VestingBalanceCreate{
 	fee: IAmount;
 	creator: AccountId;
@@ -524,6 +551,32 @@ interface VestingBalanceWithdraw {
 interface CommitteeMemberUpdateGlobalParametersProps{
 	fee: IAmount;
 	new_parameters: NewParameters;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeMemberActivate {
+	fee: IAmount;
+	committee_to_activate: string;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeMemberDeactivate {
+	fee: IAmount;
+	committee_to_deactivate: string;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeFrozenBalanceDeposit {
+	fee: IAmount;
+	committee_member_account: string;
+	amount: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeFrozenBalanceWithdraw {
+	fee: IAmount;
+	committee_member_account: string;
+	amount: IAmount;
 	extensions: ExtensionsArr;
 }
 
@@ -714,6 +767,93 @@ interface SidechainErc20ApproveTokenWithdrawOperation {
 	fee: IAmount;
 	committee_member_id: AccountId;
 	withdraw_id: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20Issue {
+	fee: IAmount;
+	deposit: string;
+	account: string;
+	token: string;
+	amount: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20Burn {
+	fee: IAmount;
+	withdraw: string;
+	account: string;
+	token: string;
+	amount: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcCreateAddress {
+	fee: IAmount;
+	account: string;
+	backup_address: string;
+}
+
+interface BtcTransactionDetails {
+	block_number: number | string;
+	tx_id: string;
+	value: number | string;
+	vout: number;
+}
+
+interface SidechainBtcCreateIntermediateDeposit {
+	fee: IAmount;
+	committee_member_id: string;
+	account: string;
+	btc_address_id: string;
+	tx_info: BtcTransactionDetails;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcIntermediateDeposit {
+	fee: IAmount;
+	committee_member_id: string;
+	intermediate_address_id: string;
+	signature: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcDeposit {
+	fee: IAmount;
+	committee_member_id: string;
+	account: string;
+	intermediate_deposit_id: string;
+	tx_info: BtcTransactionDetails;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcWithdraw {
+	fee: IAmount;
+	account: string;
+	btc_addr: string;
+	value: number | string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcAggregate {
+	fee: IAmount;
+	committee_member_id: string;
+	deposits: string[];
+	withdrawals: string[];
+	transaction_id: string;
+	aggregation_out_value: number | string;
+	sma_address: { address: string };
+	committee_member_ids_in_script: [string, string][];
+	previous_aggregation: string;
+	cpfp_depth: number;
+	signatures: [number, string];
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcApproveAggregate {
+	fee: IAmount;
+	committee_member_id: string;
+	transaction_id: string;
 	extensions: ExtensionsArr;
 }
 
