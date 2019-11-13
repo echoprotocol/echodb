@@ -40,6 +40,7 @@ export default class ParserModule extends AbstractModule {
 
 	async init() {
 		const from = await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
+		logger.trace(`Inited from block #${from}`);
 		if (from === 1) {
 			await this.syncAllAccounts();
 			await this.syncCoreAsset();
@@ -59,6 +60,9 @@ export default class ParserModule extends AbstractModule {
 	async parseBlock({ block, map }: IBlockWithVOps) {
 		try {
 			const dBlock = await this.blockRepository.create(block);
+			if (block.transactions.length === 0) {
+				logger.trace(`Skipping no-transactions block #${block.round}`);
+			}
 			for (const [txIndex, tx] of block.transactions.entries()) {
 				logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
 				const dTx = <TDoc<ITransactionExtended>>await this.transactionRepository.create({

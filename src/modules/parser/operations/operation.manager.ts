@@ -17,7 +17,6 @@ import BalanceFreezeOperation from './balance.freeze.operation';
 import BalanceUnfreezeOperation from './balance.unfreeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
-import ContractTransferOperation from './contract.transfer.operation';
 import BalanceClaimOperation from './balance.claim.operation';
 import OverrideTransferOperation from './override.transfer.operation';
 import CommitteeMemberUpdateGlobalParametersOperation from './committee.member.update.global.parameters.operation';
@@ -56,6 +55,7 @@ import { getLogger } from 'log4js';
 import { dateFromUtcIso } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
 import BlockRewardOperation from './block.reward.operation';
+import { inspect } from 'util';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -85,7 +85,6 @@ export default class OperationManager {
 		balanceUnfreezeOperation: BalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
-		contractTransferOperation: ContractTransferOperation,
 		balanceClaimOperation: BalanceClaimOperation,
 		overrideTransferOperation: OverrideTransferOperation,
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
@@ -132,7 +131,6 @@ export default class OperationManager {
 			assetClaimFeesOperation,
 			assetUpdateFeedProducersOperation,
 			transferOperation,
-			contractTransferOperation,
 			balanceClaimOperation,
 			overrideTransferOperation,
 			committeeMemberUpdateGlobalParametersOperation,
@@ -207,11 +205,18 @@ export default class OperationManager {
 		dBlock: TDoc<IBlock>,
 	): Promise<IOperationRelation> {
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
-		const relation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
-		if (body.fee) {
-			await this.balanceService.takeFee(relation.from[0], body.fee);
+		try {
+			const relation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
+			if (body.fee) {
+				await this.balanceService.takeFee(relation.from[0], body.fee);
+			}
+			return relation;
+		} catch (error) {
+			logger.error('Failed to parse operation', inspect({ id, body, result, dBlock }, false, null, true));
+			logger.error(error);
+			process.exit(1);
+			throw error;
 		}
-		return relation;
 	}
 
 }

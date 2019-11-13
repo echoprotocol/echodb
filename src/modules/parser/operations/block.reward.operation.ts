@@ -5,10 +5,10 @@ import AccountRepository from 'repositories/account.repository';
 import BalanceRepository from 'repositories/balance.repository';
 import * as ECHO from '../../../constants/echo.constants';
 
-type OP_ID = ECHO.OPERATION_ID.BLOCK_REWARD_OPERATION;
+type OP_ID = ECHO.OPERATION_ID.BLOCK_REWARD;
 
 export default class BlockRewardOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.BLOCK_REWARD_OPERATION;
+	id = ECHO.OPERATION_ID.BLOCK_REWARD;
 
 	constructor(
 		private accountRepository: AccountRepository,

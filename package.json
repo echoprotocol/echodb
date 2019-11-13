@@ -39,7 +39,7 @@
 		"connect-mongo": "^3.1.2",
 		"cors": "^2.8.5",
 		"echojs-contract": "git+https://gitlab+deploy-token-9:f17aTdMVy2-EVxdmQpUb@gitlab.pixelplex.by/645.echo/echojs/echojs-contract.git#1.0.0",
-		"echojs-lib": "1.8.1-rc.4",
+		"echojs-lib": "^1.9.1-echo.13-rc.1",
 		"express": "^4.16.4",
 		"express-graphql": "^0.7.1",
 		"graphql": "^14.1.1",
