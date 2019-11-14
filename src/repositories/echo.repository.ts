@@ -64,7 +64,7 @@ export default class EchoRepository {
 		const hexValue = await this.echoConnection.echo.api.callContractNoChangingState(
 			contractId,
 			'1.2.1',
-			ECHO.CORE_ASSET,
+			{ asset_id: ECHO.CORE_ASSET, amount: 0 },
 			// FIXME: use constant
 			ERC20.METHOD.HASH.BALANCE_OF + encode({ value: address, type: 'address' }),
 		);
@@ -84,7 +84,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.CORE_ASSET,
+				{ asset_id: ECHO.CORE_ASSET, amount: 0 },
 				ERC20.METHOD.HASH.TOTAL_SUPPLY,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.TOTAL_SUPPLY).toString();
@@ -100,7 +100,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.CORE_ASSET,
+				{ asset_id: ECHO.CORE_ASSET, amount: 0 },
 				ERC20.METHOD.HASH.NAME,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.NAME);
@@ -115,7 +115,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.CORE_ASSET,
+				{ asset_id: ECHO.CORE_ASSET, amount: 0 },
 				ERC20.METHOD.HASH.SYMBOL,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.SYMBOL);
@@ -140,7 +140,7 @@ export default class EchoRepository {
 				contractId,
 				// FIXME: needed to use any accountId here
 				'1.2.1',
-				ECHO.CORE_ASSET,
+				{ asset_id: ECHO.CORE_ASSET, amount: 0 },
 				ERC20.METHOD.HASH.DECIMALS,
 			);
 			return <string>decode(hex, ERC20.METHOD.RESULT_TYPE.DECIMALS).toString();
