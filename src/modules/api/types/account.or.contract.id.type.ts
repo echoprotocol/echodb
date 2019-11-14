@@ -1,14 +1,17 @@
+import { validators, constants } from 'echojs-lib';
 import { GraphQLScalarType, Kind, GraphQLError } from 'graphql';
 
 function check(value: string) {
-	const regExpArr = value.match(/^1.(2|10).\d+$/);
-	if (!regExpArr || !regExpArr.length) throw new GraphQLError('');
+	if (!validators.isAccountId(value) || !validators.isContractId(value)) throw new GraphQLError('');
 	return value;
 }
 
+const accountTypeId = constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT;
+const contractTypeId = constants.PROTOCOL_OBJECT_TYPE_ID.CONTRACT;
+
 export default new GraphQLScalarType({
 	name: 'AccountOrContractId',
-	description: 'String. Format "1.(2|10).\\d+"',
+	description: `String. Format "1.(${accountTypeId}|${contractTypeId}).\\d+"`,
 	parseValue(value: string) {
 		if (typeof value !== 'string') throw new GraphQLError('');
 		check(value);

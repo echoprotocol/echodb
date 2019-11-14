@@ -51,12 +51,12 @@ export default class AssetCreateOperation extends AbstractOperation<OP_ID> {
 			this.accountRepository.findById(body.issuer),
 		]);
 		const dAsset = await this.assetRepository.create({
-			bitasset: assetData.bitasset ? {
+			bitasset: assetData.bitasset === undefined ? null : {
 				...bitAssetDefaultFields,
 				id: assetData.bitasset.id,
 				current_feed_publication_time:  dateFromUtcIso(assetData.bitasset.current_feed_publication_time),
 				options: body.bitasset_opts,
-			} : null,
+			},
 			id: result,
 			_account: dAccount,
 			symbol: body.symbol,

@@ -56,6 +56,7 @@ import { dateFromUtcIso } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
 import BlockRewardOperation from './block.reward.operation';
 import { inspect } from 'util';
+import ContractInternalCreateOperaiton from './contract.internal.create.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -85,6 +86,7 @@ export default class OperationManager {
 		balanceUnfreezeOperation: BalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
+		contractInternalCreateOperation: ContractInternalCreateOperaiton,
 		balanceClaimOperation: BalanceClaimOperation,
 		overrideTransferOperation: OverrideTransferOperation,
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
@@ -124,6 +126,7 @@ export default class OperationManager {
 			balanceUnfreezeOperation,
 			contractCreateOperation,
 			contractCallOperation,
+			contractInternalCreateOperation,
 			assetIssueOperation,
 			assetReserveOperation,
 			assetFundFeePoolOperation,
