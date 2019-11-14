@@ -78,6 +78,7 @@ export default class BlockEngine extends EventEmitter {
 				this.stage = STAGE.LIVE;
 				logger.info(`${STAGE.LIVE} stage has come`);
 			}
+			if (this.current === this.last) yield this.pureGet(this.current);
 			await this.waitForNewBlock();
 			yield this.pureGet(this.current);
 		}
@@ -112,15 +113,11 @@ export default class BlockEngine extends EventEmitter {
 	}
 
 	private async pureGet(num: number) {
-		try {
-			const [block, blockAndVOps] = await Promise.all([
-				this.echoRepository.getBlock(num),
-				this.echoRepository.getBlockVirtualOperationsMap(num),
-			]);
-			return { block, map: blockAndVOps } as IBlockWithVOps;
-		} catch (error) {
-			logger.error(`Block ${num}`, error);
-		}
+		const [block, blockAndVOps] = await Promise.all([
+			this.echoRepository.getBlock(num),
+			this.echoRepository.getBlockVirtualOperationsMap(num),
+		]);
+		return { block, map: blockAndVOps } as IBlockWithVOps;
 	}
 
 	// speedometer
