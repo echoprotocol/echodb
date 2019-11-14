@@ -195,7 +195,7 @@ declare module 'echojs-lib' {
 		constructor(cache: Cache, wsApi: WSAPI);
 		getObjects(objectIds: string[], force = false): Promise<object[]>;
 		async getObject(objectId: string, force = false): any;
-		async getContract(contractId: string): Promise<any[]>;
+		async getContract(contractId: string): Promise<unknown[]>;
 		// getBitAssetData
 		// getDynamicAssetData
 		getBlockHeader(blockNum: number): Promise<BlockHeader>;

@@ -1,8 +1,9 @@
 import { ok } from 'assert';
+import { constants } from 'echojs-lib';
 
 const SHORT_TO_ECHO: { [x: string]: string } = {
-	'00': '2',
-	'01': '11', // ContractId
+	'00': constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT.toString(10),
+	'01': constants.PROTOCOL_OBJECT_TYPE_ID.CONTRACT.toString(10),
 };
 // TODO: throw UtilError
 export function ethAddrToEchoId(addr: string) {

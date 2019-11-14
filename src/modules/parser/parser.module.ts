@@ -17,7 +17,6 @@ import { IBlockWithVOps } from '../../interfaces/IBlock';
 import { getLogger } from 'log4js';
 import { TDoc } from 'types/mongoose';
 import { ITransactionExtended } from 'interfaces/ITransaction';
-// import { inspect } from 'util';
 
 const logger = getLogger('parser.module');
 
@@ -59,8 +58,6 @@ export default class ParserModule extends AbstractModule {
 	}
 
 	async parseBlock({ block, map }: IBlockWithVOps) {
-		// console.log(inspect(block, false, null, true));
-		// console.log(inspect(map, false, null, true));
 		try {
 			const dBlock = await this.blockRepository.create(block);
 			if (block.transactions.length === 0) {
