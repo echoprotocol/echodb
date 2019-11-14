@@ -232,7 +232,7 @@ declare module 'echojs-lib' {
 		createTransaction(): import('echojs-lib/types').Transaction;
 	}
 
-	export const PrivateKey: import('echojs-lib/types').PrivateKey;
+	export type PrivateKey = import('echojs-lib/types').PrivateKey;
 	export const validators: typeof import('echojs-lib/types').validators;
 	export const constants: typeof import('echojs-lib/types').constants;
 
