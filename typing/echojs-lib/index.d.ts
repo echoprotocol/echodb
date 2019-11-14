@@ -195,6 +195,7 @@ declare module 'echojs-lib' {
 		constructor(cache: Cache, wsApi: WSAPI);
 		getObjects(objectIds: string[], force = false): Promise<object[]>;
 		async getObject(objectId: string, force = false): any;
+		async getContract(contractId: string): Promise<unknown[]>;
 		// getBitAssetData
 		// getDynamicAssetData
 		getBlockHeader(blockNum: number): Promise<BlockHeader>;
@@ -220,8 +221,6 @@ declare module 'echojs-lib' {
 		setBlockApplySubscribe(cb: (block: Block) => void): void;
 	}
 
-	export { PrivateKey, validators } from 'echojs-lib';
-
 	export class Echo {
 		api?: API;
 		cache?: Cache;
@@ -232,6 +231,10 @@ declare module 'echojs-lib' {
 		async disconnect(): void;
 		createTransaction(): import('echojs-lib/types').Transaction;
 	}
+
+	export type PrivateKey = import('echojs-lib/types').PrivateKey;
+	export const validators: typeof import('echojs-lib/types').validators;
+	export const constants: typeof import('echojs-lib/types').constants;
 
 	export default new Echo();
 

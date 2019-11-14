@@ -1,14 +1,14 @@
+import { validators, constants } from 'echojs-lib';
 import { GraphQLScalarType, Kind, GraphQLError } from 'graphql';
 
 function check(value: string) {
-	const regExpArr = value.match(/^1.10.\d+$/);
-	if (!regExpArr || !regExpArr.length) throw new GraphQLError('');
+	if (!validators.isContractId(value)) throw new GraphQLError('');
 	return value;
 }
 
 export default new GraphQLScalarType({
 	name: 'ContractId',
-	description: 'String. Format "1.10.\\d+"',
+	description: `String. Format "1.${constants.PROTOCOL_OBJECT_TYPE_ID.CONTRACT}.\\d+"`,
 	parseValue(value: string) {
 		if (typeof value !== 'string') throw new GraphQLError('');
 		check(value);

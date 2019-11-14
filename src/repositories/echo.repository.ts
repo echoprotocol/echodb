@@ -193,4 +193,12 @@ export default class EchoRepository {
 		}
 	}
 
+	async getContract(contractId: string) {
+		try {
+			return await this.echoConnection.echo.api.getContract(contractId);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'parseModule#getContract', { contractId });
+		}
+	}
+
 }

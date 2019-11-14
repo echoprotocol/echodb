@@ -5,10 +5,10 @@ import AssetRepository from 'repositories/asset.repository';
 import AccountRepository from 'repositories/account.repository';
 import * as ECHO from '../../../constants/echo.constants';
 
-type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ETH_BURN;
+type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_BURN;
 
 export default class SidechainEthBurnOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.SIDECHAIN_ETH_BURN;
+	id = ECHO.OPERATION_ID.SIDECHAIN_BURN;
 
 	constructor(
 		private balanceRepository: BalanceRepository,

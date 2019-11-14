@@ -4,92 +4,105 @@ export const CORE_ASSET = '1.3.0';
 export const CONNECT_STATUS = 'connect';
 
 export enum OPERATION_ID {
-	TRANSFER,
-	ACCOUNT_CREATE,
-	ACCOUNT_UPDATE,
-	ACCOUNT_WHITELIST,
-	ASSET_CREATE,
-	ASSET_UPDATE,
-	ASSET_UPDATE_BITASSET,
-	ASSET_UPDATE_FEED_PRODUCERS,
-	ASSET_ISSUE,
-	ASSET_RESERVE,
-	ASSET_FUND_FEE_POOL,
-	ASSET_PUBLISH_FEED,
-	PROPOSAL_CREATE,
-	PROPOSAL_UPDATE,
-	PROPOSAL_DELETE,
-	COMMITTEE_MEMBER_CREATE,
-	COMMITTEE_MEMBER_UPDATE,
-	COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS,
-	VESTING_BALANCE_CREATE,
-	VESTING_BALANCE_WITHDRAW,
-	BALANCE_CLAIM,
-	BALANCE_FREEZE,
-	BALANCE_UNFREEZE,
-	OVERRIDE_TRANSFER,
-	ASSET_CLAIM_FEES,
-	CONTRACT_CREATE,
-	CONTRACT_CALL,
-	CONTRACT_TRANSFER,
-	CONTRACT_UPDATE,
-	ACCOUNT_ADDRESS_CREATE,
-	TRANSFER_TO_ADDRESS,
-	SIDECHAIN_ETH_CREATE_ADDRESS,
-	SIDECHAIN_ETH_APPROVE_ADDRESS,
-	SIDECHAIN_ETH_DEPOSIT,
-	SIDECHAIN_ETH_WITHDRAW,
-	SIDECHAIN_ETH_APPROVE_WITHDRAW,
-	CONTRACT_FUND_POOL,
-	CONTRACT_WHITELIST,
-	SIDECHAIN_ETH_ISSUE, // VIRTUAL
-	SIDECHAIN_ETH_BURN, // VIRTUAL
-	SIDECHAIN_ERC20_REGISTER_TOKEN,
-	SIDECHAIN_ERC20_DEPOSIT_TOKEN,
-	SIDECHAIN_ERC20_WITHDRAW_TOKEN,
-	SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW,
-	SIDECHAIN_ERC20_ISSUE, // VIRTUAL
-	SIDECHAIN_ERC20_BURN, // VIRTUAL
-	SIDECHAIN_BTC_CREATE_ADDRESS,
-	SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT,
-	SIDECHAIN_BTC_DEPOSIT,
-	SIDECHAIN_BTC_WITHDRAW,
-	SIDECHAIN_BTC_APPROVE_WITHDRAW,
-	SIDECHAIN_BTC_AGGREGATE,
-	BLOCK_REWARD_OPERATION, // VIRTUAL
+	TRANSFER = 0,
+	TRANSFER_TO_ADDRESS = 1,
+	OVERRIDE_TRANSFER = 2,
+	ACCOUNT_CREATE = 3,
+	ACCOUNT_UPDATE = 4,
+	ACCOUNT_WHITELIST = 5,
+	ACCOUNT_ADDRESS_CREATE = 6,
+	ASSET_CREATE = 7,
+	ASSET_UPDATE = 8,
+	ASSET_UPDATE_BITASSET = 9,
+	ASSET_UPDATE_FEED_PRODUCERS = 10,
+	ASSET_ISSUE = 11,
+	ASSET_RESERVE = 12,
+	ASSET_FUND_FEE_POOL = 13,
+	ASSET_PUBLISH_FEED = 14,
+	ASSET_CLAIM_FEES = 15,
+	PROPOSAL_CREATE = 16,
+	PROPOSAL_UPDATE = 17,
+	PROPOSAL_DELETE = 18,
+	COMMITTEE_MEMBER_CREATE = 19,
+	COMMITTEE_MEMBER_UPDATE = 20,
+	COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS = 21,
+	COMMITTEE_MEMBER_ACTIVATE = 22,
+	COMMITTEE_MEMBER_DEACTIVATE = 23,
+	COMMITTEE_FROZEN_BALANCE_DEPOSIT = 24,
+	COMMITTEE_FROZEN_BALANCE_WITHDRAW = 25,
+	VESTING_BALANCE_CREATE = 26,
+	VESTING_BALANCE_WITHDRAW = 27,
+	BALANCE_CLAIM = 28,
+	BALANCE_FREEZE = 29,
+	BALANCE_UNFREEZE = 30,
+	CONTRACT_CREATE = 31,
+	CONTRACT_CALL = 32,
+	CONTRACT_INTERNAL_CREATE = 33, // VIRTUAL
+	CONTRACT_INTERNAL_CALL = 34, // VIRTUAL
+	CONTRACT_SELFDESTRUCT = 35, // VIRTUAL
+	CONTRACT_UPDATE = 36,
+	CONTRACT_FUND_POOL = 37,
+	CONTRACT_WHITELIST = 38,
+	SIDECHAIN_ETH_CREATE_ADDRESS = 39,
+	SIDECHAIN_ETH_APPROVE_ADDRESS = 40,
+	SIDECHAIN_ETH_DEPOSIT = 41,
+	SIDECHAIN_ETH_WITHDRAW = 42,
+	SIDECHAIN_ETH_APPROVE_WITHDRAW = 43,
+	SIDECHAIN_ISSUE = 44, // VIRTUAL
+	SIDECHAIN_BURN = 45, // VIRTUAL
+	SIDECHAIN_ERC20_REGISTER_TOKEN = 46,
+	SIDECHAIN_ERC20_DEPOSIT_TOKEN = 47,
+	SIDECHAIN_ERC20_WITHDRAW_TOKEN = 48,
+	SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW = 49,
+	SIDECHAIN_ERC20_ISSUE = 50, // VIRTUAL
+	SIDECHAIN_ERC20_BURN = 51, // VIRTUAL
+	SIDECHAIN_BTC_CREATE_ADDRESS = 52,
+	SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT = 53,
+	SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT = 54,
+	SIDECHAIN_BTC_DEPOSIT = 55,
+	SIDECHAIN_BTC_WITHDRAW = 56,
+	SIDECHAIN_BTC_AGGREGATE = 57,
+	SIDECHAIN_BTC_APPROVE_AGGREGATE = 58,
+	BLOCK_REWARD = 59, // VIRTUAL
 }
 
 export type Operations = {
 	[OPERATION_ID.TRANSFER]: TransferOperation;
+	[OPERATION_ID.TRANSFER_TO_ADDRESS]: TransferToAddressOperation;
+	[OPERATION_ID.OVERRIDE_TRANSFER]: OverrideTransfer;
 	[OPERATION_ID.ACCOUNT_CREATE]: AccountCreateOperation;
 	[OPERATION_ID.ACCOUNT_UPDATE]: AccountUpdateOperation;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: AccountWhitelistOperation;
+	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: AccountAddressCreateOperation;
 	[OPERATION_ID.ASSET_CREATE]: AssetCreateOperation;
 	[OPERATION_ID.ASSET_UPDATE]: AssetUpdateOperation;
 	[OPERATION_ID.ASSET_UPDATE_BITASSET]: AssetBitAssetUpdateOperation;
+	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
 	[OPERATION_ID.ASSET_ISSUE]: AssetIssueOperation;
 	[OPERATION_ID.ASSET_RESERVE]: AssetReserveOperation;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: AssetFundFeePoolOperation;
 	[OPERATION_ID.ASSET_PUBLISH_FEED]: AssetPublishFeed;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
-	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: AssetUpdateFeedProducers;
+	[OPERATION_ID.PROPOSAL_CREATE]: ProposalCreateOperation;
 	[OPERATION_ID.BALANCE_FREEZE]: BalanceFreezeOperation;
 	[OPERATION_ID.BALANCE_UNFREEZE]: BalanceUnfreezeOperation;
 	[OPERATION_ID.CONTRACT_CREATE]: ContractCreateOperation;
 	[OPERATION_ID.CONTRACT_CALL]: ContractCallOperation;
-	[OPERATION_ID.CONTRACT_TRANSFER]: ContractTransferOperation;
+	[OPERATION_ID.CONTRACT_INTERNAL_CREATE]: ContractInternalCreate;
+	[OPERATION_ID.CONTRACT_INTERNAL_CALL]: ContractInternalCall;
+	[OPERATION_ID.CONTRACT_SELFDESTRUCT]: ContractSelfdestruct;
 	[OPERATION_ID.VESTING_BALANCE_CREATE]: VestingBalanceCreate;
 	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: VestingBalanceWithdraw;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: CommitteeMemberUpdateGlobalParametersProps
+	[OPERATION_ID.COMMITTEE_MEMBER_ACTIVATE]: CommitteeMemberActivate;
+	[OPERATION_ID.COMMITTEE_MEMBER_DEACTIVATE]: CommitteeMemberDeactivate;
+	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_DEPOSIT]: CommitteeFrozenBalanceDeposit;
+	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_WITHDRAW]: CommitteeFrozenBalanceWithdraw;
 	[OPERATION_ID.BALANCE_CLAIM]: BalanceClaimOperation;
-	[OPERATION_ID.OVERRIDE_TRANSFER]: OverrideTransfer;
-	[OPERATION_ID.PROPOSAL_CREATE]: ProposalCreateOperation;
 	[OPERATION_ID.PROPOSAL_UPDATE]: ProposalUpdateOperation;
 	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
-	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: AccountAddressCreateOperation;
-	[OPERATION_ID.TRANSFER_TO_ADDRESS]: TransferToAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: SidechainEthCreateAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: SidechainEthDepositOperation;
@@ -97,62 +110,86 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
 	[OPERATION_ID.CONTRACT_WHITELIST]: ContractWhitelistOperation;
-	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: SidechainEthIssueOperation;
-	[OPERATION_ID.SIDECHAIN_ETH_BURN]: SidechainEthBurnOperation;
-	[OPERATION_ID.BLOCK_REWARD_OPERATION]: BlockRewardOperation;
+	[OPERATION_ID.SIDECHAIN_ISSUE]: SidechainEthIssueOperation;
+	[OPERATION_ID.SIDECHAIN_BURN]: SidechainEthBurnOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: SidechainErc20RegisterTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: SidechainErc20DepositTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: SidechainErc20WithdrawTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: SidechainErc20ApproveTokenWithdrawOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: SidechainErc20Issue;
+	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: SidechainErc20Burn;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS]: SidechainBtcCreateAddress;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT]: SidechainBtcCreateIntermediateDeposit;
+	[OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT]: SidechainBtcIntermediateDeposit;
+	[OPERATION_ID.SIDECHAIN_BTC_DEPOSIT]: SidechainBtcDeposit;
+	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: SidechainBtcWithdraw;
+	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: SidechainBtcAggregate;
+	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: SidechainBtcApproveAggregate;
 	[OPERATION_ID.CONTRACT_UPDATE]: ContractUpdateOperation;
+	[OPERATION_ID.BLOCK_REWARD]: BlockRewardOperation;
 };
 
 export type OperationResult = {
 	[OPERATION_ID.TRANSFER]: string;
+	[OPERATION_ID.TRANSFER_TO_ADDRESS]: unknown;
+	[OPERATION_ID.OVERRIDE_TRANSFER]: unknown;
 	[OPERATION_ID.ACCOUNT_CREATE]: string;
 	[OPERATION_ID.ACCOUNT_UPDATE]: string;
 	[OPERATION_ID.ACCOUNT_WHITELIST]: unknown;
+	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: string;
 	[OPERATION_ID.ASSET_CREATE]: string;
 	[OPERATION_ID.ASSET_UPDATE]: unknown;
 	[OPERATION_ID.ASSET_UPDATE_BITASSET]: unknown;
+	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
 	[OPERATION_ID.ASSET_ISSUE]: unknown;
 	[OPERATION_ID.ASSET_RESERVE]: unknown;
 	[OPERATION_ID.ASSET_FUND_FEE_POOL]: unknown;
 	[OPERATION_ID.ASSET_PUBLISH_FEED]: unknown;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: unknown;
-	[OPERATION_ID.ASSET_UPDATE_FEED_PRODUCERS]: unknown;
-	[OPERATION_ID.BALANCE_FREEZE]: unknown;
-	[OPERATION_ID.BALANCE_UNFREEZE]: unknown;
-	[OPERATION_ID.CONTRACT_CREATE]: string;
-	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
-	[OPERATION_ID.CONTRACT_TRANSFER]: unknown;
-	[OPERATION_ID.VESTING_BALANCE_CREATE]: unknown;
-	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: unknown;
-	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: unknown;
-	[OPERATION_ID.BALANCE_CLAIM]: unknown;
-	[OPERATION_ID.OVERRIDE_TRANSFER]: unknown;
 	[OPERATION_ID.PROPOSAL_CREATE]: string;
 	[OPERATION_ID.PROPOSAL_UPDATE]: unknown;
 	[OPERATION_ID.PROPOSAL_DELETE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: unknown;
 	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: unknown;
-	[OPERATION_ID.ACCOUNT_ADDRESS_CREATE]: string;
-	[OPERATION_ID.TRANSFER_TO_ADDRESS]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_ACTIVATE]: unknown;
+	[OPERATION_ID.COMMITTEE_MEMBER_DEACTIVATE]: unknown;
+	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_DEPOSIT]: unknown;
+	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_WITHDRAW]: unknown;
+	[OPERATION_ID.VESTING_BALANCE_CREATE]: unknown;
+	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: unknown;
+	[OPERATION_ID.BALANCE_CLAIM]: unknown;
+	[OPERATION_ID.BALANCE_FREEZE]: unknown;
+	[OPERATION_ID.BALANCE_UNFREEZE]: unknown;
+	[OPERATION_ID.CONTRACT_CREATE]: string;
+	[OPERATION_ID.CONTRACT_CALL]: ContractResultId;
+	[OPERATION_ID.CONTRACT_INTERNAL_CREATE]: unknown;
+	[OPERATION_ID.CONTRACT_INTERNAL_CALL]: unknown;
+	[OPERATION_ID.CONTRACT_SELFDESTRUCT]: unknown;
+	[OPERATION_ID.CONTRACT_UPDATE]: unknown;
+	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
+	[OPERATION_ID.CONTRACT_WHITELIST]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
-	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
-	[OPERATION_ID.CONTRACT_WHITELIST]: unknown;
-	[OPERATION_ID.BLOCK_REWARD_OPERATION]: unknown;
-	[OPERATION_ID.SIDECHAIN_ETH_ISSUE]: unknown;
-	[OPERATION_ID.SIDECHAIN_ETH_BURN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ISSUE]: unknown;
+	[OPERATION_ID.SIDECHAIN_BURN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: unknown;
-	[OPERATION_ID.CONTRACT_UPDATE]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_DEPOSIT]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: unknown;
+	[OPERATION_ID.BLOCK_REWARD]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -250,13 +287,6 @@ interface TransferOperation {
 	to: string;
 	amount: IAmount;
 	extensions: ExtensionsArr;
-}
-
-interface ContractTransferOperation {
-	fee: IAmount;
-	from: string;
-	to: string;
-	amount: IAmount;
 }
 
 export interface AccountPerson {
@@ -474,6 +504,33 @@ interface ContractCallOperation {
 	extensions: ExtensionsArr;
 }
 
+interface ContractInternalCreate {
+	fee: IAmount;
+	caller: string;
+	new_contract: string;
+	value: IAmount;
+	eth_accuracy: boolean;
+	supported_asset_id?: string;
+	extensions: ExtensionsArr;
+}
+
+interface ContractInternalCall {
+	fee: IAmount;
+	caller: string;
+	callee: string;
+	method: string;
+	value: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface ContractSelfdestruct {
+	fee: IAmount;
+	contract: string;
+	recipient: string;
+	amounts: IAmount[];
+	extensions: ExtensionsArr;
+}
+
 interface VestingBalanceCreate{
 	fee: IAmount;
 	creator: AccountId;
@@ -494,6 +551,32 @@ interface VestingBalanceWithdraw {
 interface CommitteeMemberUpdateGlobalParametersProps{
 	fee: IAmount;
 	new_parameters: NewParameters;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeMemberActivate {
+	fee: IAmount;
+	committee_to_activate: string;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeMemberDeactivate {
+	fee: IAmount;
+	committee_to_deactivate: string;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeFrozenBalanceDeposit {
+	fee: IAmount;
+	committee_member_account: string;
+	amount: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface CommitteeFrozenBalanceWithdraw {
+	fee: IAmount;
+	committee_member_account: string;
+	amount: IAmount;
 	extensions: ExtensionsArr;
 }
 
@@ -684,6 +767,93 @@ interface SidechainErc20ApproveTokenWithdrawOperation {
 	fee: IAmount;
 	committee_member_id: AccountId;
 	withdraw_id: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20Issue {
+	fee: IAmount;
+	deposit: string;
+	account: string;
+	token: string;
+	amount: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20Burn {
+	fee: IAmount;
+	withdraw: string;
+	account: string;
+	token: string;
+	amount: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcCreateAddress {
+	fee: IAmount;
+	account: string;
+	backup_address: string;
+}
+
+interface BtcTransactionDetails {
+	block_number: number | string;
+	tx_id: string;
+	value: number | string;
+	vout: number;
+}
+
+interface SidechainBtcCreateIntermediateDeposit {
+	fee: IAmount;
+	committee_member_id: string;
+	account: string;
+	btc_address_id: string;
+	tx_info: BtcTransactionDetails;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcIntermediateDeposit {
+	fee: IAmount;
+	committee_member_id: string;
+	intermediate_address_id: string;
+	signature: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcDeposit {
+	fee: IAmount;
+	committee_member_id: string;
+	account: string;
+	intermediate_deposit_id: string;
+	tx_info: BtcTransactionDetails;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcWithdraw {
+	fee: IAmount;
+	account: string;
+	btc_addr: string;
+	value: number | string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcAggregate {
+	fee: IAmount;
+	committee_member_id: string;
+	deposits: string[];
+	withdrawals: string[];
+	transaction_id: string;
+	aggregation_out_value: number | string;
+	sma_address: { address: string };
+	committee_member_ids_in_script: [string, string][];
+	previous_aggregation: string;
+	cpfp_depth: number;
+	signatures: [number, string];
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcApproveAggregate {
+	fee: IAmount;
+	committee_member_id: string;
+	transaction_id: string;
 	extensions: ExtensionsArr;
 }
 

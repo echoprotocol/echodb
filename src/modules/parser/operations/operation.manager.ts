@@ -17,7 +17,6 @@ import BalanceFreezeOperation from './balance.freeze.operation';
 import BalanceUnfreezeOperation from './balance.unfreeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
-import ContractTransferOperation from './contract.transfer.operation';
 import BalanceClaimOperation from './balance.claim.operation';
 import OverrideTransferOperation from './override.transfer.operation';
 import CommitteeMemberUpdateGlobalParametersOperation from './committee.member.update.global.parameters.operation';
@@ -85,7 +84,6 @@ export default class OperationManager {
 		balanceUnfreezeOperation: BalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
-		contractTransferOperation: ContractTransferOperation,
 		balanceClaimOperation: BalanceClaimOperation,
 		overrideTransferOperation: OverrideTransferOperation,
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
@@ -132,7 +130,6 @@ export default class OperationManager {
 			assetClaimFeesOperation,
 			assetUpdateFeedProducersOperation,
 			transferOperation,
-			contractTransferOperation,
 			balanceClaimOperation,
 			overrideTransferOperation,
 			committeeMemberUpdateGlobalParametersOperation,
