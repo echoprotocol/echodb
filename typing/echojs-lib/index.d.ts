@@ -191,6 +191,8 @@ declare module 'echojs-lib' {
 		virtual_op: number;
 	}
 
+	export type BigNumber = import('echojs-lib/types').BigNumber;
+
 	class API {
 		constructor(cache: Cache, wsApi: WSAPI);
 		getObjects(objectIds: string[], force = false): Promise<object[]>;
@@ -210,7 +212,7 @@ declare module 'echojs-lib' {
 		callContractNoChangingState(
 			contractId: string,
 			accountId: string,
-			assetId: string,
+			asset: { asset_id: string, amount: number | string | BigNumber },
 			bytecode: string,
 		): Promise<string>;
 	}
