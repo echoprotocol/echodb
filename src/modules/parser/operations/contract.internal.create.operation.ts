@@ -29,12 +29,7 @@ export default class ContractInternalCreateOperaiton extends AbstractOperation<O
 		_result: ECHO.OPERATION_RESULT<OP_ID>,
 		dBlock: TDoc<IBlock>,
 	): Promise<IOperationRelation> {
-		// console.log(inspect(body, false, null, true));
-		// console.log(inspect(result, false, null, true));
-		// console.log(inspect(dBlock, false, null, true));
 		const code = await this.echoRepository.getContract(body.new_contract).then((res) => (res as any)[1].code);
-		// console.log(inspect(code, false, null, true));
-
 		const contract: IContract = await this.fullfillContract({
 			_block: dBlock,
 			id: body.new_contract,
