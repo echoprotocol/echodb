@@ -2,9 +2,9 @@ import EchoRepository from '../../repositories/echo.repository';
 import InfoRepository from '../../repositories/info.repository';
 import * as INFO from '../../constants/info.constants';
 import * as config from 'config';
-import { IBlockWithVOps } from '../../interfaces/IBlock';
 import { EventEmitter } from 'events';
 import { getLogger } from 'log4js';
+import { BlockWithInjectedVirtualOperations } from 'interfaces/IBlock';
 
 const logger = getLogger('block.engine');
 
@@ -22,7 +22,7 @@ const BATCH_SIZE = 10;
 export default class BlockEngine extends EventEmitter {
 	private last: number;
 	private current: number;
-	private blockCache = new Map<number, Promise<IBlockWithVOps>>();
+	private blockCache = new Map<number, Promise<BlockWithInjectedVirtualOperations>>();
 	private maxCacheSize = config.parser.cacheSize;
 	private speedoTimeout: NodeJS.Timeout;
 	private ee = new EventEmitter();
@@ -59,7 +59,7 @@ export default class BlockEngine extends EventEmitter {
 		await this.infoRepository.set(INFO.KEY.BLOCK_TO_PARSE_NUMBER, this.current);
 	}
 
-	public async *start(current?: number): AsyncIterableIterator<IBlockWithVOps> {
+	public async *start(current?: number): AsyncIterableIterator<BlockWithInjectedVirtualOperations> {
 		this.current = current
 			? current
 			: await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
@@ -105,20 +105,22 @@ export default class BlockEngine extends EventEmitter {
 	}
 
 	private cacheBlock(num: number): void {
-		if (num <= this.last && !this.blockCache.has(num)) this.blockCache.set(num, this.pureGet(num));
+		if (num <= this.last && !this.blockCache.has(num)) {
+			this.blockCache.set(num, this.pureGet(num).catch((error) => {
+				logger.error(error);
+				throw error;
+			}));
+		}
 	}
 
 	private get(num: number) {
-		return this.blockCache.has(num) ? this.blockCache.get(num) : this.pureGet(num);
+		return this.blockCache.has(num) ? this.blockCache.get(num) : this.pureGet(num).catch((error) => {
+			logger.error(error);
+			throw error;
+		});
 	}
 
-	private async pureGet(num: number) {
-		const [block, blockAndVOps] = await Promise.all([
-			this.echoRepository.getBlock(num),
-			this.echoRepository.getBlockVirtualOperationsMap(num),
-		]);
-		return { block, map: blockAndVOps } as IBlockWithVOps;
-	}
+	private async pureGet(num: number) { return await this.echoRepository.getBlockWithInjectedVirtualOperations(num); }
 
 	// speedometer
 	private speedo(prevCurrent?: number) {

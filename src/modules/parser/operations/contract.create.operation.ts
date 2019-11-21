@@ -11,6 +11,7 @@ import { ethAddrToEchoId } from '../../../utils/format';
 import { IContract } from '../../../interfaces/IContract';
 import { TDoc } from '../../../types/mongoose';
 import { IBlock } from '../../../interfaces/IBlock';
+import { IOperationRelation } from 'interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CREATE;
 
@@ -49,17 +50,25 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			type: this.contractService.getTypeByCode(body.code),
 			problem: false,
 		});
-		const dContract = await this.createContractAndContractBalance(contract, body.value);
-		const commonRelations = {
+		await this.createContractAndContractBalance(contract, body.value);
+		return this.validateRelation({
 			from: [body.registrar],
 			assets: [body.fee.asset_id],
 			contracts: contract.id,
-		};
-		if (contract.type === CONTRACT.TYPE.ERC20) {
-			const relations = await this.contractService.handleErc20Logs(dContract, contractResult, dBlock);
-			return this.validateAndMergeRelations(commonRelations, relations);
-		}
-		return this.validateRelation(commonRelations);
+		});
+	}
+
+	async postInternalParse(
+		_body: ECHO.OPERATION_PROPS<OP_ID>,
+		result: ECHO.OPERATION_RESULT<OP_ID>,
+		dBlock: TDoc<IBlock>,
+		relations: IOperationRelation,
+	) {
+		const [, contractResult] = await this.echoRepository.getContractResult(result);
+		const contract = await this.contractRepository.findById(ethAddrToEchoId(contractResult.exec_res.new_address));
+		if (contract.type !== CONTRACT.TYPE.ERC20) return relations;
+		const newRelations = await this.contractService.handleErc20Logs(contract, contractResult, dBlock);
+		return this.validateAndMergeRelations(relations, newRelations);
 	}
 
 	private async createContractAndContractBalance(contract: IContract, value: ECHO.IAmount) {

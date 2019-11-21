@@ -55,6 +55,7 @@ import { getLogger } from 'log4js';
 import { dateFromUtcIso } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
 import BlockRewardOperation from './block.reward.operation';
+import ContractInternalCreateOperaiton from './contract.internal.create.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -111,6 +112,7 @@ export default class OperationManager {
 		sidechainErc20WithdrawTokenOperation: SidechainErc20WithdrawTokenOperation,
 		sidechainErc20ApproveTokenWithdrawOperation: SidechainErc20ApproveTokenWithdrawOperation,
 		contractUpdateOperation: ContractUpdateOperation,
+		contractInternalCreateOperation: ContractInternalCreateOperaiton,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -157,6 +159,7 @@ export default class OperationManager {
 			sidechainErc20WithdrawTokenOperation,
 			sidechainErc20ApproveTokenWithdrawOperation,
 			contractUpdateOperation,
+			contractInternalCreateOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
@@ -166,9 +169,9 @@ export default class OperationManager {
 
 	// FIXME: emit all (not only parsed) operations
 	async parse<T extends ECHO.KNOWN_OPERATION>(
-		[id, body]: [T, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_PROPS<T> : unknown],
+		[id, body]: [T, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_WITH_INJECTED_VIRTUALS<T> : unknown],
 		[_, result]: [unknown, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<T> : unknown],
-		dTx: TDoc<ITransactionExtended>,
+		dTx: TDoc<ITransactionExtended> | null,
 		dBlock?: TDoc<IBlock>,
 	) {
 		const operation: IOperation<T> = {
@@ -199,16 +202,20 @@ export default class OperationManager {
 
 	async parseKnownOperation<T extends ECHO.KNOWN_OPERATION>(
 		id: T,
-		body: ECHO.OPERATION_PROPS<T>,
+		body: ECHO.OPERATION_WITH_INJECTED_VIRTUALS<T>,
 		result: ECHO.OPERATION_RESULT<T>,
 		dBlock: TDoc<IBlock>,
 	): Promise<IOperationRelation> {
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
-		const relation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
-		if (body.fee) {
-			await this.balanceService.takeFee(relation.from[0], body.fee);
+		const preInternalRelation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
+		if (body.fee) await this.balanceService.takeFee(preInternalRelation.from[0], body.fee);
+		if (body.virtual_operations) {
+			for (const virtualOperation of body.virtual_operations) {
+				await this.parseKnownOperation(virtualOperation[0], virtualOperation[1], result, dBlock);
+			}
 		}
-		return relation;
+		const postInternalRelation = await this.map[id].postInternalParse(body, result, dBlock, preInternalRelation);
+		return postInternalRelation;
 	}
 
 }

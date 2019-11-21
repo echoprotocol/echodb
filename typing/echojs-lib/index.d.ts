@@ -62,7 +62,7 @@ declare module 'echojs-lib' {
 		ref_block_num: number;
 		ref_block_prefix: number;
 		expiration: string;
-		operations: any[];
+		operations: [number, any][];
 		extensions: unknown[];
 		signatures: string[];
 		operation_results: OperationResult[];
@@ -239,5 +239,8 @@ declare module 'echojs-lib' {
 	export const constants: typeof import('echojs-lib/types').constants;
 
 	export default new Echo();
+
+	export function decode(hex: string, types: any): any;
+	export function encode(_: { value: any, type: string }): string;
 
 }

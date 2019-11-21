@@ -13,10 +13,10 @@ import TransactionRepository from '../../repositories/transaction.repository';
 import * as INFO from '../../constants/info.constants';
 import * as ECHO from '../../constants/echo.constants';
 import * as REDIS from '../../constants/redis.constants';
-import { IBlockWithVOps } from '../../interfaces/IBlock';
 import { getLogger } from 'log4js';
 import { TDoc } from 'types/mongoose';
 import { ITransactionExtended } from 'interfaces/ITransaction';
+import { BlockWithInjectedVirtualOperations } from 'interfaces/IBlock';
 
 const logger = getLogger('parser.module');
 
@@ -57,13 +57,16 @@ export default class ParserModule extends AbstractModule {
 		}
 	}
 
-	async parseBlock({ block, map }: IBlockWithVOps) {
+	async parseBlock(block: BlockWithInjectedVirtualOperations) {
 		try {
 			const dBlock = await this.blockRepository.create(block);
-			if (block.transactions.length === 0) {
+			if (block.transactions.length === 0 && block.unlinked_virtual_operations.length === 0) {
 				logger.trace(`Skipping no-transactions block #${block.round}`);
 			}
-			for (const [txIndex, tx] of block.transactions.entries()) {
+			for (const virtualOperation of block.unlinked_virtual_operations) {
+				await this.operationManager.parse(virtualOperation.op, virtualOperation.result, null, dBlock);
+			}
+			for (const tx of block.transactions) {
 				logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
 				const dTx = <TDoc<ITransactionExtended>>await this.transactionRepository.create({
 					...tx,
@@ -72,23 +75,8 @@ export default class ParserModule extends AbstractModule {
 				for (const [opIndex, operation] of tx.operations.entries()) {
 					await this.operationManager.parse(operation, tx.operation_results[opIndex], dTx);
 				}
-				if (map.has(txIndex)) {
-					for (const { op, result } of map.get(txIndex)) {
-						await this.operationManager.parse(op, result, dTx);
-					}
-				}
 				this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 			}
-
-			if (map.size) {
-				logger.trace(`Parsing block #${block.round}`);
-				let mapOpsPromises = null;
-				map.forEach((mapOps) => {
-					mapOpsPromises = mapOps.map((vOp) => this.operationManager.parse(vOp.op, vOp.result, null, dBlock));
-				});
-				await Promise.all(mapOpsPromises);
-			}
-
 			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
 		} catch (error) {
 			logger.error(`Block ${this.blockEngine.getCurrentBlockNum()}`, error);

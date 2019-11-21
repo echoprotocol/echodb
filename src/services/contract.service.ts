@@ -15,10 +15,9 @@ import { AccountId, ContractId } from '../types/echo';
 import { IContract, ITokenInfo } from '../interfaces/IContract';
 import { IOperationRelation } from '../interfaces/IOperation';
 import { SomeOfAny } from '../types/some.of.d';
-import { escapeRegExp, dateFromUtcIso } from '../utils/format';
-import { ContractResult } from 'echojs-lib';
+import { escapeRegExp, dateFromUtcIso, ethAddrToEchoId } from '../utils/format';
+import { ContractResult, decode } from 'echojs-lib';
 import { TDoc, MongoId } from '../types/mongoose';
-import { decode } from 'echojs-contract';
 import { IAccount } from '../interfaces/IAccount';
 import { IBlock } from '../interfaces/IBlock';
 
@@ -35,6 +34,8 @@ export const ERROR = {
 	ACCOUNT_NOT_FOUND: 'account not found',
 	CONTRACT_NOT_FOUND: 'contract not found',
 };
+
+const ZERO_ACCOUNT = '1.2.0';
 
 export default class ContractService {
 
@@ -127,8 +128,12 @@ export default class ContractService {
 			accounts: [],
 			tokens: [],
 		};
+		const contractsMap: { [id: string]: TDoc<IContract> } = { [dContract.id]: dContract };
 		for (const record of logs) {
 			if (!ContractService.isLogRecord(record)) continue;
+			const { address } = record;
+			const contract = contractsMap[address]
+				|| (contractsMap[address] = await this.contractRepository.findById(ethAddrToEchoId(address)));
 			const [eventHash, ...params] = record.log;
 			if (!ERC20.EVENT_HASH_LIST.includes(eventHash)) continue;
 			switch (eventHash) {
@@ -138,14 +143,14 @@ export default class ContractService {
 					});
 					relations.from.push(from);
 					relations.to.push(to);
-					await this.handleTokenTransfer(dContract, from, to, amount, dBlock);
+					await this.handleTokenTransfer(contract, from, to, amount, dBlock);
 			}
 		}
 
 		return relations;
 	}
 
-	static isLogRecord(value: unknown): value is { log: string[]; data: string; } {
+	static isLogRecord(value: unknown): value is { log: string[]; data: string; address: string } {
 		if (!(value instanceof Object)) return false;
 		if (!value.hasOwnProperty('data')) return false;
 		if (!value.hasOwnProperty('log') || !Array.isArray((<{ log: string[] }>value).log)) return false;
@@ -183,7 +188,7 @@ export default class ContractService {
 				if (dContract.problem) return;
 				const sFromAmount = fromAmount.toString();
 				const sToAmount = toAmount.toString();
-				if (sFromAmount === '' || sToAmount === '') {
+				if ((sFromAmount === '' && from !== ZERO_ACCOUNT) || (sToAmount === '' && to !== ZERO_ACCOUNT)) {
 					dContract.problem = true;
 					await dContract.save();
 					return;
