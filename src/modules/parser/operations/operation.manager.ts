@@ -56,6 +56,7 @@ import { dateFromUtcIso } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
 import BlockRewardOperation from './block.reward.operation';
 import ContractInternalCreateOperaiton from './contract.internal.create.operation';
+import ContractInternalCallOperation from './contract.internal.call.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -113,6 +114,7 @@ export default class OperationManager {
 		sidechainErc20ApproveTokenWithdrawOperation: SidechainErc20ApproveTokenWithdrawOperation,
 		contractUpdateOperation: ContractUpdateOperation,
 		contractInternalCreateOperation: ContractInternalCreateOperaiton,
+		contractInternalCallOperation: ContractInternalCallOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -160,6 +162,7 @@ export default class OperationManager {
 			sidechainErc20ApproveTokenWithdrawOperation,
 			contractUpdateOperation,
 			contractInternalCreateOperation,
+			contractInternalCallOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
