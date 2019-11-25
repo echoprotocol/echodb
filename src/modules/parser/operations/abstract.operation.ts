@@ -14,6 +14,13 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 		dBlock: TDoc<IBlock>,
 	): IOperationRelation | Promise<IOperationRelation>;
 
+	public postInternalParse<Y extends ECHO.KNOWN_OPERATION>(
+		_body: ECHO.OPERATION_PROPS<Y>,
+		_result: ECHO.OPERATION_RESULT<Y>,
+		_dBlock: TDoc<IBlock>,
+		relation: IOperationRelation,
+	): IOperationRelation | Promise<IOperationRelation> { return relation; }
+
 	validateRelation(params: RelationParameters) {
 		return relationResponse(params);
 	}

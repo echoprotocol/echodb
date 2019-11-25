@@ -1,11 +1,16 @@
 import EchoConnection from '../connections/echo.connection';
 import * as ECHO from '../constants/echo.constants';
 import * as ERC20 from '../constants/erc20.constants';
-import { Block, Asset, BlockVirtualOperation } from 'echojs-lib';
-import { encode, decode } from 'echojs-contract';
+import { Block, Asset, BlockVirtualOperation, decode, encode } from 'echojs-lib';
 import { AccountId, ContractId, AssetId } from '../types/echo';
 import RavenHelper from 'helpers/raven.helper';
 import ProcessingError from '../errors/processing.error';
+
+import {
+	BlockWithInjectedVirtualOperations,
+	TransactionWithInjectedVirtualOperations,
+	OperationWithInjectedVirtualOperaitons,
+} from '../interfaces/IBlock';
 
 export default class EchoRepository {
 
@@ -22,7 +27,7 @@ export default class EchoRepository {
 		}
 	}
 
-	async getBlockVirtualOperations(blockNum: number): Promise<[BlockVirtualOperation]> {
+	async getBlockVirtualOperations(blockNum: number): Promise<BlockVirtualOperation[]> {
 		try {
 			return await this.echoConnection.echo.api.getBlockVirtualOperations(blockNum);
 		} catch (error) {
@@ -38,6 +43,42 @@ export default class EchoRepository {
 			else map.set(txIndex, [operation]);
 			return map;
 		}, new Map<number, BlockVirtualOperation[]>());
+	}
+
+	async getBlockWithInjectedVirtualOperations(blockNum: number): Promise<BlockWithInjectedVirtualOperations> {
+		const [block, virtualOperations] = await Promise.all([
+			this.getBlock(blockNum),
+			this.getBlockVirtualOperations(blockNum),
+		]);
+		const transactionsWithInjectedVirtualOperations: TransactionWithInjectedVirtualOperations[] = [];
+		for (const originalTransaction of block.transactions) {
+			const operationsWithInjectedVirtualOperations: OperationWithInjectedVirtualOperaitons[] = [];
+			for (const originalOperation of originalTransaction.operations) {
+				operationsWithInjectedVirtualOperations.push([originalOperation[0], {
+					...originalOperation[1],
+					virtual_operations: [],
+				}]);
+			}
+			transactionsWithInjectedVirtualOperations.push({
+				...originalTransaction,
+				operations: operationsWithInjectedVirtualOperations,
+			});
+		}
+		const unlinkedVirtualOperations: BlockVirtualOperation[] = [];
+		for (const virtualOperation of virtualOperations) {
+			if (virtualOperation.trx_in_block === block.transactions.length) {
+				unlinkedVirtualOperations.push(virtualOperation);
+			} else {
+				const transaction = transactionsWithInjectedVirtualOperations[virtualOperation.trx_in_block];
+				const parentOperation = transaction.operations[virtualOperation.op_in_trx];
+				parentOperation[1].virtual_operations.push(virtualOperation.op);
+			}
+		}
+		return {
+			...block,
+			transactions: transactionsWithInjectedVirtualOperations,
+			unlinked_virtual_operations: unlinkedVirtualOperations,
+		};
 	}
 
 	async getAssets(assets: string[]): Promise<Asset[]> {

@@ -34,7 +34,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>, dBlock: TDoc<IBlock>) {
+	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, _result: ECHO.OPERATION_RESULT<OP_ID>, _dBlock: TDoc<IBlock>) {
 		const dContract = await this.contractRepository.findById(body.callee);
 		if (dContract) {
 			const amount = new BN(body.value.amount);
@@ -57,7 +57,6 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 					{ append: true },
 				);
 			}
-			if (dContract.type === CONTRACT.TYPE.ERC20) return this.handleERC20(dContract, body, result, dBlock);
 		} else {
 			logger.warn('contract not found, can not parse call');
 		}
@@ -66,6 +65,19 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 			assets: [body.fee.asset_id],
 			contracts: body.callee,
 		});
+	}
+
+	async postInternalParse(
+		body: ECHO.OPERATION_PROPS<OP_ID>,
+		result: ECHO.OPERATION_RESULT<OP_ID>,
+		dBlock: TDoc<IBlock>,
+		relations: IOperationRelation,
+	) {
+		const dContract = await this.contractRepository.findById(body.callee);
+		if (dContract.type !== CONTRACT.TYPE.ERC20) {
+			return relations;
+		}
+		return this.validateAndMergeRelations(relations, await this.handleERC20(dContract, body, result, dBlock));
 	}
 
 	private async handleERC20(

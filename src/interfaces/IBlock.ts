@@ -1,4 +1,4 @@
-import { Block, BlockVirtualOperation } from 'echojs-lib';
+import { Block, BlockVirtualOperation, Transaction } from 'echojs-lib';
 
 export interface IBlock {
 	previous: string;
@@ -27,7 +27,19 @@ export interface IBlock {
 	};
 }
 
-export interface IBlockWithVOps {
-	block: Block;
-	map: Map<number, BlockVirtualOperation[]>;
-}
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+export type Operation = Transaction['operations'][0];
+
+export type OperationWithInjectedVirtualOperaitons = [Operation[0], Operation[1] & {
+	virtual_operations: BlockVirtualOperation[],
+}];
+
+export type TransactionWithInjectedVirtualOperations = Omit<Transaction, 'operations'> & {
+	operations: OperationWithInjectedVirtualOperaitons[],
+};
+
+export type BlockWithInjectedVirtualOperations = Omit<Block, 'transactions'> & {
+	transactions: TransactionWithInjectedVirtualOperations[],
+	unlinked_virtual_operations: BlockVirtualOperation[],
+};

@@ -1,4 +1,5 @@
 import { AccountId, AssetId, ContractResultId } from '../types/echo';
+import { BlockVirtualOperation } from 'echojs-lib';
 export const CORE_ASSET = '1.3.0';
 
 export const CONNECT_STATUS = 'connect';
@@ -195,6 +196,11 @@ export type OperationResult = {
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
 
 export type OPERATION_PROPS<T extends keyof Operations> = Operations[T];
+
+export type OPERATION_WITH_INJECTED_VIRTUALS<T extends keyof Operations> = Operations[T] & {
+	virtual_operations?: BlockVirtualOperation['op'][];
+};
+
 export type OPERATION_RESULT<T extends keyof OperationResult> = OperationResult[T];
 
 export type Authority = [number, {}];
