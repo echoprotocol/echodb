@@ -1,6 +1,6 @@
 {
 	"name": "echodb",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:echoprotocol/echodb.git"
@@ -46,7 +46,7 @@
 		"graphql-type-json": "^0.2.2",
 		"joi": "^14.3.1",
 		"log4js": "^4.0.2",
-		"mongoose": "^5.4.10",
+		"mongoose": "^5.7.12",
 		"passport": "^0.4.0",
 		"raven": "^2.6.4",
 		"redis": "^2.8.0",
