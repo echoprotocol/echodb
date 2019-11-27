@@ -5,7 +5,7 @@ export default new GraphQLScalarType({
 	name: 'StringifiedNumber',
 	description: 'Number that converted to string',
 	parseValue(value: string | number) {
-		if (typeof value !== 'string' || typeof value !== 'number') throw new GraphQLError('');
+		if (typeof value !== 'string' && typeof value !== 'number') throw new GraphQLError('');
 		return new BN(value).toString();
 	},
 	serialize(value: string) {

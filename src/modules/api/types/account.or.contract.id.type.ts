@@ -2,7 +2,7 @@ import { validators, constants } from 'echojs-lib';
 import { GraphQLScalarType, Kind, GraphQLError } from 'graphql';
 
 function check(value: string) {
-	if (!validators.isAccountId(value) || !validators.isContractId(value)) throw new GraphQLError('');
+	if (!validators.isAccountId(value) && !validators.isContractId(value)) throw new GraphQLError('');
 	return value;
 }
 
