@@ -214,7 +214,12 @@ export default class OperationManager {
 		if (body.fee) await this.balanceService.takeFee(preInternalRelation.from[0], body.fee);
 		if (body.virtual_operations) {
 			for (const virtualOperation of body.virtual_operations) {
-				await this.parseKnownOperation(virtualOperation[0], virtualOperation[1], result, dBlock);
+				const [vopId, vopProps] = virtualOperation;
+				if (!this.map[vopId as ECHO.OPERATION_ID]) {
+					logger.warn(`Internal operation ${vopId} is not supported`);
+					continue;
+				}
+				await this.parseKnownOperation(vopId, vopProps, result, dBlock);
 			}
 		}
 		const postInternalRelation = await this.map[id].postInternalParse(body, result, dBlock, preInternalRelation);

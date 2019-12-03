@@ -16,10 +16,12 @@ import { IContract, ITokenInfo } from '../interfaces/IContract';
 import { IOperationRelation } from '../interfaces/IOperation';
 import { SomeOfAny } from '../types/some.of.d';
 import { escapeRegExp, dateFromUtcIso, ethAddrToEchoId } from '../utils/format';
-import { ContractResult, decode } from 'echojs-lib';
+import { ContractResult, decode, validators } from 'echojs-lib';
 import { TDoc, MongoId } from '../types/mongoose';
 import { IAccount } from '../interfaces/IAccount';
 import { IBlock } from '../interfaces/IBlock';
+import ContractCallerRepository from '../repositories/contract.caller.repository';
+import { NAME as ModelName } from '../constants/model.constants';
 
 type GetContractsQuery = { registrar?: object, type?: CONTRACT.TYPE };
 type GetTokensQuery = { _registrar?: any, type?: any, token_info?: SomeOfAny<ITokenInfo> };
@@ -43,6 +45,7 @@ export default class ContractService {
 		private accountRepository: AccountRepository,
 		private balanceRepository: BalanceRepository,
 		private contractRepository: ContractRepository,
+		private contractCallerRepository: ContractCallerRepository,
 		private contractBalanceRepository: ContractBalanceRepository,
 		private echoRepository: EchoRepository,
 		private transferRepository: TransferRepository,
@@ -65,6 +68,23 @@ export default class ContractService {
 		const dContract = await this.contractRepository.findById(id);
 		if (!dContract) throw new ProcessingError(ERROR.CONTRACT_NOT_FOUND);
 		return dContract;
+	}
+
+	async getCallers(contract: MongoId<IContract>): Promise<{
+		contracts: TDoc<IContract>[],
+		accounts: TDoc<IAccount>[],
+	}> {
+		const callers = await this.contractCallerRepository.find({ contract });
+		const contracts: TDoc<IContract>[] = [];
+		const accounts: TDoc<IAccount>[] = [];
+		await Promise.all(callers.map(async ({ callerModel, caller }) => {
+			if (callerModel === ModelName.CONTRACT) {
+				contracts.push(await this.contractRepository.findOne({ _id: caller }));
+			} else {
+				accounts.push(await this.accountRepository.findOne({ _id: caller }));
+			}
+		}));
+		return { contracts, accounts };
 	}
 
 	async getContracts(
@@ -235,17 +255,24 @@ export default class ContractService {
 		}
 	}
 
-	async updateContractCallingAccounts(dContract: TDoc<IContract>, mongoAccountId: MongoId<IAccount>) {
-		if (Array.isArray(dContract._calling_accounts)) {
-			if (dContract._calling_accounts.some((id) => id.toString() === mongoAccountId.toString())) {
-				return;
-			}
-			dContract._calling_accounts.push(mongoAccountId);
-		} else {
-			dContract._calling_accounts = [mongoAccountId];
-		}
+	private async getCaller(callerId: string): Promise<TDoc<IContract> | TDoc<IAccount> | null> {
+		let result: TDoc<IContract> | TDoc<IAccount>;
+		if (validators.isContractId(callerId)) result = await this.contractRepository.findById(callerId);
+		else if (validators.isAccountId(callerId)) result = await this.accountRepository.findById(callerId);
+		else throw new Error(`invalid contract caller id format ${callerId}`);
+		return result;
+	}
 
-		this.contractRepository.updateAndEmit(dContract);
+	async updateContractCaller(dContract: TDoc<IContract>, callerId: string) {
+		const callerDocument = await this.getCaller(callerId);
+		if (!callerDocument) throw new Error(`caller ${callerId} not found`);
+		const caller = await this.contractCallerRepository.findOne({ contract: dContract, caller: callerDocument });
+		if (caller) return;
+		await this.contractCallerRepository.create({
+			caller: callerDocument,
+			callerModel: validators.isContractId(callerId) ? ModelName.CONTRACT : ModelName.ACCOUNT,
+			contract: dContract,
+		});
 	}
 
 }
