@@ -41,7 +41,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 			const dAccount = await this.accountRepository.findById(body.registrar);
 			const [dAsset] = await Promise.all([
 				this.assetRepository.findById(body.value.asset_id),
-				this.contractService.updateContractCallingAccounts(dContract, dAccount._id),
+				this.contractService.updateContractCaller(dContract, dAccount.id),
 			]);
 			if (amount) {
 				await this.contractBalanceRepository.updateOrCreateByOwnerAndAsset(
@@ -58,7 +58,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 				);
 			}
 		} else {
-			logger.warn('contract not found, can not parse call');
+			logger.warn(`contract ${body.callee} not found, can not parse call`);
 		}
 		return this.validateRelation({
 			from: [body.registrar],
@@ -74,6 +74,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		relations: IOperationRelation,
 	) {
 		const dContract = await this.contractRepository.findById(body.callee);
+		if (!dContract) return relations;
 		if (dContract.type !== CONTRACT.TYPE.ERC20) {
 			return relations;
 		}

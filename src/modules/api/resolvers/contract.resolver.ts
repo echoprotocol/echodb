@@ -66,8 +66,8 @@ export default class ContractResolver extends AbstractResolver {
 	}
 
 	@FieldResolver()
-	calling_accounts(@Root('_calling_accounts') ids: Contract['_calling_accounts']) {
-		return this.resolveArrayMongoField(ids, this.accountRepository);
+	callers(@Root() contract: Contract['_id']) {
+		return this.contractService.getCallers(contract);
 	}
 
 	@FieldResolver()

@@ -4,12 +4,24 @@ import Block from './block.type';
 import Token from './token.type';
 import * as CONTRACT from '../../../constants/contract.constants';
 import { IAccount } from '../../../interfaces/IAccount';
-import { TDoc } from '../../../types/mongoose';
+import { TDoc, MongoId } from '../../../types/mongoose';
 import { ObjectType, Field } from 'type-graphql';
 import { IBlock } from '../../../interfaces/IBlock';
+import { IContract } from 'interfaces/IContract';
+
+@ObjectType()
+export class ContractCallers {
+	@Field(() => [Contract])
+	contracts: TDoc<IContract>[];
+
+	@Field(() => [Account])
+	accounts: TDoc<IAccount>[];
+}
 
 @ObjectType()
 export default class Contract {
+	_id: MongoId<IContract>;
+
 	@Field(() => ContractId)
 	id: string;
 
@@ -33,7 +45,6 @@ export default class Contract {
 	@Field(() => Block, { nullable: true })
 	block: Block;
 
-	_calling_accounts: TDoc<IAccount>[];
-	@Field(() => [Account], { nullable: true })
-	calling_accounts: Account[];
+	@Field(() => ContractCallers, { nullable: true })
+	callers: ContractCallers;
 }
