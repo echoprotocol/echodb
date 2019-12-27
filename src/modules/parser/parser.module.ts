@@ -1,3 +1,4 @@
+import * as config from 'config';
 import AccountRepository from '../../repositories/account.repository';
 import AbstractModule from '../abstract.module';
 import BlockEngine from './block.engine';
@@ -80,6 +81,7 @@ export default class ParserModule extends AbstractModule {
 			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
 		} catch (error) {
 			logger.error(`Block ${this.blockEngine.getCurrentBlockNum()}`, error);
+			if (config.parser.exitOnError) process.exit(1);
 			return;
 		}
 	}

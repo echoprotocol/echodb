@@ -46,6 +46,7 @@ declare module 'config' {
 			delay: number;
 			logCacheSize: boolean;
 		};
+		exitOnError: boolean;
 	};
 	// Loggers
 	export const memoryLogger: {
