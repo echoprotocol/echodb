@@ -1,3 +1,4 @@
+import * as assert from 'assert';
 import AccountRepository from '../../../repositories/account.repository';
 import BlockRepository from '../../../repositories/block.repository';
 import AbstractResolver, { handleError } from './abstract.resolver';
@@ -16,8 +17,9 @@ import {
 import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
-import { TDoc } from '../../../types/mongoose';
+import { TDoc, MongoId } from '../../../types/mongoose';
 import { IContract } from '../../../interfaces/IContract';
+import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 
 const paginatedContracts = PaginatedResponse(Contract);
 
@@ -36,11 +38,13 @@ export default class ContractResolver extends AbstractResolver {
 	@inject static accountRepository: AccountRepository;
 	@inject static blockRepository: BlockRepository;
 	@inject static contractService: ContractService;
+	@inject static erc20TokenRepository: ERC20TokenRepository;
 
 	constructor(
 		private accountRepository: AccountRepository,
 		private blockRepository: BlockRepository,
 		private contractService: ContractService,
+		private erc20TokenRepository: ERC20TokenRepository,
 	) {
 		super();
 	}
@@ -78,6 +82,12 @@ export default class ContractResolver extends AbstractResolver {
 	@FieldResolver()
 	token(@Root('type') type: Contract['type'], @Root() body: TDoc<IContract>) {
 		return (TOKEN.TYPE_LIST.includes(type)) ? body : null;
+	}
+
+	@FieldResolver() async sidechainERC20Token(@Root('_id') id: MongoId) {
+		const tokens = await this.erc20TokenRepository.find({ contract: id });
+		assert(tokens.length < 2);
+		return tokens[0] || null;
 	}
 
 	// Subscription

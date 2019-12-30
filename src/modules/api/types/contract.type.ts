@@ -8,6 +8,7 @@ import { TDoc, MongoId } from '../../../types/mongoose';
 import { ObjectType, Field } from 'type-graphql';
 import { IBlock } from '../../../interfaces/IBlock';
 import { IContract } from 'interfaces/IContract';
+import ERC20TokenType from './erc20Token.type';
 
 @ObjectType()
 export class ContractCallers {
@@ -47,4 +48,6 @@ export default class Contract {
 
 	@Field(() => ContractCallers, { nullable: true })
 	callers: ContractCallers;
+
+	@Field(() => ERC20TokenType, { nullable: true }) sidechainERC20Token: ERC20TokenType;
 }
