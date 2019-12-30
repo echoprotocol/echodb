@@ -93,7 +93,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 		return dContract;
 	}
 
-	private async fullfillContract(contract: IContract) {
+	public async fullfillContract(contract: IContract) {
 		if (contract.type === CONTRACT.TYPE.ERC20) {
 			const [totalSupply, name, symbol, decimals] = await Promise.all([
 				this.echoRepository.getTokenTotalSupply(contract.id),

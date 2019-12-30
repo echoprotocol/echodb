@@ -13,4 +13,5 @@ export enum NAME {
 	CONTRACT_BALANCE = 'contract_balance',
 	BALANCE = 'balance',
 	CONTRACT_CALLER = 'contract_caller',
+	ERC20_TOKEN = 'erc20_token',
 }
