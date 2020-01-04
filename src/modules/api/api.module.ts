@@ -30,6 +30,7 @@ import { getLogger } from 'log4js';
 import { buildSchema } from 'type-graphql';
 import { initMiddleware } from './express.middleware';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
+import ERC20TokenResolver from './resolvers/erc20Token.resolver';
 
 const logger = getLogger('api.module');
 
@@ -52,6 +53,7 @@ export default class ApiModule extends AbstractModule {
 		private assetResolver: AssetResolver,
 		private contractBalanceResolver: ContractBalanceResolver,
 		private transferResolver: TransferResolver,
+		private erc20TokenResolver: ERC20TokenResolver,
 	) {
 		super();
 	}
@@ -82,6 +84,7 @@ export default class ApiModule extends AbstractModule {
 			this.tokenResolver,
 			this.assetResolver,
 			this.transferResolver,
+			this.erc20TokenResolver,
 		];
 		const schema = await buildSchema({
 			resolvers,

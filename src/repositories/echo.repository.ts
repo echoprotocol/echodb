@@ -11,6 +11,7 @@ import {
 	TransactionWithInjectedVirtualOperations,
 	OperationWithInjectedVirtualOperaitons,
 } from '../interfaces/IBlock';
+import { IObject } from 'echojs-lib/types/interfaces/objects';
 
 export default class EchoRepository {
 
@@ -239,6 +240,14 @@ export default class EchoRepository {
 			return await this.echoConnection.echo.api.getContract(contractId);
 		} catch (error) {
 			throw this.ravenHelper.error(error, 'parseModule#getContract', { contractId });
+		}
+	}
+
+	async getObject<T extends IObject = IObject>(objectId: string): Promise<T> {
+		try {
+			return await this.echoConnection.echo.api.getObject<T>(objectId);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getObject', { objectId });
 		}
 	}
 

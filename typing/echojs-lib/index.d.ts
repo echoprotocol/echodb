@@ -192,12 +192,14 @@ declare module 'echojs-lib' {
 	}
 
 	export type BigNumber = import('echojs-lib/types').BigNumber;
+	type IObject = import('echojs-lib/types/interfaces/objects').IObject;
+	type Contract = import('echojs-lib/types/interfaces/Contract').Contract;
 
 	class API {
 		constructor(cache: Cache, wsApi: WSAPI);
 		getObjects(objectIds: string[], force = false): Promise<object[]>;
-		async getObject(objectId: string, force = false): any;
-		async getContract(contractId: string): Promise<unknown[]>;
+		async getObject<T extends IObject = IObject>(objectId: string, force = false): Promise<T>;
+		async getContract(contractId: string): Promise<Contract | null>;
 		// getBitAssetData
 		// getDynamicAssetData
 		getBlockHeader(blockNum: number): Promise<BlockHeader>;
