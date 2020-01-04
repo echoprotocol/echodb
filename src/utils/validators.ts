@@ -6,7 +6,7 @@ import { IOperationRelation } from '../interfaces/IOperation';
 import { ok } from 'assert';
 import { removeDuplicates } from './common';
 
-const { isAccountId, isContractId, isAssetId } = validators;
+const { isAccountId, isContractId, isAssetId, isVestingBalanceId } = validators;
 
 export function isMongoObjectId(value: string | number | any): value is mongoose.Types.ObjectId {
 	return mongoose.Types.ObjectId.isValid(value);
@@ -26,7 +26,7 @@ export function relationResponse(
 	{ from, to, accounts, contracts, assets, tokens }: RelationParameters,
 ): IOperationRelation {
 	return {
-		from: validateArray(from, [isAccountId, isContractId], {
+		from: validateArray(from, [isAccountId, isContractId, isVestingBalanceId], {
 			unique: true,
 			canBeEmpty: false,
 			canBeNotArray: false,

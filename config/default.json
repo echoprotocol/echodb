@@ -67,7 +67,8 @@
 		"speedo": {
 			"delay": 3000,
 			"logCacheSize": false
-		}
+		},
+		"exitOnError": false
 	},
 	"raven": {
 		"enabled": false,

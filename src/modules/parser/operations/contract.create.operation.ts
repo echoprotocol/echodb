@@ -12,8 +12,11 @@ import { IContract } from '../../../interfaces/IContract';
 import { TDoc } from '../../../types/mongoose';
 import { IBlock } from '../../../interfaces/IBlock';
 import { IOperationRelation } from 'interfaces/IOperation';
+import { getLogger } from 'log4js';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CREATE;
+
+const logger = getLogger('contract.call');
 
 export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.CONTRACT_CREATE;
@@ -30,31 +33,35 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>, dBlock: TDoc<IBlock>) {
-		const [, contractResult] = await this.echoRepository.getContractResult(result);
-		const { exec_res: {
-			new_address: hexAddr,
-			code_deposit: codeDeposit,
-		} } = contractResult;
-		if (codeDeposit !== 'Success') {
-			return this.validateRelation({
-				from: [body.registrar],
-				assets: [body.fee.asset_id],
+		const [contractType, contractResult] = await this.echoRepository.getContractResult(result);
+		let contractId: string | null = null;
+		if (contractType === 0) {
+			const { exec_res: {
+				new_address: hexAddr,
+				code_deposit: codeDeposit,
+			} } = contractResult;
+			if (codeDeposit !== 'Success') {
+				return this.validateRelation({
+					from: [body.registrar],
+					assets: [body.fee.asset_id],
+				});
+			}
+			const contract: IContract = await this.fullfillContract({
+				_block: dBlock,
+				id: ethAddrToEchoId(hexAddr),
+				_registrar: await this.accountRepository.findById(body.registrar),
+				eth_accuracy: body.eth_accuracy,
+				supported_asset_id: body.supported_asset_id || null,
+				type: this.contractService.getTypeByCode(body.code),
+				problem: false,
 			});
-		}
-		const contract: IContract = await this.fullfillContract({
-			_block: dBlock,
-			id: ethAddrToEchoId(hexAddr),
-			_registrar: await this.accountRepository.findById(body.registrar),
-			eth_accuracy: body.eth_accuracy,
-			supported_asset_id: body.supported_asset_id || null,
-			type: this.contractService.getTypeByCode(body.code),
-			problem: false,
-		});
-		await this.createContractAndContractBalance(contract, body.value);
+			contractId = contract.id;
+			await this.createContractAndContractBalance(contract, body.value);
+		} else logger.warn('x86_64 contract creation parsing is not implemented');
 		return this.validateRelation({
 			from: [body.registrar],
 			assets: [body.fee.asset_id],
-			contracts: contract.id,
+			...contractId === null ? {} : { contracts: contractId },
 		});
 	}
 
@@ -64,7 +71,8 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 		dBlock: TDoc<IBlock>,
 		relations: IOperationRelation,
 	) {
-		const [, contractResult] = await this.echoRepository.getContractResult(result);
+		const [contractType, contractResult] = await this.echoRepository.getContractResult(result);
+		if (contractType === 1) return relations;
 		const contract = await this.contractRepository.findById(ethAddrToEchoId(contractResult.exec_res.new_address));
 		if (contract.type !== CONTRACT.TYPE.ERC20) return relations;
 		const newRelations = await this.contractService.handleErc20Logs(contract, contractResult, dBlock);
