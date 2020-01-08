@@ -20,7 +20,7 @@ export default class BlockRewardOperation extends AbstractOperation<OP_ID> {
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const [dAccount, dAsset] = await Promise.all([
-			this.accountRepository.findById(body.reciever),
+			this.accountRepository.findById(body.receiver),
 			this.assetRepository.findById(ECHO.CORE_ASSET),
 		]);
 		const amount = new BN(body.amount).toString();
@@ -31,8 +31,8 @@ export default class BlockRewardOperation extends AbstractOperation<OP_ID> {
 			{ append: true },
 		);
 		return this.validateRelation({
-			from: [body.reciever],
-			accounts: [body.reciever],
+			from: [body.receiver],
+			accounts: [body.receiver],
 			assets: [ECHO.CORE_ASSET],
 		});
 	}
