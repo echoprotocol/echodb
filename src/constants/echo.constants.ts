@@ -878,7 +878,7 @@ interface ContractUpdateOperation {
 
 interface BlockRewardOperation {
 	fee: undefined;
-	reciever: AccountId;
+	receiver: AccountId;
 	amount: number;
 	extensions: ExtensionsArr;
 }
