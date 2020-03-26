@@ -37,7 +37,7 @@ export const ERROR = {
 	CONTRACT_NOT_FOUND: 'contract not found',
 };
 
-const ZERO_ACCOUNT = '1.2.0';
+export const ZERO_ACCOUNT = '1.2.0';
 
 export default class ContractService {
 
