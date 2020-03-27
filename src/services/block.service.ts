@@ -7,7 +7,7 @@ export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
 };
 
-interface delegateCalcOpts {
+interface historyDelegatePercentOpts {
 	startDate: number | string;
 	endDate: number | string;
 	interval: number | string;
@@ -44,13 +44,13 @@ export default class BlockService {
 		return delegatePercent;
 	}
 
-	async getDelegationRate(opts?: delegateCalcOpts) {
+	async getDelegationRate(historyOpts?: historyDelegatePercentOpts) {
 		const blocks = await this.blockRepository.find({});
 		const delegatePercent = this.calculateDelegationRate(blocks);
-		if (opts) {
-			const startDate = Number(opts.startDate);
-			const endDate = Number(opts.endDate);
-			const interval = Number(opts.interval);
+		if (historyOpts) {
+			const startDate = Number(historyOpts.startDate);
+			const endDate = Number(historyOpts.endDate);
+			const interval = Number(historyOpts.interval);
 			if (endDate <= startDate) {
 				throw new Error('Start date is bigger then end date');
 			}
