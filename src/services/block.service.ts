@@ -1,7 +1,7 @@
 import BlockRepository from '../repositories/block.repository';
 import ProcessingError from '../errors/processing.error';
 import { IBlock } from '../interfaces/IBlock';
-import { ZERO_ACCOUNT } from '../services/contract.service';
+import { ZERO_ACCOUNT } from '../constants/echo.constants';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
