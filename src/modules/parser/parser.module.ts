@@ -60,7 +60,7 @@ export default class ParserModule extends AbstractModule {
 
 	async parseBlock(block: BlockWithInjectedVirtualOperations) {
 		try {
-			const dBlock = await this.blockRepository.createBlockWithAverageTime(block);
+			const dBlock = await this.blockRepository.create(block);
 			if (block.transactions.length === 0 && block.unlinked_virtual_operations.length === 0) {
 				logger.trace(`Skipping no-transactions block #${block.round}`);
 			}

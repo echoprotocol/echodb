@@ -14,7 +14,6 @@ export interface IBlock {
 	round: number;
 	rand: string;
 	vm_root: string[];
-	average_block_time: number;
 	cert: {
 		_rand: string;
 		_block_hash: string;
