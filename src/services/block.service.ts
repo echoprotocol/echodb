@@ -8,8 +8,8 @@ export const ERROR = {
 };
 
 interface historyDelegatePercentOpts {
-	startDate: number | string;
-	endDate: number | string;
+	startDate: string;
+	endDate: string;
 	interval: number | string;
 }
 
@@ -51,8 +51,8 @@ export default class BlockService {
 		}
 		const delegatePercent = this.calculateDelegationRate(blocks);
 		if (historyOpts) {
-			const startDate = Number(historyOpts.startDate);
-			const endDate = Number(historyOpts.endDate);
+			const startDate = Date.parse(historyOpts.startDate) / 1000;
+			const endDate = Date.parse(historyOpts.endDate) / 1000;
 			const interval = Number(historyOpts.interval);
 			if (endDate <= startDate) {
 				throw new Error('Start date is bigger then end date');
