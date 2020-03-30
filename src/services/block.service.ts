@@ -71,8 +71,8 @@ export default class BlockService {
 			for(const blocks of orderedBlocks) {
 				const rate = this.calculateDelegationRate(blocks[1]);
 				const startIntervalDate = startDate + (interval * (blocks[0] - 1));
-				const startIntarelDateString = new Date(startIntervalDate * 1000).toISOString();
-				ratesMap.set(startIntarelDateString, rate)
+				const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
+				ratesMap.set(startIntervalDateString, rate)
 			}
 			return {
 				delegatePercent,
