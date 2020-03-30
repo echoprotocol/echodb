@@ -46,6 +46,9 @@ export default class BlockService {
 
 	async getDelegationRate(historyOpts?: historyDelegatePercentOpts) {
 		const blocks = await this.blockRepository.find({});
+		if (blocks.length === 0) {
+			return 0;
+		}
 		const delegatePercent = this.calculateDelegationRate(blocks);
 		if (historyOpts) {
 			const startDate = Number(historyOpts.startDate);
