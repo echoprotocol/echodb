@@ -69,4 +69,7 @@ export default class BlockResolver extends AbstractResolver {
 		return block;
 	}
 
+	getBlocksAndOperationsCount(options: historyBlocksAndOpsCountOpts) {
+		return this.blockService.getBlocksAndOpsCount(options);
+	}
 }
