@@ -2,16 +2,12 @@ import BlockRepository from '../repositories/block.repository';
 import ProcessingError from '../errors/processing.error';
 import { IBlock } from '../interfaces/IBlock';
 import { ZERO_ACCOUNT } from '../constants/echo.constants';
+import { historyDelegatePercentOpts } from 'interfaces/IHistoryOptions';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
 };
 
-interface historyDelegatePercentOpts {
-	startDate: string;
-	endDate: string;
-	interval: number | string;
-}
 
 export default class BlockService {
 
@@ -37,7 +33,7 @@ export default class BlockService {
 	}
 
 
-	calculateDelegationRate(blocks: Array<IBlock>) {
+	private calculateDelegationRate(blocks: Array<IBlock>) {
 		const blocksCount = blocks.length;
 		const blocksWithDelegateProduser = blocks.filter((b) => b.delegate !== ZERO_ACCOUNT).length;
 		const delegatePercent = (blocksWithDelegateProduser / blocksCount) * 100;

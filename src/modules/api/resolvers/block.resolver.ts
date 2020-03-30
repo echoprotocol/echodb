@@ -13,6 +13,7 @@ import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
 import { Payload } from '../../../types/graphql';
+import { historyDelegatePercentOpts } from 'interfaces/IHistoryOptions';
 
 const paginatedBlocks = PaginatedResponse(Block);
 
@@ -69,4 +70,7 @@ export default class BlockResolver extends AbstractResolver {
 		return block;
 	}
 
+	getDelegationPercent(historyOpts: historyDelegatePercentOpts) {
+		return this.blockService.getDelegationRate(historyOpts);
+	}
 }
