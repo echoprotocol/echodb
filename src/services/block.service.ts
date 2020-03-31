@@ -6,6 +6,8 @@ import { historyDelegatePercentOpts } from 'interfaces/IHistoryOptions';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
+	INVALID_DATES: 'Start date is bigger then end date',
+	INVALID_INTERVAL: 'The choosen period is smaller then interval'
 };
 
 
@@ -42,8 +44,9 @@ export default class BlockService {
 
 	async getDelegationRate(historyOpts?: historyDelegatePercentOpts) {
 		const blocks = await this.blockRepository.find({});
+		const ratesMap: Map<string, number> = new Map();
 		if (blocks.length === 0) {
-			return 0;
+			return { delegatePercent: 0 };
 		}
 		const delegatePercent = this.calculateDelegationRate(blocks);
 		if (historyOpts) {
@@ -51,10 +54,10 @@ export default class BlockService {
 			const endDate = Date.parse(historyOpts.endDate) / 1000;
 			const interval = Number(historyOpts.interval);
 			if (endDate <= startDate) {
-				throw new Error('Start date is bigger then end date');
+				throw new Error(ERROR.INVALID_DATES);
 			}
 			if (endDate - startDate < interval) {
-				throw new Error('The choosen period is smaller then interval');
+				throw new Error(ERROR.INVALID_INTERVAL);
 			}
 			const newMap: Map<number, Array<IBlock>> = new Map();
 			const orderedBlocks = blocks.filter((block) => {
@@ -66,18 +69,18 @@ export default class BlockService {
 				return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
 			}, newMap);
 
-			const ratesMap: Map<string, number> = new Map();
 			for(const blocks of orderedBlocks) {
 				const rate = this.calculateDelegationRate(blocks[1]);
 				const startIntervalDate = startDate + (interval * (blocks[0] - 1));
 				const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
 				ratesMap.set(startIntervalDateString, rate)
 			}
-			return {
-				delegatePercent,
-				ratesMap,
-			};
 		}
-		return delegatePercent;
+		return historyOpts ? {
+			delegatePercent,
+			ratesMap
+		} : {
+			delegatePercent,
+		};
 	}
 }

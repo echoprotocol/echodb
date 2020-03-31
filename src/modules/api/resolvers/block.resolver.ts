@@ -14,6 +14,7 @@ import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
 import { Payload } from '../../../types/graphql';
 import { historyDelegatePercentOpts } from 'interfaces/IHistoryOptions';
+import delegateRateObject from '../types/delegate.rate.type';
 
 const paginatedBlocks = PaginatedResponse(Block);
 
@@ -70,6 +71,11 @@ export default class BlockResolver extends AbstractResolver {
 		return block;
 	}
 
+	@Query(() => delegateRateObject)
+	@handleError({
+		[BLOCK_SERVICE_ERROR.INVALID_DATES]: [HTTP.CODE.BAD_REQUEST],
+		[BLOCK_SERVICE_ERROR.INVALID_INTERVAL]: [HTTP.CODE.BAD_REQUEST],
+	})
 	getDelegationPercent(historyOpts: historyDelegatePercentOpts) {
 		return this.blockService.getDelegationRate(historyOpts);
 	}
