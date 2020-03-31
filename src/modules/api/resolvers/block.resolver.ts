@@ -7,13 +7,14 @@ import TransactionRepository from '../../../repositories/transaction.repository'
 import Transaction from '../types/transaction.type';
 import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
-import { GetBlockForm, GetBlocksForm } from '../forms/block.forms';
+import { GetBlockForm, GetBlocksForm, HistoryForm } from '../forms/block.forms';
 import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
 import { Payload } from '../../../types/graphql';
 import historyBlockObject from '../types/history.block.type';
+import OperationService from '../../../services/operation.service';
 
 const paginatedBlocks = PaginatedResponse(Block);
 
@@ -22,11 +23,13 @@ export default class BlockResolver extends AbstractResolver {
 	@inject static accountService: AccountService;
 	@inject static blockService: BlockService;
 	@inject static transactionRepository: TransactionRepository;
+	@inject static operationService: OperationService
 
 	constructor(
 		private accountService: AccountService,
 		private blockService: BlockService,
 		private transactionRepository: TransactionRepository,
+		private operationService: OperationService,
 	) {
 		super();
 	}
@@ -71,7 +74,11 @@ export default class BlockResolver extends AbstractResolver {
 	}
 
 	@Query(() => historyBlockObject)
-	getBlocksAndOperationsCount(options: historyBlocksAndOpsCountOpts) {
-		return this.blockService.getBlocksAndOpsCount(options);
+	@validateArgs(HistoryForm)
+	getBlocksAndOperationsCount(@Args() options: HistoryForm) {
+		return {
+			blocksCount: this.blockService.getBlocksAndOpsCount(options),
+			operationsCount: this.operationService.getBlocksAndOpsCount(options),
+		}
 	}
 }
