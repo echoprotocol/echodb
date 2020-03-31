@@ -34,16 +34,9 @@ export default class BlockService {
 	}
 
 	async getBlocksAndOpsCount(historyOpts: historyBlocksAndOpsCountOpts) {
-		const from = new Date(historyOpts.from);
+		const from = new Date(historyOpts.from).toISOString();
 		const to = historyOpts.to ? new Date(historyOpts.to) : new Date();
-		console.log(from)
-		console.log(to)
-		// const a = await this.blockRepository.find({ });
-		// console.log(a)
-		const b = await this.blockRepository.find({ timestamp: { $lte: to, $gt: from } });
-		console.log(b)
 		const blocksCount = await this.blockRepository.count({ timestamp: { $gte: from, $lte: to } });
-		console.log(blocksCount)
 		return blocksCount;
 	}
 
