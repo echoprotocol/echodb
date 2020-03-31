@@ -47,6 +47,15 @@ export default class BlockResolver extends AbstractResolver {
 		return this.blockService.getBlocks(count, offset);
 	}
 
+	// Query
+	@Query(() => Number)
+	@handleError({
+		[BLOCK_SERVICE_ERROR.BLOCK_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
+	})
+	getCurrentDecentralizationRate() {
+		return this.blockService.getCurrentDecentralizationRate();
+	}
+
 	@FieldResolver()
 	account(@Root('account') id: string) {
 		return this.accountService.getAccount(id);
