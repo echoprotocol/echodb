@@ -34,7 +34,7 @@ export default class BlockService {
 		const currentDate = new Date(block.timestamp);
 		const yesterdayDate = new Date(Date.parse(currentDate.toISOString()) - dayMs).toISOString();
 		const blocksPer24Hours = await this.blockRepository.count({ timestamp: { $gt: yesterdayDate, $lt: currentDate } });
-		const averageBlockTime = dayMs / blocksPer24Hours;
+		const averageBlockTime = blocksPer24Hours !== 0 ? dayMs / blocksPer24Hours : 0;
 
 		return this.blockRepository.create({
 			...block,
