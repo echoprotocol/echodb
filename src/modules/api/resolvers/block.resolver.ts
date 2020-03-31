@@ -13,6 +13,7 @@ import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
 import { Payload } from '../../../types/graphql';
+import historyBlockObject from '../types/history.block.type';
 
 const paginatedBlocks = PaginatedResponse(Block);
 
@@ -69,6 +70,7 @@ export default class BlockResolver extends AbstractResolver {
 		return block;
 	}
 
+	@Query(() => historyBlockObject)
 	getBlocksAndOperationsCount(options: historyBlocksAndOpsCountOpts) {
 		return this.blockService.getBlocksAndOpsCount(options);
 	}
