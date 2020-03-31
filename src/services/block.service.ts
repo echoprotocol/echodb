@@ -1,19 +1,15 @@
 import BlockRepository from '../repositories/block.repository';
 import ProcessingError from '../errors/processing.error';
 import { historyBlocksAndOpsCountOpts } from 'interfaces/IHistoryOptions';
-// import OperationRepository from '../repositories/operation.repository';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
 };
 
-
-
 export default class BlockService {
 
 	constructor(
 		readonly blockRepository: BlockRepository,
-		// readonly operationRepositry: OperationRepository,
 	) {}
 
 	async getBlock(round: number) {
@@ -33,7 +29,7 @@ export default class BlockService {
 		return { total, items };
 	}
 
-	async getBlocksAndOpsCount(historyOpts: historyBlocksAndOpsCountOpts) {
+	async getBlocksCount(historyOpts: historyBlocksAndOpsCountOpts) {
 		const from = new Date(historyOpts.from).toISOString();
 		const to = historyOpts.to ? new Date(historyOpts.to) : new Date();
 		const blocksCount = await this.blockRepository.count({ timestamp: { $gte: from, $lte: to } });

@@ -77,8 +77,8 @@ export default class BlockResolver extends AbstractResolver {
 	@validateArgs(HistoryForm)
 	getBlocksAndOperationsCount(@Args() options: HistoryForm) {
 		return {
-			blocksCount: this.blockService.getBlocksAndOpsCount(options),
-			operationsCount: this.operationService.getBlocksAndOpsCount(options),
+			blocksCount: this.blockService.getBlocksCount(options),
+			operationsCount: this.operationService.getOpsCount(options),
 		}
 	}
 }

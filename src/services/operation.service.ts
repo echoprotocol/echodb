@@ -74,7 +74,7 @@ export default class OperationService {
 		return { total, items };
 	}
 
-	async getBlocksAndOpsCount(historyOpts: historyBlocksAndOpsCountOpts) {
+	async getOpsCount(historyOpts: historyBlocksAndOpsCountOpts) {
 		const from = new Date(historyOpts.from);
 		const to = historyOpts.to ? new Date(historyOpts.to) : new Date();
 		const operationsCount = await this.operationRepository.count({ timestamp: { $gte: from, $lte: to } });
