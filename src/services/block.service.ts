@@ -44,15 +44,15 @@ export default class BlockService {
 
 	async getDelegationRate(historyOpts?: historyDelegatePercentOpts) {
 		const blocks = await this.blockRepository.find({});
-		const ratesMap: Map<string, number> = new Map();
+		const ratesMap: Array<Object> = [];
 		if (blocks.length === 0) {
 			return { delegatePercent: 0 };
 		}
 		const delegatePercent = this.calculateDelegationRate(blocks);
 		if (historyOpts) {
-			const startDate = Date.parse(historyOpts.startDate) / 1000;
-			const endDate = Date.parse(historyOpts.endDate) / 1000;
-			const interval = Number(historyOpts.interval);
+			const startDate = Date.parse(historyOpts.from) / 1000;
+			const endDate = Date.parse(historyOpts.to) / 1000;
+			const interval = historyOpts.interval;
 			if (endDate <= startDate) {
 				throw new Error(ERROR.INVALID_DATES);
 			}
@@ -73,14 +73,12 @@ export default class BlockService {
 				const rate = this.calculateDelegationRate(blocks[1]);
 				const startIntervalDate = startDate + (interval * (blocks[0] - 1));
 				const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
-				ratesMap.set(startIntervalDateString, rate)
+				ratesMap.push({startIntervalDateString, rate})
 			}
 		}
-		return historyOpts ? {
+		return {
 			delegatePercent,
 			ratesMap
-		} : {
-			delegatePercent,
 		};
 	}
 }

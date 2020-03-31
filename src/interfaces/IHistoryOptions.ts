@@ -1,5 +1,5 @@
 export interface historyDelegatePercentOpts {
-  startDate: string;
-  endDate: string;
-  interval: number | string;
+  from: string;
+  to: string;
+  interval: number;
 }
