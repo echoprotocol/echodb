@@ -1,5 +1,6 @@
 import BlockRepository from '../repositories/block.repository';
 import ProcessingError from '../errors/processing.error';
+import { BlockWithInjectedVirtualOperations } from 'interfaces/IBlock';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
@@ -28,4 +29,16 @@ export default class BlockService {
 		return { total, items };
 	}
 
+	async createModifiedBlock(block: BlockWithInjectedVirtualOperations) {
+		const today = new Date();
+		const dayMs = 24 * 60 * 60 * 1000;
+		const yesterday = new Date(Date.parse(today.toString()) - dayMs);
+		const blocksPer24Hours = await this.blockRepository.count({ timestamp: { $gt: yesterday } });
+		const averageBlockTime = blocksPer24Hours / dayMs;
+
+		return this.blockRepository.create({
+			...block,
+			average_block_time: averageBlockTime,
+		});
+	}
 }

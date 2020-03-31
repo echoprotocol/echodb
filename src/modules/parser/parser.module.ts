@@ -18,6 +18,7 @@ import { getLogger } from 'log4js';
 import { TDoc } from 'types/mongoose';
 import { ITransactionExtended } from 'interfaces/ITransaction';
 import { BlockWithInjectedVirtualOperations } from 'interfaces/IBlock';
+import BlockService from 'services/block.service';
 
 const logger = getLogger('parser.module');
 
@@ -32,6 +33,7 @@ export default class ParserModule extends AbstractModule {
 		readonly assetRepository: AssetRepository,
 		readonly echoRepository: EchoRepository,
 		readonly blockRepository: BlockRepository,
+		readonly blockService: BlockService,
 		readonly transactionRepository: TransactionRepository,
 		readonly memoryHelper: MemoryHelper,
 		readonly operationManager: OperationManager,
@@ -60,7 +62,7 @@ export default class ParserModule extends AbstractModule {
 
 	async parseBlock(block: BlockWithInjectedVirtualOperations) {
 		try {
-			const dBlock = await this.blockRepository.createBlockWithAverageTime(block);
+			const dBlock = await this.blockService.createModifiedBlock(block);
 			if (block.transactions.length === 0 && block.unlinked_virtual_operations.length === 0) {
 				logger.trace(`Skipping no-transactions block #${block.round}`);
 			}

@@ -20,6 +20,7 @@ export default class Block {
 	// FIXME: unknown type
 	// @Field() verifications: unknown[];
 	@Field() round: number;
+	@Field() average_block_time: number;
 	@Field() rand: string;
 	@Field() cert: BlockCert;
 
