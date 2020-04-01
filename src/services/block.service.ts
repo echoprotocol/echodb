@@ -7,8 +7,8 @@ import { IBlock, BlockWithInjectedVirtualOperations } from '../interfaces/IBlock
 import { DECENTRALIZATION_RATE_BLOCK_COUNT } from '../constants/block.constants';
 import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
-import { removeDuplicates } from '../utils/common';
-import { historyDelegatePercentOpts } from 'interfaces/IHistoryOptions';
+import { removeDuplicates, calculateAverage } from '../utils/common';
+import { HistoryDelegatePercentOpts } from 'interfaces/IHistoryOptions';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
@@ -26,13 +26,21 @@ export default class BlockService {
 		readonly assetRepository: AssetRepository,
 	) {}
 
-	async getCurrentDecentralizationRate() {
-		const dBlocks = await this.blockRepository.find({}, {}, { sort: { round: -1 }, limit: 1 });
-		if (!dBlocks[0]) {
-			throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
-		}
+	async getBlock(round: number) {
+		const dBlock = await this.blockRepository.findOne({ round });
+		if (!dBlock) throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
+		return dBlock;
+	}
 
-		return dBlocks[0].decentralization_rate;
+	async getBlocks(count: number, offset: number) {
+		const [items, total] = await Promise.all([
+			this.blockRepository.find({} , null, {
+				skip: offset,
+				limit: count,
+			}),
+			this.blockRepository.count({}),
+		]);
+		return { total, items };
 	}
 
 	async getDecentralizationRateFromBlock(block: BlockWithInjectedVirtualOperations) {
@@ -80,25 +88,64 @@ export default class BlockService {
 		return dBlock;
 	}
 
-	async getBlock(round: number) {
-		const dBlock = await this.blockRepository.findOne({ round });
-		if (!dBlock) throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
-		return dBlock;
-	}
+	async getDecentralizationRate(historyOpts?: HistoryDelegatePercentOpts) {
+		if (Object.keys(historyOpts).length !== 0 && (!historyOpts.from || !historyOpts.interval)) {
+			throw new ProcessingError(ERROR.INVALID_HISTORY_PARAMS);
+		}
 
-	async getBlocks(count: number, offset: number) {
-		const [items, total] = await Promise.all([
-			this.blockRepository.find({} , null, {
-				skip: offset,
-				limit: count,
-			}),
-			this.blockRepository.count({}),
-		]);
-		return { total, items };
+		const dBlocks = await this.blockRepository.find({}, {}, { sort: { round: -1 }, limit: 1 });
+		if (!dBlocks[0]) {
+			throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
+		}
+		const decentralizationRatePercent = dBlocks[0].decentralization_rate || 0;
+
+		const ratesMap: Array<Object> = [];
+		
+		if (Object.keys(historyOpts).length === 0) {
+			return { decentralizationRatePercent, ratesMap };
+		}
+
+		const startDate = Date.parse(historyOpts.from) / 1000;
+		const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
+		const interval = historyOpts.interval;
+
+		if (endDate <= startDate) {
+			throw new ProcessingError(ERROR.INVALID_DATES);
+		}
+		if (endDate - startDate < interval) {
+			throw new ProcessingError(ERROR.INVALID_INTERVAL);
+		}
+
+		const blocks = await this.getBlocksByDate(historyOpts.from, historyOpts.to);
+
+		if (blocks.length === 0) {
+			return { decentralizationRatePercent, ratesMap };
+		}
+
+		const newMap: Map<number, Array<IBlock>> = new Map();
+		const orderedBlocks = blocks
+			.reduce((acc: Map<number, Array<IBlock>>, val: IBlock) => {
+				const timestamp = Date.parse(val.timestamp) / 1000;
+				const segmentNumber = Math.ceil((timestamp - startDate) / interval);
+				return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
+			}, newMap);
+
+		for (const [time, blocks] of orderedBlocks) {
+			const decentralizationRatePeriudArray = blocks.map(({ decentralization_rate }) => decentralization_rate || 0);
+			const rate = calculateAverage(decentralizationRatePeriudArray).integerValue(BN.ROUND_CEIL).toNumber();
+			const startIntervalDate = startDate + (interval * (time - 1));
+			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
+			ratesMap.push({ startIntervalDateString, rate })
+		}
+
+		return {
+			decentralizationRatePercent,
+			ratesMap,
+		}
 	}
 
 	async getBlocksByDate(from: string, to?: string) {
-		return this.blockRepository.count({ timestamp: { $gte: from, $lte : to || new Date().toISOString() } });
+		return this.blockRepository.find({ timestamp: { $gte: from, $lte : to || new Date().toISOString() } });
 	}
 
 	private calculateDelegationRate(blocks: Array<IBlock>) {
@@ -108,9 +155,9 @@ export default class BlockService {
 		return delegatePercent;
 	}
 
-	async getDelegationRate(historyOpts?: historyDelegatePercentOpts) {
+	async getDelegationRate(historyOpts?: HistoryDelegatePercentOpts) {
 		if (historyOpts && (!historyOpts.from || !historyOpts.interval)) {
-			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
+			throw new ProcessingError(ERROR.INVALID_HISTORY_PARAMS);
 		}
 		const blocks = await this.blockRepository.find({});
 		const ratesMap: Array<Object> = [];
@@ -129,10 +176,10 @@ export default class BlockService {
 		const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
 		const interval = historyOpts.interval;
 		if (endDate <= startDate) {
-			throw new Error(ERROR.INVALID_DATES);
+			throw new ProcessingError(ERROR.INVALID_DATES);
 		}
 		if (endDate - startDate < interval) {
-			throw new Error(ERROR.INVALID_INTERVAL);
+			throw new ProcessingError(ERROR.INVALID_INTERVAL);
 		}
 		const newMap: Map<number, Array<IBlock>> = new Map();
 		const orderedBlocks = blocks.filter((block) => {
