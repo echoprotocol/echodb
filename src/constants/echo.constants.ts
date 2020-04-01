@@ -1,5 +1,7 @@
 import { AccountId, AssetId, ContractResultId } from '../types/echo';
-import { BlockVirtualOperation } from 'echojs-lib';
+import { BlockVirtualOperation, constants } from 'echojs-lib';
+
+export const ZERO_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.0`;
 export const CORE_ASSET = '1.3.0';
 
 export const CONNECT_STATUS = 'connect';
