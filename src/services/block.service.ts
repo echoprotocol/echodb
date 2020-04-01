@@ -49,7 +49,10 @@ export default class BlockService {
 		const blocks = await this.blockRepository.find({});
 		const ratesMap: Array<Object> = [];
 		if (blocks.length === 0) {
-			return { delegatePercent: 0 };
+			return {
+				delegatePercent: 0,
+				ratesMap,
+			};
 		}
 		const delegatePercent = this.calculateDelegationRate(blocks);
 		if (!historyOpts) {
@@ -75,9 +78,9 @@ export default class BlockService {
 			return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
 		}, newMap);
 
-		for (const blocks of orderedBlocks) {
-			const rate = this.calculateDelegationRate(blocks[1]);
-			const startIntervalDate = startDate + (interval * (blocks[0] - 1));
+		for (const [time, blocks] of orderedBlocks) {
+			const rate = this.calculateDelegationRate(blocks);
+			const startIntervalDate = startDate + (interval * (time - 1));
 			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
 			ratesMap.push({ startIntervalDateString, rate })
 		}
