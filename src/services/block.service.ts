@@ -8,7 +8,7 @@ export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
 	INVALID_DATES: 'Start date is bigger then end date',
 	INVALID_INTERVAL: 'The choosen period is smaller then interval',
-	INVALID_HISTORY_PARAMS: 'parameter from, to or interval was not provided',
+	INVALID_HISTORY_PARAMS: 'parameter from or interval was not provided',
 };
 
 
@@ -47,7 +47,7 @@ export default class BlockService {
 	}
 
 	async getDelegationRate(historyOpts?: historyDelegatePercentOpts) {
-		if (historyOpts && (!historyOpts.from || !historyOpts.to || !historyOpts.interval)) {
+		if (historyOpts && (!historyOpts.from || !historyOpts.interval)) {
 			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
 		}
 		const blocks = await this.blockRepository.find({});
@@ -64,7 +64,7 @@ export default class BlockService {
 		}
 
 		const startDate = Date.parse(historyOpts.from) / 1000;
-		const endDate = Date.parse(historyOpts.to) / 1000;
+		const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
 		const interval = historyOpts.interval;
 		if (endDate <= startDate) {
 			throw new Error(ERROR.INVALID_DATES);
