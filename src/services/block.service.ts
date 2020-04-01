@@ -7,7 +7,8 @@ import { historyDelegatePercentOpts } from 'interfaces/IHistoryOptions';
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
 	INVALID_DATES: 'Start date is bigger then end date',
-	INVALID_INTERVAL: 'The choosen period is smaller then interval'
+	INVALID_INTERVAL: 'The choosen period is smaller then interval',
+	INVALID_HISTORY_PARAMS: 'parameter from, to or interval was not provided',
 };
 
 
@@ -46,6 +47,9 @@ export default class BlockService {
 	}
 
 	async getDelegationRate(historyOpts?: historyDelegatePercentOpts) {
+		if (historyOpts && (!historyOpts.from || !historyOpts.to || !historyOpts.interval)) {
+			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
+		}
 		const blocks = await this.blockRepository.find({});
 		const ratesMap: Array<Object> = [];
 		if (blocks.length === 0) {
