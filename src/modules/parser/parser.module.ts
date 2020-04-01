@@ -11,6 +11,7 @@ import OperationManager from './operations/operation.manager';
 import RavenHelper from 'helpers/raven.helper';
 import RedisConnection from '../../connections/redis.connection';
 import TransactionRepository from '../../repositories/transaction.repository';
+import AccountService from '../../services/account.service';
 import * as INFO from '../../constants/info.constants';
 import * as ECHO from '../../constants/echo.constants';
 import * as REDIS from '../../constants/redis.constants';
@@ -33,6 +34,7 @@ export default class ParserModule extends AbstractModule {
 		readonly echoRepository: EchoRepository,
 		readonly blockRepository: BlockRepository,
 		readonly transactionRepository: TransactionRepository,
+		readonly accountService: AccountService,
 		readonly memoryHelper: MemoryHelper,
 		readonly operationManager: OperationManager,
 	) {
