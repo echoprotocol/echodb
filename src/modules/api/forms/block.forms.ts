@@ -18,16 +18,13 @@ export class HistoryForm extends AbstractForm {
 	@rule(Joi.date().required())
 	@Field(() => String, { nullable: true })
 	from: string;
-}
-
-@ArgsType()
-export class ExtendedHistoryForm extends AbstractForm {
-	@rule(Joi.date())
-	@Field(() => String, { nullable: true })
-	from: string;
 	@rule(Joi.date())
 	@Field(() => String, { nullable: true })
 	to: string;
+}
+
+@ArgsType()
+export class ExtendedHistoryForm extends HistoryForm {
 	@rule(Joi.number().positive())
 	@Field(() => Int, { nullable: true })
 	interval: number;
