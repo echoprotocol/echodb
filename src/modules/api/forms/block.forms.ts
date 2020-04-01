@@ -14,13 +14,13 @@ export class GetBlockForm extends AbstractForm {
 export class GetBlocksForm extends PaginationForm {}
 @ArgsType()
 export class ExtendedHistoryForm extends AbstractForm {
-	@rule(Joi.date())
+	@rule(Joi.date().required())
 	@Field(() => String, { nullable: true })
 	from: string;
-	@rule(Joi.date())
+	@rule(Joi.date().required())
 	@Field(() => String, { nullable: true })
 	to: string;
-	@rule(Joi.number().positive())
+	@rule(Joi.number().positive().required())
 	@Field(() => Int, { nullable: true })
 	interval: number;
 }
