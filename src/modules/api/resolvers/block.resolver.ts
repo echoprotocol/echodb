@@ -76,7 +76,7 @@ export default class BlockResolver extends AbstractResolver {
 		[BLOCK_SERVICE_ERROR.INVALID_DATES]: [HTTP.CODE.BAD_REQUEST],
 		[BLOCK_SERVICE_ERROR.INVALID_INTERVAL]: [HTTP.CODE.BAD_REQUEST],
 	})
-	getDelegationPercent(@Args() historyOpts: ExtendedHistoryForm) {
+	getDelegationPercent(@Args() historyOpts?: ExtendedHistoryForm) {
 		return this.blockService.getDelegationRate(historyOpts);
 	}
 }

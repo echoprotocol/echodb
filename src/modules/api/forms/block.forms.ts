@@ -14,7 +14,7 @@ export class GetBlockForm extends AbstractForm {
 export class GetBlocksForm extends PaginationForm {}
 @ArgsType()
 export class ExtendedHistoryForm extends AbstractForm {
-	@rule(Joi.date().required())
+	@rule(Joi.date())
 	@Field(() => String, { nullable: true })
 	from: string;
 	@rule(Joi.date())

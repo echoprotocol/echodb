@@ -49,32 +49,34 @@ export default class BlockService {
 			return { delegatePercent: 0 };
 		}
 		const delegatePercent = this.calculateDelegationRate(blocks);
-		if (historyOpts) {
-			const startDate = Date.parse(historyOpts.from) / 1000;
-			const endDate = Date.parse(historyOpts.to) / 1000;
-			const interval = historyOpts.interval;
-			if (endDate <= startDate) {
-				throw new Error(ERROR.INVALID_DATES);
-			}
-			if (endDate - startDate < interval) {
-				throw new Error(ERROR.INVALID_INTERVAL);
-			}
-			const newMap: Map<number, Array<IBlock>> = new Map();
-			const orderedBlocks = blocks.filter((block) => {
-				const blockTimestamp = Date.parse(block.timestamp) / 1000
-				return (blockTimestamp >= startDate) && (blockTimestamp <= endDate);
-			}).reduce((acc: Map<number, Array<IBlock>>, val: IBlock) => {
-				const timestamp = Date.parse(val.timestamp) / 1000;
-				const segmentNumber = Math.ceil((timestamp - startDate) / interval);
-				return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
-			}, newMap);
+		if (!historyOpts) {
+			return { delegatePercent }
+		}
 
-			for(const blocks of orderedBlocks) {
-				const rate = this.calculateDelegationRate(blocks[1]);
-				const startIntervalDate = startDate + (interval * (blocks[0] - 1));
-				const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
-				ratesMap.push({startIntervalDateString, rate})
-			}
+		const startDate = Date.parse(historyOpts.from) / 1000;
+		const endDate = Date.parse(historyOpts.to) / 1000;
+		const interval = historyOpts.interval;
+		if (endDate <= startDate) {
+			throw new Error(ERROR.INVALID_DATES);
+		}
+		if (endDate - startDate < interval) {
+			throw new Error(ERROR.INVALID_INTERVAL);
+		}
+		const newMap: Map<number, Array<IBlock>> = new Map();
+		const orderedBlocks = blocks.filter((block) => {
+			const blockTimestamp = Date.parse(block.timestamp) / 1000
+			return (blockTimestamp >= startDate) && (blockTimestamp <= endDate);
+		}).reduce((acc: Map<number, Array<IBlock>>, val: IBlock) => {
+			const timestamp = Date.parse(val.timestamp) / 1000;
+			const segmentNumber = Math.ceil((timestamp - startDate) / interval);
+			return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
+		}, newMap);
+
+		for (const blocks of orderedBlocks) {
+			const rate = this.calculateDelegationRate(blocks[1]);
+			const startIntervalDate = startDate + (interval * (blocks[0] - 1));
+			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
+			ratesMap.push({ startIntervalDateString, rate })
 		}
 		return {
 			delegatePercent,
