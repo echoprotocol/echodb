@@ -34,6 +34,9 @@ export default class BlockService {
 		return { total, items };
 	}
 
+	async getBlocksByDate(from: string, to?: string) {
+		return this.blockRepository.count({ timestamp: { $gte: from, $lte : to || new Date().toISOString()}})
+	}
 
 	private calculateDelegationRate(blocks: Array<IBlock>) {
 		const blocksCount = blocks.length;
