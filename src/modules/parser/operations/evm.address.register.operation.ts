@@ -5,25 +5,25 @@ import * as ECHO from '../../../constants/echo.constants';
 type OP_ID = ECHO.OPERATION_ID.EVM_ADDRESS_REGISTER;
 
 export default class EVMAddressRegister extends AbstractOperation<OP_ID>{
-  id = ECHO.OPERATION_ID.EVM_ADDRESS_REGISTER;
+	id = ECHO.OPERATION_ID.EVM_ADDRESS_REGISTER;
 
-  constructor(
-    readonly accountRepository: AccountRepository,
-  ) {
-    super();
-  }
+	constructor(
+		readonly accountRepository: AccountRepository,
+	) {
+		super();
+	}
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
-    const { evm_address, owner } = body;
-    const account = await this.accountRepository.findById(owner);
-    await this.accountRepository.update({ id: owner }, {
-      ...account,
-      evm_address,
-    });
+		const { evm_address, owner } = body;
+		const account = await this.accountRepository.findById(owner);
+		await this.accountRepository.update({ id: owner }, {
+			...account,
+			evm_address,
+		});
 
-    return this.validateRelation({
-      from: [body.owner],
-      assets: [body.fee.asset_id],
-    });
-  }
+		return this.validateRelation({
+			from: [body.owner],
+			assets: [body.fee.asset_id],
+		});
+	}
 
 }
