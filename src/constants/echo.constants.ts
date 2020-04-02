@@ -70,6 +70,7 @@ export enum OPERATION_ID {
 	SIDECHAIN_BTC_AGGREGATE = 62,
 	SIDECHAIN_BTC_APPROVE_AGGREGATE = 63,
 	BLOCK_REWARD = 64, // VIRTUAL
+	EVM_ADDRESS_REGISTER = 65,
 }
 
 export type Operations = {
@@ -133,6 +134,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: SidechainBtcApproveAggregate;
 	[OPERATION_ID.CONTRACT_UPDATE]: ContractUpdateOperation;
 	[OPERATION_ID.BLOCK_REWARD]: BlockRewardOperation;
+	[OPERATION_ID.EVM_ADDRESS_REGISTER]: EVMAddressRegister;
 };
 
 export type OperationResult = {
@@ -196,6 +198,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: unknown;
 	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: unknown;
 	[OPERATION_ID.BLOCK_REWARD]: unknown;
+	[OPERATION_ID.EVM_ADDRESS_REGISTER]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -880,5 +883,12 @@ interface BlockRewardOperation {
 	fee: undefined;
 	receiver: AccountId;
 	amount: number;
+	extensions: ExtensionsArr;
+}
+
+interface EVMAddressRegister {
+	fee: IAmount;
+	owner: string;
+	evm_address: string;
 	extensions: ExtensionsArr;
 }
