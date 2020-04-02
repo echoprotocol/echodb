@@ -15,6 +15,7 @@ export default class Account {
 	@Field() options: AccountOptions;
 	@Field() statistics: string;
 	@Field() top_n_control_flags: number;
+	@Field() evm_address: string;
 
 	@Field(() => [String])
 	whitelisting_accounts: string[];

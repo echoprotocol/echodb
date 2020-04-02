@@ -26,4 +26,5 @@ export interface IAccount {
 	active_special_authority: [number, {}];
 	top_n_control_flags: number;
 	addresses: string[];
+	evm_address?: string;
 }
