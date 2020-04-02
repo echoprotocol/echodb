@@ -463,12 +463,7 @@ interface AssetPublishFeed {
 	fee: IAmount;
 	publisher: AccountId;
 	asset_id: AssetId;
-	feed: {
-		settlement_price: IAssetPrice;
-		maintenance_collateral_ratio: number | string;
-		maximum_short_squeeze_ratio: number | string;
-		core_exchange_rate: IAssetPrice;
-	};
+	core_exchange_rate: IAssetPrice;
 	extensions: ExtensionsArr;
 }
 

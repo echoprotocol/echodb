@@ -11,10 +11,8 @@ export default class AssetPublishFeedOperation extends AbstractOperation<OP_ID> 
 			from: [body.publisher],
 			assets: [
 				body.fee.asset_id,
-				body.feed.settlement_price.base.asset_id,
-				body.feed.settlement_price.quote.asset_id,
-				body.feed.core_exchange_rate.base.asset_id,
-				body.feed.core_exchange_rate.quote.asset_id,
+				body.core_exchange_rate.base.asset_id,
+				body.core_exchange_rate.quote.asset_id,
 			],
 		});
 	}
