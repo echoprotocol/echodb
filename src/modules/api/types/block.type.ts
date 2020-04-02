@@ -22,6 +22,7 @@ export default class Block {
 	@Field() round: number;
 	@Field() rand: string;
 	@Field() cert: BlockCert;
+	@Field() decentralization_rate: number;
 
 	@Field(() => [Transaction])
 	transactions: Transaction[];
