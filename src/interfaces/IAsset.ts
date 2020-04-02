@@ -17,15 +17,7 @@ export interface IAssetDynamic {
 }
 
 export interface IAssetDefaultBitasset {
-	current_feed: {
-		maintenance_collateral_ratio: number;
-		maximum_short_squeeze_ratio: number;
-		settlement_price: IAssetPrice;
-		core_exchange_rate: IAssetPrice;
-	};
-	settlement_price: IAssetPrice;
 	force_settled_volume: number;
-	settlement_fund: number;
 	feeds: unknown[];
 }
 
