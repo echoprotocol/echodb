@@ -35,7 +35,7 @@ const bitassetSchema = createSchema<IAssetBitasset>({
 		short_backing_asset: String,
 		feed_lifetime_sec: Number,
 		minimum_feeds: Number,
-	}
+	},
 }, {
 	_id: false,
 });
