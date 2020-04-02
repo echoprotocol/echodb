@@ -1,4 +1,3 @@
-import AssetPrice from './asset.price.type';
 import AssetBitassetOptions from './asset.bitasset.options.type';
 import { ObjectType, Field } from 'type-graphql';
 
@@ -9,5 +8,4 @@ export default class AssetBitasset {
 	@Field() force_settled_volume: number;
 	@Field(() => [String]) feeds: unknown[];
 	@Field(() => AssetBitassetOptions) options: AssetBitassetOptions;
-	@Field(() => AssetPrice) core_exchange_rate: AssetPrice;
 }
