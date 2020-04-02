@@ -35,6 +35,7 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 				active_special_authority: body.owner_special_authority,
 				top_n_control_flags: 0,
 				addresses: [],
+				evm_address: body.evm_address,
 			});
 		this.redisConnection.emit(REDIS.EVENT.NEW_ACCOUNT, dAccount);
 		return this.validateRelation({

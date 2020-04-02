@@ -30,5 +30,6 @@ export default AbstractModel<IAccount>(MODEL.NAME.ACCOUNT, {
 	owner_special_authority: [Schema.Types.Mixed],
 	active_special_authority: [Schema.Types.Mixed],
 	top_n_control_flags: Number,
+	evm_address: String,
 	addresses: [Schema.Types.Mixed],
 });
