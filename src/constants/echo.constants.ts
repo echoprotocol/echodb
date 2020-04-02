@@ -329,6 +329,7 @@ interface AccountCreateOperation {
 	echorand_key: string;
 	owner_special_authority?: Authority;
 	active_special_authority?: Authority;
+	evm_address?: string;
 }
 
 interface AccountUpdateOperation {
