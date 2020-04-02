@@ -29,6 +29,7 @@ export default AbstractModel<IBlock>(MODEL.NAME.BLOCK, {
 	rand: String,
 	vm_root: [String],
 	average_block_time: Number,
+	decentralization_rate: Number,
 	cert: {
 		_rand: String,
 		_block_hash: String,

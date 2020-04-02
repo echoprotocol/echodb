@@ -11,6 +11,7 @@ import OperationManager from './operations/operation.manager';
 import RavenHelper from 'helpers/raven.helper';
 import RedisConnection from '../../connections/redis.connection';
 import TransactionRepository from '../../repositories/transaction.repository';
+import BlockService from '../../services/block.service';
 import * as INFO from '../../constants/info.constants';
 import * as ECHO from '../../constants/echo.constants';
 import * as REDIS from '../../constants/redis.constants';
@@ -18,7 +19,6 @@ import { getLogger } from 'log4js';
 import { TDoc } from 'types/mongoose';
 import { ITransactionExtended } from 'interfaces/ITransaction';
 import { BlockWithInjectedVirtualOperations } from 'interfaces/IBlock';
-import BlockService from 'services/block.service';
 
 const logger = getLogger('parser.module');
 
@@ -80,7 +80,8 @@ export default class ParserModule extends AbstractModule {
 				}
 				this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 			}
-			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
+			const updatedBlock = await this.blockService.updateBlockAfterParsing(block);
+			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, updatedBlock);
 		} catch (error) {
 			logger.error(`Block ${this.blockEngine.getCurrentBlockNum()}`, error);
 			if (config.parser.exitOnError) process.exit(1);
