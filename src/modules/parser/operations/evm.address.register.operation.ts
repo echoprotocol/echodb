@@ -15,10 +15,8 @@ export default class EVMAddressRegister extends AbstractOperation<OP_ID>{
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const { evm_address, owner } = body;
 		const account = await this.accountRepository.findById(owner);
-		await this.accountRepository.update({ id: owner }, {
-			...account,
-			evm_address,
-		});
+		account.evm_address = evm_address
+		await account.save()
 
 		return this.validateRelation({
 			from: [body.owner],
