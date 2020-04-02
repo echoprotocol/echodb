@@ -80,6 +80,8 @@ export default class ParserModule extends AbstractModule {
 				}
 				this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 			}
+
+			await this.accountService.updateAccountsConcentrationRate();
 			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
 		} catch (error) {
 			logger.error(`Block ${this.blockEngine.getCurrentBlockNum()}`, error);
