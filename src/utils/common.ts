@@ -1,4 +1,5 @@
 // TODO: sort functions
+import BN from 'bignumber.js';
 
 export function removeExtension(value: string): string {
 	return value.replace(/\.[a-z]+$/, '');
@@ -21,4 +22,9 @@ export function removeFromArray(array: any[], value: any) {
 
 export function addToArray(array: any[], item: any) {
 	if (!array.includes(item)) array.push(item);
+}
+
+export function calculateAverage(array: Array<number|string|BN>): BN {
+	const summ: any = array.reduce((acc: BN, val: number|string|BN) => acc.plus(val), new BN(0));
+	return summ.div(array.length);
 }

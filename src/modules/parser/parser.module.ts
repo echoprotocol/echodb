@@ -12,6 +12,7 @@ import RavenHelper from 'helpers/raven.helper';
 import RedisConnection from '../../connections/redis.connection';
 import TransactionRepository from '../../repositories/transaction.repository';
 import AccountService from '../../services/account.service';
+import BlockService from '../../services/block.service';
 import * as INFO from '../../constants/info.constants';
 import * as ECHO from '../../constants/echo.constants';
 import * as REDIS from '../../constants/redis.constants';
@@ -35,6 +36,7 @@ export default class ParserModule extends AbstractModule {
 		readonly blockRepository: BlockRepository,
 		readonly transactionRepository: TransactionRepository,
 		readonly accountService: AccountService,
+		readonly blockService: BlockService,
 		readonly memoryHelper: MemoryHelper,
 		readonly operationManager: OperationManager,
 	) {
@@ -82,7 +84,8 @@ export default class ParserModule extends AbstractModule {
 			}
 
 			await this.accountService.updateAccountsConcentrationRate();
-			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, dBlock);
+			const updatedBlock = await this.blockService.updateBlockAfterParsing(block);
+			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, updatedBlock);
 		} catch (error) {
 			logger.error(`Block ${this.blockEngine.getCurrentBlockNum()}`, error);
 			if (config.parser.exitOnError) process.exit(1);

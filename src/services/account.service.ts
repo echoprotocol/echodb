@@ -94,7 +94,7 @@ export default class AccountService {
 
 		if (!baseAsset) {
 			return;
-		};
+		}
 
 		const allBalanceQuery = {
 			amount: { $ne: '0' },
@@ -114,7 +114,5 @@ export default class AccountService {
 
 		await Promise.all(accounts.map((a) => this.updateAccountConcentrationRate(a, baseAsset, allBalance, createCount)));
 	}
-
-		
 
 }
