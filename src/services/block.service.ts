@@ -4,12 +4,12 @@ import BalanceRepository from '../repositories/balance.repository';
 import AssetRepository from '../repositories/asset.repository';
 import ProcessingError from '../errors/processing.error';
 import { IBlock, BlockWithInjectedVirtualOperations } from '../interfaces/IBlock';
+import { HistoryDelegatePercentOpts } from '../interfaces/IHistoryOptions';
+import { DAY } from '../constants/time.constants';
 import { DECENTRALIZATION_RATE_BLOCK_COUNT } from '../constants/block.constants';
 import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
 import { removeDuplicates, calculateAverage } from '../utils/common';
-import { HistoryDelegatePercentOpts } from 'interfaces/IHistoryOptions';
-import { DAY } from 'constants/time.constants';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
@@ -112,9 +112,9 @@ export default class BlockService {
 		if (!dBlocks[0]) {
 			throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
 		}
-		const decentralizationRatePercent = dBlocks[0].decentralization_rate || 0;
+		const decentralizationRatePercent = dBlocks[0].decentralization_rate;
 
-		const ratesMap: Array<Object> = [];
+		const ratesMap: Object[] = [];
 
 		if (Object.keys(historyOpts).length === 0) {
 			return { decentralizationRatePercent, ratesMap };

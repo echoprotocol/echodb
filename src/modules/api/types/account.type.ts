@@ -15,7 +15,8 @@ export default class Account {
 	@Field() options: AccountOptions;
 	@Field() statistics: string;
 	@Field() top_n_control_flags: number;
-	@Field() concentration_rate?: number;
+	@Field() concentration_balance_rate?: number;
+	@Field() concentration_history_rate?: number;
 
 	@Field(() => [String])
 	whitelisting_accounts: string[];

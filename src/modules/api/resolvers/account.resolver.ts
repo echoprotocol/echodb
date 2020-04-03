@@ -44,8 +44,8 @@ export default class AccountResolver extends AbstractResolver {
 
 	@validateArgs(GetAccountsWithUnrequiredSortsForm)
 	@Query(() => paginatedAccounts)
-	getAccounts(@Args() { count, offset, name, concentrationRateSort }: GetAccountsWithUnrequiredSortsForm) {
-		return this.accountService.getAccounts(count, offset, name, concentrationRateSort);
+	getAccounts(@Args() { count, offset, name, concentrationBalanceRateSort, concentrationHistroyRateSort }: GetAccountsWithUnrequiredSortsForm) {
+		return this.accountService.getAccounts(count, offset, name, concentrationBalanceRateSort, concentrationHistroyRateSort);
 	}
 
 	// FieldResolver
