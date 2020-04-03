@@ -6,7 +6,11 @@ import AccountRepository from '../../../repositories/account.repository';
 import PaginatedResponse from '../types/paginated.response.type';
 import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
-import { GetAccountForm, GetAccountsWithUnrequiredSortsForm, AccountHistoryUpdatedSubscriptionForm } from '../forms/account.forms';
+import {
+	GetAccountForm,
+	GetAccountsWithUnrequiredSortsForm,
+	AccountHistoryUpdatedSubscriptionForm,
+} from '../forms/account.forms';
 import { Resolver, Query, Args, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';

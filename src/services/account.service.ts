@@ -83,7 +83,8 @@ export default class AccountService {
 			return account.save();
 		}
 
-		const accountConcentrationRate = targetBalance.div(allBalance).div(createCount).times(100).integerValue(BN.ROUND_CEIL).toNumber();
+		const accountConcentrationRate = targetBalance.div(allBalance).div(createCount)
+			.times(100).integerValue(BN.ROUND_CEIL).toNumber();
 		account.concentration_rate = accountConcentrationRate;
 
 		return account.save();
@@ -110,9 +111,17 @@ export default class AccountService {
 
 		const allBalance = allBalancesArray.reduce((acc, val) => acc.plus(val.amount), new BN(0));
 
-		const { parameters: { echorand_config: { _creator_count: createCount } } } = await this.echoRepository.getGlobalProperties();
+		const {
+			parameters: {
+				echorand_config: {
+					_creator_count: createCount,
+				},
+			},
+		} = await this.echoRepository.getGlobalProperties();
 
-		await Promise.all(accounts.map((a) => this.updateAccountConcentrationRate(a, baseAsset, allBalance, createCount)));
+		await Promise.all(accounts.map(
+			(a) => this.updateAccountConcentrationRate(a, baseAsset, allBalance, createCount),
+		));
 	}
 
 }
