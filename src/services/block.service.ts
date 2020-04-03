@@ -9,6 +9,7 @@ import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
 import { removeDuplicates, calculateAverage } from '../utils/common';
 import { HistoryDelegatePercentOpts } from 'interfaces/IHistoryOptions';
+import { DAY } from 'constants/time.constants';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
@@ -75,7 +76,7 @@ export default class BlockService {
 	}
 
 	async getAverageBlockTime(block: BlockWithInjectedVirtualOperations) {
-		const dayMs = new BN(24 * 60 * 60 * 1000);
+		const dayMs = new BN(DAY);
 		const currentDate = new Date(block.timestamp).toISOString();
 		const currentDateMs = new BN(Date.parse(currentDate));
 		const yesterdayDate = new Date(currentDateMs.minus(dayMs).toNumber()).toISOString();
