@@ -17,6 +17,7 @@ export const ERROR = {
 	INVALID_HISTORY_PARAMS: 'parameter from or interval was not provided',
 };
 
+
 export default class BlockService {
 
 	constructor(
