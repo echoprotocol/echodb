@@ -15,7 +15,8 @@ import { MongoId } from '../../../types/mongoose';
 import { Payload } from '../../../types/graphql';
 import historyBlockObject from '../types/history.block.type';
 import OperationService from '../../../services/operation.service';
-import delegateRateObject from '../types/delegate.rate.type';
+import DelegateRateObject from '../types/delegate.rate.type';
+import DecentralizationRateObject from '../types/decentralization.rate.type';
 
 const paginatedBlocks = PaginatedResponse(Block);
 
@@ -52,6 +53,29 @@ export default class BlockResolver extends AbstractResolver {
 		return this.blockService.getBlocks(count, offset);
 	}
 
+	@Query(() => DelegateRateObject)
+	@validateArgs(ExtendedHistoryForm)
+	@handleError({
+		[BLOCK_SERVICE_ERROR.INVALID_DATES]: [HTTP.CODE.BAD_REQUEST],
+		[BLOCK_SERVICE_ERROR.INVALID_INTERVAL]: [HTTP.CODE.BAD_REQUEST],
+		[BLOCK_SERVICE_ERROR.INVALID_HISTORY_PARAMS]: [HTTP.CODE.BAD_REQUEST],
+	})
+	getDelegationPercent(@Args() historyOpts?: ExtendedHistoryForm) {
+		return this.blockService.getDelegationRate(historyOpts);
+	}
+
+	// Query
+	@Query(() => DecentralizationRateObject)
+	@validateArgs(ExtendedHistoryForm)
+	@handleError({
+		[BLOCK_SERVICE_ERROR.INVALID_DATES]: [HTTP.CODE.BAD_REQUEST],
+		[BLOCK_SERVICE_ERROR.INVALID_INTERVAL]: [HTTP.CODE.BAD_REQUEST],
+		[BLOCK_SERVICE_ERROR.INVALID_HISTORY_PARAMS]: [HTTP.CODE.BAD_REQUEST],
+	})
+	getDecentralizationRate(@Args() historyOpts?: ExtendedHistoryForm) {
+		return this.blockService.getDecentralizationRate(historyOpts);
+	}
+
 	@FieldResolver()
 	account(@Root('account') id: string) {
 		return this.accountService.getAccount(id);
@@ -83,14 +107,4 @@ export default class BlockResolver extends AbstractResolver {
 		}
 	}
 
-	@Query(() => delegateRateObject)
-	@validateArgs(ExtendedHistoryForm)
-	@handleError({
-		[BLOCK_SERVICE_ERROR.INVALID_DATES]: [HTTP.CODE.BAD_REQUEST],
-		[BLOCK_SERVICE_ERROR.INVALID_INTERVAL]: [HTTP.CODE.BAD_REQUEST],
-		[BLOCK_SERVICE_ERROR.INVALID_HISTORY_PARAMS]: [HTTP.CODE.BAD_REQUEST],
-	})
-	getDelegationPercent(@Args() historyOpts?: ExtendedHistoryForm) {
-		return this.blockService.getDelegationRate(historyOpts);
-	}
 }
