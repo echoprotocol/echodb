@@ -33,8 +33,8 @@ export default class ParserModule extends AbstractModule {
 		readonly assetRepository: AssetRepository,
 		readonly echoRepository: EchoRepository,
 		readonly blockRepository: BlockRepository,
-		readonly transactionRepository: TransactionRepository,
 		readonly blockService: BlockService,
+		readonly transactionRepository: TransactionRepository,
 		readonly memoryHelper: MemoryHelper,
 		readonly operationManager: OperationManager,
 	) {

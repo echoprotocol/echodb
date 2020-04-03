@@ -14,7 +14,8 @@ export interface IBlock {
 	round: number;
 	rand: string;
 	vm_root: string[];
-	decentralization_rate?: number,
+	average_block_time?: number;
+	decentralization_rate?: number;
 	cert: {
 		_rand: string;
 		_block_hash: string;

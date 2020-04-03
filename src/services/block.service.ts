@@ -9,6 +9,7 @@ import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
 import { removeDuplicates, calculateAverage } from '../utils/common';
 import { HistoryDelegatePercentOpts } from 'interfaces/IHistoryOptions';
+import { DAY } from 'constants/time.constants';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
@@ -16,7 +17,6 @@ export const ERROR = {
 	INVALID_INTERVAL: 'The choosen period is smaller then interval',
 	INVALID_HISTORY_PARAMS: 'parameter from or interval was not provided',
 };
-
 
 export default class BlockService {
 
@@ -44,16 +44,18 @@ export default class BlockService {
 	}
 
 	async getDecentralizationRateFromBlock(block: BlockWithInjectedVirtualOperations) {
-		const baseBlockOffset = block.round - DECENTRALIZATION_RATE_BLOCK_COUNT
+		const baseBlockOffset = block.round - DECENTRALIZATION_RATE_BLOCK_COUNT;
 		const blockOffset = baseBlockOffset > 0 ? baseBlockOffset : 0;
-		const decentralizationRateCalculatinBlocks = await this.getBlocks(DECENTRALIZATION_RATE_BLOCK_COUNT, blockOffset);
-		const accountProducerIds = decentralizationRateCalculatinBlocks.items.map(({ account }) => account);
+		const decentralizationRateCalculatinBlocks =
+			await this.getBlocks(DECENTRALIZATION_RATE_BLOCK_COUNT, blockOffset);
+		const accountProducerIds = decentralizationRateCalculatinBlocks.items
+			.map(({ account }) => account);
 		const accountProducersCount = removeDuplicates(accountProducerIds).length;
 		const baseAsset = await this.assetRepository.findById(CORE_ASSET);
 
 		if (!baseAsset) {
 			return 100;
-		};
+		}
 
 		const query = {
 			amount: { $ne: '0' },
@@ -66,22 +68,35 @@ export default class BlockService {
 
 		if (notZeroBalancesCount === 0) {
 			return 100;
-		};
+		}
 
-		const decentralizationRate = new BN(accountProducersCount).div(notZeroBalancesCount).times(100).integerValue(BN.ROUND_CEIL).toNumber()
+		const decentralizationRate = new BN(accountProducersCount).div(notZeroBalancesCount)
+			.times(100).integerValue(BN.ROUND_CEIL).toNumber();
 		return decentralizationRate > 100 ? 100 : decentralizationRate;
+	}
+
+	async getAverageBlockTime(block: BlockWithInjectedVirtualOperations) {
+		const currentDate = new Date(block.timestamp).toISOString();
+		const currentDateMs = new BN(Date.parse(currentDate));
+		const yesterdayDate = new Date(currentDateMs.minus(DAY).toNumber()).toISOString();
+		const blocksPer24Hours = (await this.getBlocksByDate(currentDate, yesterdayDate)).length;
+		const averageBlockTime = blocksPer24Hours !== 0 ? new BN(DAY).div(blocksPer24Hours) : new BN(0);
+		return averageBlockTime.integerValue().toNumber();
 	}
 
 	async updateBlockAfterParsing(block: BlockWithInjectedVirtualOperations) {
 		const dBlock = await this.getBlock(block.round);
-		
+
 		const [
 			decentralizationRate,
+			averageBlockTime,
 		] = await Promise.all([
-			this.getDecentralizationRateFromBlock(block)
+			this.getDecentralizationRateFromBlock(block),
+			this.getAverageBlockTime(block),
 		]);
 
 		dBlock.decentralization_rate = decentralizationRate;
+		dBlock.average_block_time = averageBlockTime;
 
 		await dBlock.save();
 
@@ -99,8 +114,8 @@ export default class BlockService {
 		}
 		const decentralizationRatePercent = dBlocks[0].decentralization_rate || 0;
 
-		const ratesMap: Array<Object> = [];
-		
+		const ratesMap: Object[] = [];
+
 		if (Object.keys(historyOpts).length === 0) {
 			return { decentralizationRatePercent, ratesMap };
 		}
@@ -122,33 +137,34 @@ export default class BlockService {
 			return { decentralizationRatePercent, ratesMap };
 		}
 
-		const newMap: Map<number, Array<IBlock>> = new Map();
+		const newMap: Map<number, IBlock[]> = new Map();
 		const orderedBlocks = blocks
-			.reduce((acc: Map<number, Array<IBlock>>, val: IBlock) => {
+			.reduce((acc: Map<number, IBlock[]>, val: IBlock) => {
 				const timestamp = Date.parse(val.timestamp) / 1000;
 				const segmentNumber = Math.ceil((timestamp - startDate) / interval);
 				return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
 			}, newMap);
 
 		for (const [time, blocks] of orderedBlocks) {
-			const decentralizationRatePeriudArray = blocks.map(({ decentralization_rate }) => decentralization_rate || 0);
+			const decentralizationRatePeriudArray = blocks
+				.map(({ decentralization_rate }) => decentralization_rate || 0);
 			const rate = calculateAverage(decentralizationRatePeriudArray).integerValue(BN.ROUND_CEIL).toNumber();
 			const startIntervalDate = startDate + (interval * (time - 1));
 			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
-			ratesMap.push({ startIntervalDateString, rate })
+			ratesMap.push({ startIntervalDateString, rate });
 		}
 
 		return {
 			decentralizationRatePercent,
 			ratesMap,
-		}
+		};
 	}
 
 	async getBlocksByDate(from: string, to?: string) {
-		return this.blockRepository.find({ timestamp: { $gte: from, $lte : to || new Date().toISOString() } });
+		return this.blockRepository.find({ timestamp: { $gte: from, $lte: new Date(to || Date.now()) } });
 	}
 
-	private calculateDelegationRate(blocks: Array<IBlock>) {
+	private calculateDelegationRate(blocks: IBlock[]) {
 		const blocksCount = blocks.length;
 		const blocksWithDelegateProduser = blocks.filter((b) => b.delegate !== ZERO_ACCOUNT).length;
 		const delegatePercent = (blocksWithDelegateProduser / blocksCount) * 100;
@@ -160,16 +176,16 @@ export default class BlockService {
 			throw new ProcessingError(ERROR.INVALID_HISTORY_PARAMS);
 		}
 		const blocks = await this.blockRepository.find({});
-		const ratesMap: Array<Object> = [];
+		const ratesMap: Object[] = [];
 		if (blocks.length === 0) {
 			return {
-				delegatePercent: 0,
 				ratesMap,
+				delegatePercent: 0,
 			};
 		}
 		const delegatePercent = this.calculateDelegationRate(blocks);
 		if (!historyOpts) {
-			return { delegatePercent }
+			return { delegatePercent };
 		}
 
 		const startDate = Date.parse(historyOpts.from) / 1000;
@@ -181,11 +197,11 @@ export default class BlockService {
 		if (endDate - startDate < interval) {
 			throw new ProcessingError(ERROR.INVALID_INTERVAL);
 		}
-		const newMap: Map<number, Array<IBlock>> = new Map();
+		const newMap: Map<number, IBlock[]> = new Map();
 		const orderedBlocks = blocks.filter((block) => {
-			const blockTimestamp = Date.parse(block.timestamp) / 1000
+			const blockTimestamp = Date.parse(block.timestamp) / 1000;
 			return (blockTimestamp >= startDate) && (blockTimestamp <= endDate);
-		}).reduce((acc: Map<number, Array<IBlock>>, val: IBlock) => {
+		}).reduce((acc: Map<number, IBlock[]>, val: IBlock) => {
 			const timestamp = Date.parse(val.timestamp) / 1000;
 			const segmentNumber = Math.ceil((timestamp - startDate) / interval);
 			return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
@@ -195,11 +211,11 @@ export default class BlockService {
 			const rate = this.calculateDelegationRate(blocks);
 			const startIntervalDate = startDate + (interval * (time - 1));
 			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
-			ratesMap.push({ startIntervalDateString, rate })
+			ratesMap.push({ startIntervalDateString, rate });
 		}
 		return {
 			delegatePercent,
-			ratesMap
+			ratesMap,
 		};
 	}
 }
