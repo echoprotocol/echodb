@@ -9,7 +9,7 @@ import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
 import { removeDuplicates, calculateAverage } from '../utils/common';
 import { HistoryDelegatePercentOpts } from 'interfaces/IHistoryOptions';
-import { DAY } from 'constants/time.constants';
+import { DAY } from '../constants/time.constants';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',

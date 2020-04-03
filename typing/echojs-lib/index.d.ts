@@ -164,6 +164,16 @@ declare module 'echojs-lib' {
 		last_rand_quantity: number;
 	}
 
+	export interface GlobalProperties {
+		id: string,
+		parameters: {
+			echorand_config: {
+				_creator_count: number
+			}
+		},
+		active_committee_members: Array<Array<string>>,
+	}
+
 	export interface ContractResult {
 		exec_res: {
 			excepted: 'None' | unknown;
@@ -206,6 +216,7 @@ declare module 'echojs-lib' {
 		getBlock(blockNum: number, force: boolean = false): Promise<Block>;
 		getAssets(assets: string[]): Promise<Asset[]>;
 		getDynamicGlobalProperties(): Promise<DynamicGlobalProperties>;
+		getGlobalProperties(): Promise<GlobalProperties>;
 		getAccounts(ids: string[]): Promise<Account[]>;
 		getAccountCount(): Promise<number>;
 		getContractResult(resultId: string): Promise<[number, ContractResult]>;
