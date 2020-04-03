@@ -42,19 +42,6 @@ export default class BlockService {
 		return { total, items };
 	}
 
-	async createModifiedBlock(block: BlockWithInjectedVirtualOperations) {
-		const dayMs = 24 * 60 * 60 * 1000;
-		const currentDate = new Date(block.timestamp).toISOString();
-		const yesterdayDate = new Date(Date.parse(currentDate) - dayMs).toISOString();
-		const blocksPer24Hours = (await this.getBlocksByDate(currentDate, yesterdayDate)).length;
-		const averageBlockTime = blocksPer24Hours !== 0 ? dayMs / blocksPer24Hours : 0;
-
-		return this.blockRepository.create({
-			...block,
-			average_block_time: averageBlockTime,
-		});
-	}
-
 	async getDecentralizationRateFromBlock(block: BlockWithInjectedVirtualOperations) {
 		const baseBlockOffset = block.round - DECENTRALIZATION_RATE_BLOCK_COUNT;
 		const blockOffset = baseBlockOffset > 0 ? baseBlockOffset : 0;
@@ -87,16 +74,28 @@ export default class BlockService {
 		return decentralizationRate > 100 ? 100 : decentralizationRate;
 	}
 
+	async getAverageBlockTime(block: BlockWithInjectedVirtualOperations) {
+		const dayMs = 24 * 60 * 60 * 1000;
+		const currentDate = new Date(block.timestamp).toISOString();
+		const yesterdayDate = new Date(Date.parse(currentDate) - dayMs).toISOString();
+		const blocksPer24Hours = (await this.getBlocksByDate(currentDate, yesterdayDate)).length;
+		const averageBlockTime = blocksPer24Hours !== 0 ? dayMs / blocksPer24Hours : 0;
+		return averageBlockTime;
+	}
+
 	async updateBlockAfterParsing(block: BlockWithInjectedVirtualOperations) {
 		const dBlock = await this.getBlock(block.round);
 
 		const [
 			decentralizationRate,
+			averageBlockTime,
 		] = await Promise.all([
 			this.getDecentralizationRateFromBlock(block),
+			this.getAverageBlockTime(block),
 		]);
 
 		dBlock.decentralization_rate = decentralizationRate;
+		dBlock.average_block_time = averageBlockTime;
 
 		await dBlock.save();
 
@@ -161,7 +160,7 @@ export default class BlockService {
 	}
 
 	async getBlocksByDate(from: string, to?: string) {
-		return this.blockRepository.find({ timestamp: { $gte: from, $lte : to || new Date().toISOString() } });
+		return this.blockRepository.find({ timestamp: { $gte: from, $lte: new Date(to || Date.now()) } });
 	}
 
 	private calculateDelegationRate(blocks: IBlock[]) {
