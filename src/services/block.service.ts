@@ -75,12 +75,13 @@ export default class BlockService {
 	}
 
 	async getAverageBlockTime(block: BlockWithInjectedVirtualOperations) {
-		const dayMs = 24 * 60 * 60 * 1000;
+		const dayMs = new BN(24 * 60 * 60 * 1000);
 		const currentDate = new Date(block.timestamp).toISOString();
-		const yesterdayDate = new Date(Date.parse(currentDate) - dayMs).toISOString();
+		const currentDateMs = new BN(Date.parse(currentDate));
+		const yesterdayDate = new Date(currentDateMs.minus(dayMs).toNumber()).toISOString();
 		const blocksPer24Hours = (await this.getBlocksByDate(currentDate, yesterdayDate)).length;
-		const averageBlockTime = blocksPer24Hours !== 0 ? dayMs / blocksPer24Hours : 0;
-		return averageBlockTime;
+		const averageBlockTime = blocksPer24Hours !== 0 ? dayMs.div(blocksPer24Hours) : new BN(0);
+		return averageBlockTime.integerValue().toNumber();
 	}
 
 	async updateBlockAfterParsing(block: BlockWithInjectedVirtualOperations) {
