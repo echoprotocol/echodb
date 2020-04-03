@@ -47,7 +47,13 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 			}).then((contractToCreate) => this.contractRepository.create(contractToCreate)),
 			this.accountRepository.findById(token.owner),
 		]);
-		await this.erc20TokenRepository.create({ ...token, owner: ownerDocument, contract: contractDocument });
+		await this.erc20TokenRepository.create({
+			...token,
+			owner: ownerDocument,
+			contract: contractDocument,
+			holders_amount: 0,
+			transactions_amount: 0,
+		});
 		return this.validateRelation({ from: [body.account], assets: [body.fee.asset_id] });
 	}
 }

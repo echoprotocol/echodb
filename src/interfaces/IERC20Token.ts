@@ -8,4 +8,6 @@ export default interface IERC20Token {
 	name: string;
 	symbol: string;
 	decimals: number;
+	holders_amount: number;
+	transactions_amount: number;
 }

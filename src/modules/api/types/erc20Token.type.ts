@@ -11,4 +11,6 @@ export default class ERC20TokenType {
 	@Field() name: string;
 	@Field() symbol: string;
 	@Field() decimals: number;
+	@Field() holders_amount: number;
+	@Field() transactions_amount: number;
 }
