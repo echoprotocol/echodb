@@ -7,6 +7,8 @@ import ProcessingError from '../errors/processing.error';
 import { escapeRegExp } from '../utils/format';
 import { CORE_ASSET } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
+import { SORT_DESTINATION } from '../constants/api.constants';
+
 import { removeDuplicates } from '../utils/common';
 
 export const ERROR = {
@@ -14,6 +16,7 @@ export const ERROR = {
 };
 
 type GetAccountsQuery = { name?: RegExp };
+type OptionsAccountsQuery = { limit?: number, skip?: number, sort?: Object };
 
 export default class AccountService {
 
@@ -32,16 +35,21 @@ export default class AccountService {
 		return dAccount;
 	}
 
-	async getAccounts(count: number, offset: number, name?: string) {
+	async getAccounts(count: number, offset: number, name?: string, concentrationRateSort?: SORT_DESTINATION) {
 		const query: GetAccountsQuery = {};
 		if (name) {
 			query.name = new RegExp(escapeRegExp(name), 'i');
+		}
+		const options: OptionsAccountsQuery = { limit: count, skip: offset };
+
+		if (concentrationRateSort) {
+			options.sort = { concentration_rate: concentrationRateSort };
 		}
 		const [items, total] = await Promise.all([
 			this.accountRepository.find(
 				query,
 				null,
-				{ limit: count, skip: offset },
+				options,
 			),
 			this.accountRepository.count(query),
 		]);
@@ -52,12 +60,11 @@ export default class AccountService {
 		const delegateAccountQuery = {
 			'options.delegating_account': account.id,
 		};
-		console.log('account', account.id);
+
 		const delegateAccountArray = await this.accountRepository.find(delegateAccountQuery);
 
 		const delegateAccountArrayId = delegateAccountArray.map(({ _id }) => _id);
 		const uniqueAccountArrayId = removeDuplicates([...delegateAccountArrayId, account._id]);
-		console.log('uniqueAccountArrayId', uniqueAccountArrayId);
 		const targetBalanceQuery = {
 			amount: { $ne: '0' },
 			_account: { $in: uniqueAccountArrayId },
@@ -69,16 +76,22 @@ export default class AccountService {
 		const targetBalancesArray = await this.balanceRepository.find(targetBalanceQuery);
 
 		const targetBalance = targetBalancesArray.reduce((acc, val) => acc.plus(val.amount), new BN(0));
-		console.log('targetBalance', targetBalance)
-		const accountConcentrationRate = targetBalance.div(allBalance).div(createCount).integerValue(BN.ROUND_CEIL).toNumber();
-		console.log('accountConcentrationRate')
+
+		account.concentration_rate = 0;
+
+		if (targetBalance.eq(0)) {
+			return account.save();
+		}
+
+		const accountConcentrationRate = targetBalance.div(allBalance).div(createCount).times(100).integerValue(BN.ROUND_CEIL).toNumber();
 		account.concentration_rate = accountConcentrationRate;
+
 		return account.save();
 	}
 
 	async updateAccountsConcentrationRate(): Promise<void> {
 		const baseAsset = await this.assetRepository.findById(CORE_ASSET);
-		console.log('baseAsset', baseAsset);
+
 		if (!baseAsset) {
 			return;
 		};
@@ -92,13 +105,13 @@ export default class AccountService {
 		};
 
 		const accounts = await this.accountRepository.find({});
-		// console.log('accounts', accounts);
+
 		const allBalancesArray = await this.balanceRepository.find(allBalanceQuery);
 
 		const allBalance = allBalancesArray.reduce((acc, val) => acc.plus(val.amount), new BN(0));
-		console.log('allBalance', allBalance);
+
 		const { parameters: { echorand_config: { _creator_count: createCount } } } = await this.echoRepository.getGlobalProperties();
-		console.log('createCount', createCount);
+
 		await Promise.all(accounts.map((a) => this.updateAccountConcentrationRate(a, baseAsset, allBalance, createCount)));
 	}
 
