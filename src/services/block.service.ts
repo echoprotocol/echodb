@@ -8,7 +8,7 @@ import { DECENTRALIZATION_RATE_BLOCK_COUNT } from '../constants/block.constants'
 import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
 import { removeDuplicates, calculateAverage } from '../utils/common';
-import { HistoryDelegatePercentOpts } from 'interfaces/IHistoryOptions';
+import { HistoryOptionsWithInterval, HistoryOptions } from 'interfaces/IHistoryOptions';
 import { DAY } from '../constants/time.constants';
 
 export const ERROR = {
@@ -41,6 +41,13 @@ export default class BlockService {
 			this.blockRepository.count({}),
 		]);
 		return { total, items };
+	}
+
+	async getBlocksCount(historyOpts: HistoryOptions) {
+		const from = new Date(historyOpts.from).toISOString();
+		const to = historyOpts.to ? new Date(historyOpts.to) : new Date();
+		const blocksCount = await this.blockRepository.count({ timestamp: { $gte: from, $lte: to } });
+		return blocksCount;
 	}
 
 	async getDecentralizationRateFromBlock(block: BlockWithInjectedVirtualOperations) {
@@ -103,7 +110,7 @@ export default class BlockService {
 		return dBlock;
 	}
 
-	async getDecentralizationRate(historyOpts?: HistoryDelegatePercentOpts) {
+	async getDecentralizationRate(historyOpts?: HistoryOptionsWithInterval) {
 		if (Object.keys(historyOpts).length !== 0 && (!historyOpts.from || !historyOpts.interval)) {
 			throw new ProcessingError(ERROR.INVALID_HISTORY_PARAMS);
 		}
@@ -171,7 +178,7 @@ export default class BlockService {
 		return delegatePercent;
 	}
 
-	async getDelegationRate(historyOpts?: HistoryDelegatePercentOpts) {
+	async getDelegationRate(historyOpts?: HistoryOptionsWithInterval) {
 		if (historyOpts && (!historyOpts.from || !historyOpts.interval)) {
 			throw new ProcessingError(ERROR.INVALID_HISTORY_PARAMS);
 		}

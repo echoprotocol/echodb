@@ -2,6 +2,7 @@ import OperationRepository from '../repositories/operation.repository';
 import * as ECHO from '../constants/echo.constants';
 import * as API from '../constants/api.constants';
 import { AccountId, ContractId, AssetId } from 'types/echo';
+import { HistoryOptions } from '../interfaces/IHistoryOptions';
 
 export enum KEY {
 	FROM = 'from',
@@ -71,6 +72,13 @@ export default class OperationService {
 			this.operationRepository.count(query),
 		]);
 		return { total, items };
+	}
+
+	async getOpsCount(historyOpts: HistoryOptions) {
+		const from = new Date(historyOpts.from);
+		const to = historyOpts.to ? new Date(historyOpts.to) : new Date();
+		const operationsCount = await this.operationRepository.count({ timestamp: { $gte: from, $lte: to } });
+		return operationsCount;
 	}
 
 }
