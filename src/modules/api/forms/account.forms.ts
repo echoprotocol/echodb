@@ -31,8 +31,18 @@ export class GetAccountsForm extends PaginationForm {
 @ArgsType()
 export class GetAccountsWithUnrequiredSortsForm extends GetAccountsForm {
 	@rule(Joi.string().valid(API.SORT_DESTINATION.ASC, API.SORT_DESTINATION.DESC))
-	@Field(() => API.SORT_DESTINATION, { nullable: true })
-	concentrationRateSort: API.SORT_DESTINATION;
+	@Field(() => API.SORT_DESTINATION, {
+		nullable: true,
+		description: 'balance concentration rate sort has high priority between sorts',
+	})
+	concentrationBalanceRateSort: API.SORT_DESTINATION;
+
+	@rule(Joi.string().valid(API.SORT_DESTINATION.ASC, API.SORT_DESTINATION.DESC))
+	@Field(() => API.SORT_DESTINATION, {
+		nullable: true,
+		description: 'history concentration rate sort has low priority between sorts',
+	})
+	concentrationHistroyRateSort: API.SORT_DESTINATION;
 }
 
 @ArgsType()

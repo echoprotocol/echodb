@@ -34,7 +34,8 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 				owner_special_authority: body.owner_special_authority,
 				active_special_authority: body.owner_special_authority,
 				top_n_control_flags: 0,
-				concentration_rate: 0,
+				concentration_balance_rate: 0,
+				concentration_history_rate: 0,
 				addresses: [],
 			});
 		this.redisConnection.emit(REDIS.EVENT.NEW_ACCOUNT, dAccount);
