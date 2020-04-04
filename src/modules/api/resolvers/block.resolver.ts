@@ -13,7 +13,7 @@ import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
 import { Payload } from '../../../types/graphql';
-import historyBlockObject from '../types/history.block.type';
+import HistoryBlockObject from '../types/history.block.type';
 import OperationService from '../../../services/operation.service';
 import DelegateRateObject from '../types/delegate.rate.type';
 import DecentralizationRateObject from '../types/decentralization.rate.type';
@@ -25,7 +25,7 @@ export default class BlockResolver extends AbstractResolver {
 	@inject static accountService: AccountService;
 	@inject static blockService: BlockService;
 	@inject static transactionRepository: TransactionRepository;
-	@inject static operationService: OperationService
+	@inject static operationService: OperationService;
 
 	constructor(
 		private accountService: AccountService,
@@ -98,13 +98,13 @@ export default class BlockResolver extends AbstractResolver {
 		return block;
 	}
 
-	@Query(() => historyBlockObject)
+	@Query(() => HistoryBlockObject)
 	@validateArgs(HistoryForm)
 	getBlocksAndOperationsCount(@Args() options: HistoryForm) {
 		return {
 			blocksCount: this.blockService.getBlocksCount(options),
 			operationsCount: this.operationService.getOpsCount(options),
-		}
+		};
 	}
 
 }
