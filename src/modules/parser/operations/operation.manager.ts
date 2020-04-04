@@ -53,12 +53,11 @@ import { IOperation, IOperationRelation } from 'interfaces/IOperation';
 import { ITransactionExtended } from '../../../interfaces/ITransaction';
 import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
-import { dateFromUtcIso } from '../../../utils/format';
+import { dateFromUtcIso, ethAddrToEchoId } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
 import BlockRewardOperation from './block.reward.operation';
 import ContractInternalCreateOperaiton from './contract.internal.create.operation';
 import ContractInternalCallOperation from './contract.internal.call.operation';
-import { ethAddrToEchoId } from '../../../utils/format';
 import ContractRepository from '../../../repositories/contract.repository';
 import EchoRepository from '../../../repositories/echo.repository';
 import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
@@ -247,7 +246,7 @@ export default class OperationManager {
 			ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE,
 			ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL,
 			ECHO.OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN,
-		]
+		];
 		if (!operationsPotentionalTransferTokens.some((opId) => id === opId)) {
 			return;
 		}
@@ -256,7 +255,7 @@ export default class OperationManager {
 		switch (id) {
 			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN:
 				const tokenContractAddress = (await this.erc20TokenRepository.findOne({ id: <string>result })).contract;
-				contract = await this.contractRepository.findByMongoId(tokenContractAddress)
+				contract = await this.contractRepository.findByMongoId(tokenContractAddress);
 				break;
 			case ECHO.OPERATION_ID.CONTRACT_CREATE:
 			case ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE:
@@ -285,7 +284,7 @@ export default class OperationManager {
 			_asset: contract._id,
 		};
 		const holdersAmount = await this.balanceService.balanceRepository.count(allBalanceQuery);
-		if (id === ECHO.OPERATION_ID.CONTRACT_CALL && id ===ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL) {
+		if (id === ECHO.OPERATION_ID.CONTRACT_CALL && id === ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL) {
 			contract.token_info.transactions_amount += 1;
 		}
 		contract.token_info.holders_amount = holdersAmount;
