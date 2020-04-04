@@ -3,13 +3,18 @@ import BlockRepository from '../repositories/block.repository';
 import BalanceRepository from '../repositories/balance.repository';
 import AssetRepository from '../repositories/asset.repository';
 import ProcessingError from '../errors/processing.error';
-import { IBlock, BlockWithInjectedVirtualOperations } from '../interfaces/IBlock';
+import {
+	IBlock,
+	BlockWithInjectedVirtualOperations,
+	OperationWithInjectedVirtualOperaitons,
+} from '../interfaces/IBlock';
 import { DAY } from '../constants/time.constants';
 import { DECENTRALIZATION_RATE_BLOCK_COUNT } from '../constants/block.constants';
 import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
 import { removeDuplicates, calculateAverage } from '../utils/common';
 import { HistoryOptionsWithInterval, HistoryOptions } from 'interfaces/IHistoryOptions';
+import { constants, validators } from 'echojs-lib';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
@@ -41,6 +46,44 @@ export default class BlockService {
 			this.blockRepository.count({}),
 		]);
 		return { total, items };
+	}
+
+	private parseHistoryOptions(historyOpts: HistoryOptionsWithInterval) {
+		if (!historyOpts.from || !historyOpts.interval) {
+			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
+		}
+		const startDate = Date.parse(historyOpts.from) / 1000;
+		const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
+		const interval = historyOpts.interval;
+		if (endDate <= startDate) {
+			throw new Error(ERROR.INVALID_DATES);
+		}
+		if (endDate - startDate < interval) {
+			throw new Error(ERROR.INVALID_INTERVAL);
+		}
+
+		return { startDate, endDate, interval };
+	}
+
+	private divideBlocksByDate(blocks: IBlock[], startDate: number, interval: number): Map<number, IBlock[]> {
+		const blocksMap: Map<number, IBlock[]> = new Map();
+		return blocks.reduce((acc: Map<number, IBlock[]>, val: IBlock) => {
+			const timestamp = Date.parse(val.timestamp) / 1000;
+			const segmentNumber = Math.ceil((timestamp - startDate) / interval);
+			return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
+		}, blocksMap);
+	}
+
+	private getFreezeOperations(block: BlockWithInjectedVirtualOperations) {
+		const freezeVirtualOps = block.unlinked_virtual_operations
+			.filter((vOp) => vOp.op[1] === constants.OPERATIONS_IDS.BALANCE_FREEZE)
+			.map((vOp) => vOp.op);
+		const freezeOps: OperationWithInjectedVirtualOperaitons[] = block.transactions
+			.reduce((ops, trx) =>
+				[...ops, ...trx.operations.filter((op) => op[0] === constants.OPERATIONS_IDS.BALANCE_FREEZE)],
+			[]);
+		const totalFreezeOps = [...freezeVirtualOps, ...freezeOps];
+		return { totalFreezeOps };
 	}
 
 	async getBlocksCount(historyOpts: HistoryOptions) {
@@ -91,19 +134,41 @@ export default class BlockService {
 		return averageBlockTime.integerValue().toNumber();
 	}
 
+	async getFrozenAmounts(block: BlockWithInjectedVirtualOperations) {
+		const { totalFreezeOps } = this.getFreezeOperations(block);
+		const accountsFreezeSum: BN = totalFreezeOps.reduce((sum, op) =>
+			validators.isAccountId(op[1].account) ?
+				sum.plus(op[1].amount.amount) :
+				sum
+			, new BN(0));
+		const committeeFreezeSum: BN = totalFreezeOps.reduce((sum, op) =>
+			validators.isCommitteeMemberId(op[1].account) ?
+				sum.plus(op[1].amount.amount) :
+				sum
+			, new BN(0));
+
+		return {
+			accounts_freeze_sum: accountsFreezeSum.toNumber(),
+			committee_freeze_sum: committeeFreezeSum.toNumber(),
+		};
+	}
+
 	async updateBlockAfterParsing(block: BlockWithInjectedVirtualOperations) {
 		const dBlock = await this.getBlock(block.round);
 
 		const [
 			decentralizationRate,
 			averageBlockTime,
+			freezeAmounts,
 		] = await Promise.all([
 			this.getDecentralizationRateFromBlock(block),
 			this.getAverageBlockTime(block),
+			this.getFrozenAmounts(block),
 		]);
 
 		dBlock.decentralization_rate = decentralizationRate;
 		dBlock.average_block_time = averageBlockTime;
+		dBlock.frozen_balances_data = freezeAmounts;
 
 		await dBlock.save();
 
@@ -111,9 +176,6 @@ export default class BlockService {
 	}
 
 	async getDecentralizationRate(historyOpts?: HistoryOptionsWithInterval) {
-		if (Object.keys(historyOpts).length !== 0 && (!historyOpts.from || !historyOpts.interval)) {
-			throw new ProcessingError(ERROR.INVALID_HISTORY_PARAMS);
-		}
 
 		const dBlocks = await this.blockRepository.find({}, {}, { sort: { round: -1 }, limit: 1 });
 		if (!dBlocks[0]) {
@@ -127,30 +189,17 @@ export default class BlockService {
 			return { decentralizationRatePercent, ratesMap };
 		}
 
-		const startDate = Date.parse(historyOpts.from) / 1000;
-		const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
-		const interval = historyOpts.interval;
+		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
+		const startDateInISO = new Date(startDate * 1000).toISOString();
+		const endDateInISO = new Date(endDate * 1000).toISOString();
 
-		if (endDate <= startDate) {
-			throw new ProcessingError(ERROR.INVALID_DATES);
-		}
-		if (endDate - startDate < interval) {
-			throw new ProcessingError(ERROR.INVALID_INTERVAL);
-		}
-
-		const blocks = await this.getBlocksByDate(historyOpts.from, historyOpts.to);
+		const blocks = await this.getBlocksByDate(startDateInISO, endDateInISO);
 
 		if (blocks.length === 0) {
 			return { decentralizationRatePercent, ratesMap };
 		}
 
-		const newMap: Map<number, IBlock[]> = new Map();
-		const orderedBlocks = blocks
-			.reduce((acc: Map<number, IBlock[]>, val: IBlock) => {
-				const timestamp = Date.parse(val.timestamp) / 1000;
-				const segmentNumber = Math.ceil((timestamp - startDate) / interval);
-				return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
-			}, newMap);
+		const orderedBlocks = this.divideBlocksByDate(blocks, startDate, interval);
 
 		for (const [time, blocks] of orderedBlocks) {
 			const decentralizationRatePeriudArray = blocks
@@ -179,9 +228,6 @@ export default class BlockService {
 	}
 
 	async getDelegationRate(historyOpts?: HistoryOptionsWithInterval) {
-		if (historyOpts && (!historyOpts.from || !historyOpts.interval)) {
-			throw new ProcessingError(ERROR.INVALID_HISTORY_PARAMS);
-		}
 		const blocks = await this.blockRepository.find({});
 		const ratesMap: Object[] = [];
 		if (blocks.length === 0) {
@@ -191,28 +237,19 @@ export default class BlockService {
 			};
 		}
 		const delegatePercent = this.calculateDelegationRate(blocks);
-		if (!historyOpts) {
-			return { delegatePercent };
+		if (Object.keys(historyOpts).length === 0) {
+			return {
+				ratesMap,
+				delegatePercent,
+			};
 		}
 
-		const startDate = Date.parse(historyOpts.from) / 1000;
-		const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
-		const interval = historyOpts.interval;
-		if (endDate <= startDate) {
-			throw new ProcessingError(ERROR.INVALID_DATES);
-		}
-		if (endDate - startDate < interval) {
-			throw new ProcessingError(ERROR.INVALID_INTERVAL);
-		}
-		const newMap: Map<number, IBlock[]> = new Map();
-		const orderedBlocks = blocks.filter((block) => {
+		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
+		const filteredBlocks = blocks.filter((block) => {
 			const blockTimestamp = Date.parse(block.timestamp) / 1000;
 			return (blockTimestamp >= startDate) && (blockTimestamp <= endDate);
-		}).reduce((acc: Map<number, IBlock[]>, val: IBlock) => {
-			const timestamp = Date.parse(val.timestamp) / 1000;
-			const segmentNumber = Math.ceil((timestamp - startDate) / interval);
-			return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
-		}, newMap);
+		});
+		const orderedBlocks = this.divideBlocksByDate(filteredBlocks, startDate, interval);
 
 		for (const [time, blocks] of orderedBlocks) {
 			const rate = this.calculateDelegationRate(blocks);
@@ -224,5 +261,35 @@ export default class BlockService {
 			delegatePercent,
 			ratesMap,
 		};
+	}
+
+	async getFrozenData(historyOpts?: HistoryOptionsWithInterval) {
+		if (!historyOpts) {
+			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
+		}
+		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
+		const startDateInISO = new Date(startDate * 1000).toISOString();
+		const endDateInISO = new Date(endDate * 1000).toISOString();
+		const blocks = await this.getBlocksByDate(startDateInISO, endDateInISO);
+
+		const orderedBlocks = this.divideBlocksByDate(blocks, startDate, interval);
+
+		const frozenData: Object[] = [];
+		for (const [segment, blocksSegment] of orderedBlocks) {
+			const frozenSums = {
+				accounts_freeze_sum: 0,
+				committee_freeze_sum: 0,
+			};
+			for (let i = 0; i < blocksSegment.length; i += 1) {
+				if (blocksSegment[i].frozen_balances_data) {
+					frozenSums.accounts_freeze_sum += blocksSegment[i].frozen_balances_data.accounts_freeze_sum;
+					frozenSums.committee_freeze_sum += blocksSegment[i].frozen_balances_data.committee_freeze_sum;
+				}
+			}
+			const startIntervalDate = startDate + (interval * (segment - 1));
+			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
+			frozenData.push({ startIntervalDateString, frozenSums });
+		}
+		return { frozenData };
 	}
 }

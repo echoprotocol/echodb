@@ -13,6 +13,7 @@ import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
 import { Payload } from '../../../types/graphql';
+import FrozenBalancesData from '../types/frozen.data.type';
 import HistoryBlockObject from '../types/history.block.type';
 import OperationService from '../../../services/operation.service';
 import DelegateRateObject from '../types/delegate.rate.type';
@@ -107,4 +108,12 @@ export default class BlockResolver extends AbstractResolver {
 		};
 	}
 
+	@Query(() => FrozenBalancesData)
+	@validateArgs(ExtendedHistoryForm)
+	@handleError({
+		[BLOCK_SERVICE_ERROR.INVALID_HISTORY_PARAMS]: [HTTP.CODE.BAD_REQUEST],
+	})
+	getFrozenBalancesData(@Args() historyOpts?: ExtendedHistoryForm) {
+		return this.blockService.getFrozenData(historyOpts);
+	}
 }
