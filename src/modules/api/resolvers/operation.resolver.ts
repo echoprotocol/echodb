@@ -12,7 +12,7 @@ import { Payload } from '../../../types/graphql';
 import Block from '../types/block.type';
 import BlockRepository from '../../../repositories/block.repository';
 
-const paginatedBlocks = PaginatedResponse(Operation);
+const paginatedOperations = PaginatedResponse(Operation);
 
 // TODO: register all enums in one file
 
@@ -36,7 +36,7 @@ export default class OperationResolver extends AbstractResolver {
 	}
 
 	// Query
-	@Query(() => paginatedBlocks)
+	@Query(() => paginatedOperations)
 	@validateArgs(GetOperationsHistoryForm)
 	getHistory(
 		@Args() {
