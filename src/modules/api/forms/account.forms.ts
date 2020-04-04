@@ -1,6 +1,7 @@
 import AbstractForm, { rule } from './abstract.form';
 import PaginationForm from './pagination.form';
 import AccountId from '../types/account.id.type';
+import * as API from '../../../constants/api.constants';
 import * as Joi from 'joi';
 import { ArgsType, Field } from 'type-graphql';
 
@@ -25,6 +26,23 @@ export class GetAccountsForm extends PaginationForm {
 	@rule(Joi.string().max(100))
 	@Field(() => String, { nullable: true })
 	name: string;
+}
+
+@ArgsType()
+export class GetAccountsWithUnrequiredSortsForm extends GetAccountsForm {
+	@rule(Joi.string().valid(API.SORT_DESTINATION.ASC, API.SORT_DESTINATION.DESC))
+	@Field(() => API.SORT_DESTINATION, {
+		nullable: true,
+		description: 'balance concentration rate sort has high priority between sorts',
+	})
+	concentrationBalanceRateSort: API.SORT_DESTINATION;
+
+	@rule(Joi.string().valid(API.SORT_DESTINATION.ASC, API.SORT_DESTINATION.DESC))
+	@Field(() => API.SORT_DESTINATION, {
+		nullable: true,
+		description: 'history concentration rate sort has low priority between sorts',
+	})
+	concentrationHistroyRateSort: API.SORT_DESTINATION;
 }
 
 @ArgsType()

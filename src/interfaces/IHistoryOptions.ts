@@ -1,5 +1,7 @@
-export interface HistoryDelegatePercentOpts {
-  from?: string;
-  to?: string;
-  interval?: number;
+export interface HistoryOptions {
+	from?: string;
+	to?: string;
+}
+export interface HistoryOptionsWithInterval extends HistoryOptions{
+	interval?: number;
 }

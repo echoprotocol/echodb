@@ -251,4 +251,12 @@ export default class EchoRepository {
 		}
 	}
 
+	async getGlobalProperties(): Promise<any> {
+		try {
+			return await this.echoConnection.echo.api.getGlobalProperties();
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getGlobalProperties');
+		}
+	}
+
 }

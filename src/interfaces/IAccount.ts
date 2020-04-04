@@ -26,4 +26,6 @@ export interface IAccount {
 	active_special_authority: [number, {}];
 	top_n_control_flags: number;
 	addresses: string[];
+	concentration_balance_rate?: number;
+	concentration_history_rate?: number;
 }

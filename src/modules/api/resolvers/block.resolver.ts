@@ -7,12 +7,15 @@ import TransactionRepository from '../../../repositories/transaction.repository'
 import Transaction from '../types/transaction.type';
 import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
-import { GetBlockForm, GetBlocksForm, ExtendedHistoryForm } from '../forms/block.forms';
+import { GetBlockForm, GetBlocksForm, HistoryForm, ExtendedHistoryForm } from '../forms/block.forms';
 import { Resolver, Query, Args, FieldResolver, Root, Subscription } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
 import { Payload } from '../../../types/graphql';
+import FrozenBalancesData from '../types/frozen.data.type';
+import HistoryBlockObject from '../types/history.block.type';
+import OperationService from '../../../services/operation.service';
 import DelegateRateObject from '../types/delegate.rate.type';
 import DecentralizationRateObject from '../types/decentralization.rate.type';
 
@@ -23,11 +26,13 @@ export default class BlockResolver extends AbstractResolver {
 	@inject static accountService: AccountService;
 	@inject static blockService: BlockService;
 	@inject static transactionRepository: TransactionRepository;
+	@inject static operationService: OperationService;
 
 	constructor(
 		private accountService: AccountService,
 		private blockService: BlockService,
 		private transactionRepository: TransactionRepository,
+		private operationService: OperationService,
 	) {
 		super();
 	}
@@ -92,5 +97,23 @@ export default class BlockResolver extends AbstractResolver {
 		@Root() block: Payload<REDIS.EVENT.NEW_BLOCK>,
 	) {
 		return block;
+	}
+
+	@Query(() => HistoryBlockObject)
+	@validateArgs(HistoryForm)
+	getBlocksAndOperationsCount(@Args() options: HistoryForm) {
+		return {
+			blocksCount: this.blockService.getBlocksCount(options),
+			operationsCount: this.operationService.getOpsCount(options),
+		};
+	}
+
+	@Query(() => FrozenBalancesData)
+	@validateArgs(ExtendedHistoryForm)
+	@handleError({
+		[BLOCK_SERVICE_ERROR.INVALID_HISTORY_PARAMS]: [HTTP.CODE.BAD_REQUEST],
+	})
+	getFrozenBalancesData(@Args() historyOpts?: ExtendedHistoryForm) {
+		return this.blockService.getFrozenData(historyOpts);
 	}
 }

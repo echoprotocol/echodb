@@ -5,6 +5,12 @@ import Transaction from './transaction.type';
 import { MongoId } from '../../../types/mongoose';
 
 @ObjectType()
+export class BlockFrozenData {
+	@Field() accounts_freeze_sum: number;
+	@Field() committee_freeze_sum: number;
+}
+
+@ObjectType()
 export default class Block {
 	_id: MongoId;
 	@Field() previous: string;
@@ -20,7 +26,9 @@ export default class Block {
 	// FIXME: unknown type
 	// @Field() verifications: unknown[];
 	@Field() round: number;
+	@Field(() => Number, { description: 'Returns value in ms' }) average_block_time: number;
 	@Field() rand: string;
+	@Field() frozen_balances_data: BlockFrozenData;
 	@Field() cert: BlockCert;
 	@Field() decentralization_rate: number;
 
