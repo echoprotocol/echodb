@@ -48,6 +48,7 @@ import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import * as OPERATION from '../../../constants/operation.constants';
+import { TYPE } from '../../../constants/contract.constants';
 import { IOperation, IOperationRelation } from 'interfaces/IOperation';
 import { ITransactionExtended } from '../../../interfaces/ITransaction';
 import { TDoc } from '../../../types/mongoose';
@@ -240,12 +241,23 @@ export default class OperationManager {
 		body: ECHO.OPERATION_PROPS<T>,
 		result: ECHO.OPERATION_RESULT<T>,
 	): Promise<void> {
-		if (id !== ECHO.OPERATION_ID.CONTRACT_CREATE && id !== ECHO.OPERATION_ID.CONTRACT_CALL
-			&& id !== ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE && id !== ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL) {
+		const operationsPotentionalTransferTokens = [
+			ECHO.OPERATION_ID.CONTRACT_CREATE,
+			ECHO.OPERATION_ID.CONTRACT_CALL,
+			ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE,
+			ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL,
+			ECHO.OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN,
+		]
+		if (!operationsPotentionalTransferTokens.some((opId) => id === opId)) {
 			return;
 		}
 		let contractId: string;
+		let contract = null;
 		switch (id) {
+			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN:
+				const tokenContractAddress = (await this.erc20TokenRepository.findOne({ id: <string>result })).contract;
+				contract = await this.contractRepository.findByMongoId(tokenContractAddress)
+				break;
 			case ECHO.OPERATION_ID.CONTRACT_CREATE:
 			case ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE:
 				const [contractType, contractResult] = await this.echoRepository.getContractResult(<string>result);
@@ -262,20 +274,21 @@ export default class OperationManager {
 			default:
 				return;
 		}
-		console.log('contractId', contractId)
-		const contract = await this.contractRepository.findById(contractId);
-		// console.log('contract', contract)
-		if (!contract) {
+		!contract && (contract = await this.contractRepository.findById(contractId));
+		if (!contract || contract.type !== TYPE.ERC20) {
 			return;
 		}
-		const mongoId: string = contract._id;
-		console.log(mongoId)
-		// console.log('123' + (await this.erc20TokenRepository.findOne({ contract: '5e86fb6a8d6021465daf4953' })))
-		const token = await this.erc20TokenRepository.findOne({ contract: mongoId });
-		console.log('token', token)
-		if (!token) {
-			return;
+		const allBalanceQuery = {
+			amount: { $ne: '0' },
+			_account: { $exists: true },
+			_contract: { $exists: false },
+			_asset: contract._id,
+		};
+		const holdersAmount = await this.balanceService.balanceRepository.count(allBalanceQuery);
+		if (id === ECHO.OPERATION_ID.CONTRACT_CALL && id ===ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL) {
+			contract.token_info.transactions_amount += 1;
 		}
-		console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$@#%#$@')
+		contract.token_info.holders_amount = holdersAmount;
+		await contract.save();
 	}
 }

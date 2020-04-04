@@ -51,8 +51,6 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 			...token,
 			owner: ownerDocument,
 			contract: contractDocument,
-			holders_amount: 0,
-			transactions_amount: 0,
 		});
 		return this.validateRelation({ from: [body.account], assets: [body.fee.asset_id] });
 	}

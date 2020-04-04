@@ -102,7 +102,12 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 				this.echoRepository.getTokenDecimals(contract.id),
 			]);
 			contract.token_info = {
-				name, symbol, decimals, total_supply: totalSupply,
+				name,
+				symbol,
+				decimals,
+				total_supply: totalSupply,
+				holders_amount: 0,
+				transactions_amount: 0,
 			};
 		}
 		return contract;

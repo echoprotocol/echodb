@@ -141,6 +141,7 @@ export default class ContractService {
 	): Promise<Partial<IOperationRelation>> {
 		const { tr_receipt: { log: logs } } = contractResult;
 
+		console.log('handle')
 		const relations: Partial<IOperationRelation> = {
 			from: [],
 			to: [],

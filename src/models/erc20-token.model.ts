@@ -11,8 +11,6 @@ const erc20TokenModel = AbstractModel<IERC20Token>(MODEL.NAME.ERC20_TOKEN, {
 	name: { type: String },
 	symbol: { type: String },
 	decimals: { type: Number },
-	holders_amount: { type: Number },
-	transactions_amount: { type: Number },
 });
 
 export default erc20TokenModel;

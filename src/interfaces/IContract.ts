@@ -6,6 +6,8 @@ export interface ITokenInfo {
 	name: string;
 	symbol: string;
 	decimals: string;
+	holders_amount: number;
+	transactions_amount: number;
 }
 
 export interface IContract {
