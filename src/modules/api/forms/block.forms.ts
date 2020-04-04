@@ -15,10 +15,10 @@ export class GetBlocksForm extends PaginationForm {}
 
 @ArgsType()
 export class HistoryForm extends AbstractForm {
-	@rule(Joi.date())
+	@rule(Joi.date().iso())
 	@Field(() => String, { nullable: true, description: 'Expect ISO format' })
 	from?: string;
-	@rule(Joi.date())
+	@rule(Joi.date().iso())
 	@Field(() => String, { nullable: true, description: 'Expect ISO format' })
 	to?: string;
 }
