@@ -21,6 +21,7 @@ export default class ContractUpdateOperation extends AbstractOperation<OP_ID> {
 		dContract.save();
 		return this.validateRelation({
 			from: [body.sender],
+			to: [body.contract],
 			accounts: [body.new_owner],
 			contracts: [body.contract],
 			assets: [body.fee.asset_id],
