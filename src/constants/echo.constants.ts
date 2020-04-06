@@ -56,9 +56,9 @@ export enum OPERATION_ID {
 	SIDECHAIN_BURN = 48, // VIRTUAL
 	SIDECHAIN_ERC20_REGISTER_TOKEN = 49,
 	SIDECHAIN_ERC20_DEPOSIT_TOKEN = 50,
-	SIDECHAIN_ERC20_SEND_DEPOSIT = 51,
+	SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN = 51,
 	SIDECHAIN_ERC20_WITHDRAW_TOKEN = 52,
-	SIDECHAIN_ERC20_SEND_WITHDRAW = 53,
+	SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN = 53,
 	SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW = 54,
 	SIDECHAIN_ERC20_ISSUE = 55, // VIRTUAL
 	SIDECHAIN_ERC20_BURN = 56, // VIRTUAL
@@ -878,7 +878,7 @@ interface ContractUpdateOperation {
 interface BlockRewardOperation {
 	fee: undefined;
 	receiver: AccountId;
-	amount: number;
+	assets: [{ amount: number, asset_id: AssetId }];
 	extensions: ExtensionsArr;
 }
 
