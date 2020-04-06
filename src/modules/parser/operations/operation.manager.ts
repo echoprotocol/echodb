@@ -283,14 +283,9 @@ export default class OperationManager {
 		}
 		const allBalanceQuery = {
 			amount: { $ne: '0' },
-			_account: { $exists: true },
-			_contract: { $exists: false },
-			_asset: contract._id,
+			_contract: contract._id,
 		};
 		const holdersAmount = await this.balanceService.balanceRepository.count(allBalanceQuery);
-		if (id === ECHO.OPERATION_ID.CONTRACT_CALL && id === ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL) {
-			contract.token_info.transactions_count += 1;
-		}
 		contract.token_info.holders_count = holdersAmount;
 		await contract.save();
 	}

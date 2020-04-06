@@ -229,6 +229,8 @@ export default class ContractService {
 				]);
 			})(),
 		]);
+		dContract.token_info && (dContract.token_info.transactions_count += 1);
+		await dContract.save();
 	}
 
 	async updateOrCreateToken(
