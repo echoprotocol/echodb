@@ -68,17 +68,37 @@ export default class ParserModule extends AbstractModule {
 			if (block.transactions.length === 0 && block.unlinked_virtual_operations.length === 0) {
 				logger.trace(`Skipping no-transactions block #${block.round}`);
 			}
+
+			let virtualOpIndex = 0;
 			for (const virtualOperation of block.unlinked_virtual_operations) {
-				await this.operationManager.parse(virtualOperation.op, virtualOperation.result, null, dBlock);
+				await this.operationManager.parse(
+					virtualOperation.op,
+					virtualOperation.result,
+					null,
+					dBlock,
+					virtualOpIndex,
+					0,
+				);
+				virtualOpIndex += 1;
 			}
+			let txIndex = 0;
 			for (const tx of block.transactions) {
 				logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
 				const dTx = <TDoc<ITransactionExtended>>await this.transactionRepository.create({
 					...tx,
 					_block: dBlock,
 				});
+
 				for (const [opIndex, operation] of tx.operations.entries()) {
-					await this.operationManager.parse(operation, tx.operation_results[opIndex], dTx);
+					await this.operationManager.parse(
+						operation,
+						tx.operation_results[opIndex],
+						dTx,
+						dBlock,
+						opIndex,
+						txIndex,
+					);
+					txIndex += 1;
 				}
 				this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 			}

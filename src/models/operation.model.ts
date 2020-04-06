@@ -21,5 +21,7 @@ export default AbstractModel<IOperation<ECHO.OPERATION_ID>>(MODEL.NAME.OPERATION
 	virtual: Boolean,
 	_tx: { type: Schema.Types.ObjectId, ref: MODEL.NAME.TRANSACTION },
 	timestamp: Date,
+	op_in_trx: { type: Number, default: 0 },
+	trx_in_block: { type: Number, default: 0 },
 	_relation: relationSchema,
 });

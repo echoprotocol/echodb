@@ -176,6 +176,8 @@ export default class OperationManager {
 		[_, result]: [unknown, T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<T> : unknown],
 		dTx: TDoc<ITransactionExtended> | null,
 		dBlock?: TDoc<IBlock>,
+		opIndex: number = 0,
+		txIndex: number = 0,
 	) {
 		const operation: IOperation<T> = {
 			id,
@@ -185,6 +187,8 @@ export default class OperationManager {
 			virtual: !!dBlock,
 			_tx: dTx,
 			timestamp: dateFromUtcIso(dTx ? dTx._block.timestamp : dBlock.timestamp),
+			op_in_trx: opIndex,
+			trx_in_block: txIndex,
 			_relation: null,
 		};
 		if (this.map[id]) {
