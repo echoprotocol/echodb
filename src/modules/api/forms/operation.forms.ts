@@ -2,6 +2,8 @@ import AbstractForm, { rule } from './abstract.form';
 import AccountId from '../types/account.id.type';
 import AssetId from '../types/asset.id.type';
 import ContractId from '../types/contract.id.type';
+import SubjectTypes from '../types/account.or.contract.or.asset.id.type';
+import RelationsTypes from '../types/account.or.contract.or.asset.id.type.or.proposal';
 import PaginationForm from './pagination.form';
 import * as ECHO from '../../../constants/echo.constants';
 import * as API from '../../../constants/api.constants';
@@ -50,11 +52,11 @@ export class GetOperationsHistoryForm extends QueryOpions {
 @ArgsType()
 export class GetSubjectOperation extends QueryOpions {
 	@rule(Joi.string().required())
-	@Field(() => String)
+	@Field(() => SubjectTypes)
 	subject: string;
 
 	@rule(stringsArraySchema)
-	@Field(() => [String], { nullable: true, defaultValue: [] })
+	@Field(() => [RelationsTypes], { nullable: true, defaultValue: [] })
 	relationSubjects: string[];
 }
 
