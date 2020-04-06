@@ -9,6 +9,7 @@ export default class AssetUpdatehFeedProducers extends AbstractOperation<OP_ID> 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		return this.validateRelation({
 			from: [body.issuer],
+			to: [body.asset_to_update],
 			assets: [body.fee.asset_id, body.asset_to_update],
 			accounts: body.new_feed_producers,
 		});

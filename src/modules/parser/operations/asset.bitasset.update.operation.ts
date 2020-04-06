@@ -25,6 +25,7 @@ export default class AssetBitassetUpdateOperation extends AbstractOperation<OP_I
 		this.redisConnection.emit(REDIS.EVENT.ASSET_UPDATED, dAsset);
 		return this.validateRelation({
 			from: [body.issuer],
+			to: [body.asset_to_update],
 			assets: [body.fee.asset_id, body.asset_to_update],
 		});
 	}

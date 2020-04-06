@@ -9,6 +9,7 @@ export default class AssetPublishFeedOperation extends AbstractOperation<OP_ID> 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		return this.validateRelation({
 			from: [body.publisher],
+			to: [body.asset_id],
 			assets: [
 				body.fee.asset_id,
 				body.core_exchange_rate.base.asset_id,

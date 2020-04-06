@@ -31,7 +31,8 @@ export default class BlockRewardOperation extends AbstractOperation<OP_ID> {
 			{ append: true },
 		);
 		return this.validateRelation({
-			from: [body.receiver],
+			from: [],
+			to: [body.receiver],
 			accounts: [body.receiver],
 			assets: [ECHO.CORE_ASSET],
 		});

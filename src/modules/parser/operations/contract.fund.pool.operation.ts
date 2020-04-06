@@ -32,6 +32,7 @@ export default class ContractFundPoolOperation extends AbstractOperation<OP_ID> 
 		);
 		return this.validateRelation({
 			from: [body.sender],
+			to: [body.contract],
 			assets: [body.fee.asset_id, body.value.asset_id],
 			contracts: [body.contract],
 		});

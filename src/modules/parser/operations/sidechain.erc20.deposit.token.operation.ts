@@ -13,6 +13,7 @@ export default class SidechainErc20DepositTokenOperation extends AbstractOperati
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		return this.validateRelation({
 			from: [body.committee_member_id],
+			to: [body.account],
 			assets: [body.fee.asset_id],
 		});
 	}
