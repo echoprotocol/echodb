@@ -23,6 +23,12 @@ export default class Operation {
 	@Field({ nullable: true })
 	virtual: boolean;
 
+	@Field({ nullable: true })
+	op_in_trx: number;
+
+	@Field({ nullable: true })
+	trx_in_block: number;
+
 	@Field(() => Transaction, { nullable: true })
 	transaction: Transaction;
 }

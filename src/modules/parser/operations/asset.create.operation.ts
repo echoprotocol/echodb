@@ -63,7 +63,7 @@ export default class AssetCreateOperation extends AbstractOperation<OP_ID> {
 			precision: body.precision,
 			options: body.common_options,
 			bitasset_data_id: assetData.bitasset ? assetData.bitasset_data_id : null,
-			dynamic: {
+			dynamic: assetData.dynamic ? assetData.dynamic : {
 				id: assetData ? assetData.dynamic_asset_data_id : null,
 				current_supply: '0',
 				confidential_supply: '0',
