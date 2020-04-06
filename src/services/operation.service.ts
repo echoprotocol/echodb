@@ -94,30 +94,20 @@ export default class OperationService {
 			fromQuery['_relation.to'] = { $in: relationsSubjects };
 			toQuery['_relation.from'] = { $in: relationsSubjects };
 		}
-		const [fromOperations, toOperations, totalFrom, totalTo] = await Promise.all([
-			this.operationRepository.find(fromQuery, null, {
-				limit: count + offset,
+		const [items, total] = await Promise.all([
+			this.operationRepository.find({$or: [fromQuery, toQuery]}, null, {
+				skip: offset,
+				limit: count,
 				sort: { timestamp: sortDestination },
 			}),
-			this.operationRepository.find(toQuery, null, {
-				limit: count + offset,
-				sort: { timestamp: sortDestination },
-			}),
-			this.operationRepository.count(fromQuery),
-			this.operationRepository.count(toQuery),
+			this.operationRepository.count({
+				$or: [fromQuery, toQuery],
+			})
 		]);
-		const totalCount = totalFrom + totalTo;
-		const totalOps = [...fromOperations, ...toOperations];
 
-		totalOps.sort((op1, op2) => {
-			return sortDestination === 'asc' ?
-				Date.parse(op1.timestamp.toISOString()) - Date.parse(op2.timestamp.toISOString()) :
-				Date.parse(op2.timestamp.toISOString()) - Date.parse(op1.timestamp.toISOString());
-		});
-		const slicedOps = totalOps.slice(offset, offset + count);
 		return {
-			total: totalCount,
-			items: slicedOps,
+			total,
+			items
 		};
 	}
 }
