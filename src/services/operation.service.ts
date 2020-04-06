@@ -75,14 +75,14 @@ export default class OperationService {
 
 	async getSubjectOperations(count: number, offset: number, subject: string, sortDestination: API.SORT_DESTINATION, relationsSubjects?: string[]) {
 		type query = {
-			'_relation.from'?: string | Object,
-			'_relation.to'?: string | Object,
+			'_relation.from'?: Object,
+			'_relation.to'?: Object,
 		}
 		const fromQuery: query = {
-			'_relation.from': subject,
+			'_relation.from': { $in: [subject] },
 		};
 		const toQuery: query = {
-			'_relation.to': subject,
+			'_relation.to': { $in: [subject] },
 		};
 		if (relationsSubjects.length) {
 			fromQuery['_relation.to'] = { $in: relationsSubjects };
