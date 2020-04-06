@@ -39,7 +39,8 @@ export default class BlockRewardOperation extends AbstractOperation<OP_ID> {
 		await Promise.all(balances);
 
 		return this.validateRelation({
-			from: [body.receiver],
+			from: [],
+			to: [body.receiver],
 			accounts: [body.receiver],
 			assets: usedAssets,
 		});

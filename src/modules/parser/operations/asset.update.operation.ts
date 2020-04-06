@@ -37,6 +37,7 @@ export default class AssetUpdateOperation extends AbstractOperation<OP_ID> {
 		this.redisConnection.emit(REDIS.EVENT.ASSET_UPDATED, dAsset);
 		return this.validateRelation({
 			from: [body.issuer],
+			to: [body.asset_to_update],
 			accounts: body.new_issuer ? [body.new_issuer] : [],
 			assets: [body.fee.asset_id, body.asset_to_update],
 		});

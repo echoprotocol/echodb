@@ -40,6 +40,7 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 		this.redisConnection.emit(REDIS.EVENT.NEW_ACCOUNT, dAccount);
 		return this.validateRelation({
 			from: [body.registrar],
+			to: [result],
 			accounts: [result],
 			assets: [body.fee.asset_id],
 		});

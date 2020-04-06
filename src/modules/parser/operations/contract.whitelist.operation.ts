@@ -14,6 +14,7 @@ export default class ContractWhitelistOperation extends AbstractOperation<OP_ID>
 		const { add_to_whitelist, remove_from_whitelist, add_to_blacklist } = body;
 		return this.validateRelation({
 			from: [body.sender],
+			to: [body.contract],
 			accounts: [...add_to_whitelist, ...remove_from_whitelist, ...add_to_blacklist],
 			assets: [body.fee.asset_id],
 		});
