@@ -73,4 +73,39 @@ export default class OperationService {
 		return { total, items };
 	}
 
+	async getSubjectOperations(count: number, offset: number, subject: string, sortDestination: API.SORT_DESTINATION, relationsSubjects?: string[]) {
+		type query = {
+			'_relation.from'?: string | Object,
+			'_relation.to'?: string | Object,
+		}
+		const fromQuery: query = {
+			'_relation.from': subject,
+		};
+		const toQuery: query = {
+			'_relation.to': subject,
+		};
+		if (relationsSubjects.length) {
+			fromQuery['_relation.to'] = { $in: relationsSubjects };
+			toQuery['_relation.from'] = { $in: relationsSubjects };
+		}
+		const [fromOperations, toOperations, totalFrom, totalTo] = await Promise.all([
+			this.operationRepository.find(fromQuery, null, { limit: count + offset, sort: { timestamp: sortDestination } }),
+			this.operationRepository.find(toQuery, null, { limit: count + offset, sort: { timestamp: sortDestination } }),
+			this.operationRepository.count(fromQuery),
+			this.operationRepository.count(toQuery),
+		]);
+		const totalCount = totalFrom + totalTo;
+		const totalOps = [...fromOperations, ...toOperations];
+
+		totalOps.sort((op1, op2) => {
+			return sortDestination === 'asc' ?
+				Date.parse(op1.timestamp.toISOString()) - Date.parse(op2.timestamp.toISOString()) :
+				Date.parse(op2.timestamp.toISOString()) - Date.parse(op1.timestamp.toISOString())
+		});
+		const slicedOps = totalOps.slice(offset, offset + count);
+		return {
+			total: totalCount,
+			items: slicedOps,
+		}
+	}
 }

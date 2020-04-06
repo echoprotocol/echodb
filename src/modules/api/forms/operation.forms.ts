@@ -46,6 +46,21 @@ export class GetOperationsHistoryForm extends PaginationForm {
 }
 
 @ArgsType()
+export class GetSubjectOperation extends PaginationForm {
+	@rule(Joi.string().required())
+	@Field(() => String)
+	subject: string;
+
+	@rule(stringsArraySchema)
+	@Field(() => [String], { nullable: true, defaultValue: [] })
+	relationSubjects: string[];
+
+	@rule(Joi.string().valid(API.SORT_DESTINATION.ASC, API.SORT_DESTINATION.DESC))
+	@Field(() => API.SORT_DESTINATION, { defaultValue: API.SORT_DESTINATION.DESC })
+	sort: API.SORT_DESTINATION;
+}
+
+@ArgsType()
 export class NewOperationSubscribe extends AbstractForm {
 	@rule(stringsArraySchema)
 	@Field(() => [AccountId], { nullable: true })
