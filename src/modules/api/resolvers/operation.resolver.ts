@@ -5,7 +5,7 @@ import TranasctionRepository from '../../../repositories/transaction.repository'
 import Transaction from '../types/transaction.type';
 import PaginatedResponse from '../types/paginated.response.type';
 import * as REDIS from '../../../constants/redis.constants';
-import { GetOperationsHistoryForm, NewOperationSubscribe } from '../forms/operation.forms';
+import { GetOperationsHistoryForm, NewOperationSubscribe, GetSubjectOperation } from '../forms/operation.forms';
 import { Args, Resolver, Query, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
@@ -56,6 +56,31 @@ export default class OperationResolver extends AbstractResolver {
 			count,
 			offset,
 			{ from, to, accounts, contracts, assets, tokens, operations, sort },
+		);
+	}
+
+	@Query(() => paginatedBlocks)
+	@validateArgs(GetSubjectOperation)
+	getSubjectOperations(
+		@Args() {
+			count,
+			offset,
+			subject,
+			relationSubjects,
+			accounts,
+			contracts,
+			assets,
+			tokens,
+			operations,
+			sort,
+		}: GetSubjectOperation,
+		) {
+		return this.operationService.getSubjectOperations(
+			count,
+			offset,
+			subject,
+			relationSubjects,
+			{ accounts, contracts, assets, tokens, operations, sort },
 		);
 	}
 
