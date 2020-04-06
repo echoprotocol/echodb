@@ -63,14 +63,25 @@ export default class OperationResolver extends AbstractResolver {
 	@validateArgs(GetSubjectOperation)
 	getSubjectOperations(
 		@Args() {
-			subject,
-			relationSubjects,
 			count,
 			offset,
+			subject,
+			relationSubjects,
+			accounts,
+			contracts,
+			assets,
+			tokens,
+			operations,
 			sort,
 		}: GetSubjectOperation,
 		) {
-		return this.operationService.getSubjectOperations(count, offset, subject, sort, relationSubjects);
+		return this.operationService.getSubjectOperations(
+			count,
+			offset,
+			subject,
+			relationSubjects,
+			{ accounts, contracts, assets, tokens, operations, sort },
+		);
 	}
 
 	// FieldResolver

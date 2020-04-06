@@ -11,15 +11,7 @@ import { ArgsType, Field } from 'type-graphql';
 const stringsArraySchema = Joi.array().items(Joi.string()).max(100).unique();
 
 @ArgsType()
-export class GetOperationsHistoryForm extends PaginationForm {
-	@rule(stringsArraySchema)
-	@Field(() => [AccountId], { nullable: true })
-	from: string[];
-
-	@rule(stringsArraySchema)
-	@Field(() => [AccountId], { nullable: true })
-	to: string[];
-
+export class QueryOpions extends PaginationForm {
 	@rule(stringsArraySchema)
 	@Field(() => [AccountId], { nullable: true })
 	accounts: string[];
@@ -44,9 +36,19 @@ export class GetOperationsHistoryForm extends PaginationForm {
 	@Field(() => API.SORT_DESTINATION, { defaultValue: API.SORT_DESTINATION.DESC })
 	sort: API.SORT_DESTINATION;
 }
+@ArgsType()
+export class GetOperationsHistoryForm extends QueryOpions {
+	@rule(stringsArraySchema)
+	@Field(() => [AccountId], { nullable: true })
+	from: string[];
+
+	@rule(stringsArraySchema)
+	@Field(() => [AccountId], { nullable: true })
+	to: string[];
+}
 
 @ArgsType()
-export class GetSubjectOperation extends PaginationForm {
+export class GetSubjectOperation extends QueryOpions {
 	@rule(Joi.string().required())
 	@Field(() => String)
 	subject: string;
@@ -54,10 +56,6 @@ export class GetSubjectOperation extends PaginationForm {
 	@rule(stringsArraySchema)
 	@Field(() => [String], { nullable: true, defaultValue: [] })
 	relationSubjects: string[];
-
-	@rule(Joi.string().valid(API.SORT_DESTINATION.ASC, API.SORT_DESTINATION.DESC))
-	@Field(() => API.SORT_DESTINATION, { defaultValue: API.SORT_DESTINATION.DESC })
-	sort: API.SORT_DESTINATION;
 }
 
 @ArgsType()
