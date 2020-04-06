@@ -106,8 +106,8 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 				symbol,
 				decimals,
 				total_supply: totalSupply,
-				holders_amount: 0,
-				transactions_amount: 0,
+				holders_count: 0,
+				transactions_count: 0,
 			};
 		}
 		return contract;

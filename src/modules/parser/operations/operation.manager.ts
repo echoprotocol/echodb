@@ -289,9 +289,9 @@ export default class OperationManager {
 		};
 		const holdersAmount = await this.balanceService.balanceRepository.count(allBalanceQuery);
 		if (id === ECHO.OPERATION_ID.CONTRACT_CALL && id === ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL) {
-			contract.token_info.transactions_amount += 1;
+			contract.token_info.transactions_count += 1;
 		}
-		contract.token_info.holders_amount = holdersAmount;
+		contract.token_info.holders_count = holdersAmount;
 		await contract.save();
 	}
 }
