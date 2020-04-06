@@ -95,19 +95,19 @@ export default class OperationService {
 			toQuery['_relation.from'] = { $in: relationsSubjects };
 		}
 		const [items, total] = await Promise.all([
-			this.operationRepository.find({$or: [fromQuery, toQuery]}, null, {
+			this.operationRepository.find({ $or: [fromQuery, toQuery] }, null, {
 				skip: offset,
 				limit: count,
 				sort: { timestamp: sortDestination },
 			}),
 			this.operationRepository.count({
 				$or: [fromQuery, toQuery],
-			})
+			}),
 		]);
 
 		return {
 			total,
-			items
+			items,
 		};
 	}
 }
