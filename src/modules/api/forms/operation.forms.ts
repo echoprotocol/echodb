@@ -13,7 +13,7 @@ import { ArgsType, Field } from 'type-graphql';
 const stringsArraySchema = Joi.array().items(Joi.string()).max(100).unique();
 
 @ArgsType()
-export class QueryOpions extends PaginationForm {
+export class QueryOptions extends PaginationForm {
 	@rule(stringsArraySchema)
 	@Field(() => [AccountId], { nullable: true })
 	accounts: string[];
@@ -39,7 +39,7 @@ export class QueryOpions extends PaginationForm {
 	sort: API.SORT_DESTINATION;
 }
 @ArgsType()
-export class GetOperationsHistoryForm extends QueryOpions {
+export class GetOperationsHistoryForm extends QueryOptions {
 	@rule(stringsArraySchema)
 	@Field(() => [AccountId], { nullable: true })
 	from: string[];
@@ -50,7 +50,7 @@ export class GetOperationsHistoryForm extends QueryOpions {
 }
 
 @ArgsType()
-export class GetSubjectOperation extends QueryOpions {
+export class GetSubjectOperation extends QueryOptions {
 	@rule(Joi.string().required())
 	@Field(() => SubjectTypes)
 	subject: string;
