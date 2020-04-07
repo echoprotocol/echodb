@@ -13,8 +13,8 @@ import { DAY } from '../constants/time.constants';
 import { DECENTRALIZATION_RATE_BLOCK_COUNT } from '../constants/block.constants';
 import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
-import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
 import { removeDuplicates, calculateAverage, parseHistoryOptions } from '../utils/common';
+import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
 import { constants, validators } from 'echojs-lib';
 
 export const ERROR = {
