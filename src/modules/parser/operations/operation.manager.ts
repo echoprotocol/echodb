@@ -48,15 +48,19 @@ import RedisConnection from '../../../connections/redis.connection';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import * as OPERATION from '../../../constants/operation.constants';
+import { TYPE } from '../../../constants/contract.constants';
 import { IOperation, IOperationRelation } from 'interfaces/IOperation';
 import { ITransactionExtended } from '../../../interfaces/ITransaction';
 import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
-import { dateFromUtcIso } from '../../../utils/format';
+import { dateFromUtcIso, ethAddrToEchoId } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
 import BlockRewardOperation from './block.reward.operation';
 import ContractInternalCreateOperaiton from './contract.internal.create.operation';
 import ContractInternalCallOperation from './contract.internal.call.operation';
+import ContractRepository from '../../../repositories/contract.repository';
+import EchoRepository from '../../../repositories/echo.repository';
+import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -69,6 +73,9 @@ export default class OperationManager {
 		readonly operationRepository: OperationRepository,
 		readonly balanceService: BalanceService,
 		readonly redisConnection: RedisConnection,
+		readonly contractRepository: ContractRepository,
+		readonly echoRepository: EchoRepository,
+		readonly erc20TokenRepository: ERC20TokenRepository,
 		transferOperation: TransferOperation,
 		accountCreateOperation: AccountCreateOperation,
 		accountUpdateOperation: AccountUpdateOperation,
@@ -226,8 +233,74 @@ export default class OperationManager {
 				await this.parseKnownOperation(vopId, vopProps, result, dBlock);
 			}
 		}
+
 		const postInternalRelation = await this.map[id].postInternalParse(body, result, dBlock, preInternalRelation);
+		await this.checkForTokenBalancesUpdating(id, body, result);
 		return postInternalRelation;
 	}
 
+	async checkForTokenBalancesUpdating<T extends ECHO.KNOWN_OPERATION>(
+		id: T,
+		body: ECHO.OPERATION_PROPS<T>,
+		result: ECHO.OPERATION_RESULT<T>,
+	): Promise<void> {
+		const operationsPotentionalTransferTokens = [
+			ECHO.OPERATION_ID.CONTRACT_CREATE,
+			ECHO.OPERATION_ID.CONTRACT_CALL,
+			ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE,
+			ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL,
+			ECHO.OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN,
+			ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN,
+			ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN,
+		];
+		if (!operationsPotentionalTransferTokens.some((opId) => id === opId)) {
+			return;
+		}
+		let contractId: string;
+		let contract = null;
+		switch (id) {
+			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN:
+				const tokenContractAddress = (await this.erc20TokenRepository.findOne({ id: <string>result })).contract;
+				contract = await this.contractRepository.findByMongoId(tokenContractAddress);
+				break;
+			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN:
+				const erc20TokenContract = (await this.erc20TokenRepository.findOne({
+					eth_address:
+						(<ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN>>body).erc20_token_addr,
+				})).contract;
+				contract = await this.contractRepository.findByMongoId(erc20TokenContract);
+				break;
+			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN:
+				contractId = (await this.echoRepository.getObject(
+					(<ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN>>body).erc20_token,
+				)).id;
+				break;
+			case ECHO.OPERATION_ID.CONTRACT_CREATE:
+			case ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE:
+				const [contractType, contractResult] = await this.echoRepository.getContractResult(<string>result);
+				if (contractType !== 0) {
+					return;
+				}
+				const { exec_res: { new_address: hexAddr } } = contractResult;
+				contractId = ethAddrToEchoId(hexAddr);
+				break;
+			case ECHO.OPERATION_ID.CONTRACT_CALL:
+			case ECHO.OPERATION_ID.CONTRACT_INTERNAL_CALL:
+				contractId = (<ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.CONTRACT_CALL>>body).callee;
+				break;
+			default:
+				return;
+		}
+		!contract && (contract = await this.contractRepository.findById(contractId));
+		if (!contract || contract.type !== TYPE.ERC20) {
+			return;
+		}
+		const allBalanceQuery = {
+			amount: { $ne: '0' },
+			_contract: contract._id,
+		};
+		const holdersAmount = await this.balanceService.balanceRepository.count(allBalanceQuery);
+		contract.token_info.holders_count = holdersAmount;
+		await contract.save();
+	}
 }

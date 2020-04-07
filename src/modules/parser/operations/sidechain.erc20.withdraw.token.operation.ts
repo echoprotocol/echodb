@@ -1,4 +1,8 @@
 import AbstractOperation from './abstract.operation';
+import AccountRepository from '../../../repositories/account.repository';
+import BalanceRepository from '../../../repositories/balance.repository';
+import ContractRepository from '../../../repositories/contract.repository';
+import EchoRepository from '../../../repositories/echo.repository';
 import * as ECHO from '../../../constants/echo.constants';
 
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN;
@@ -6,11 +10,22 @@ type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN;
 export default class SidechainErc20WithdrawTokenOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN;
 
-	constructor() {
+	constructor(
+		private accountRepository: AccountRepository,
+		private balanceRepository: BalanceRepository,
+		private contractRepository: ContractRepository,
+		private echoRepository: EchoRepository,
+	) {
 		super();
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
+		const contractId = (await this.echoRepository.getObject(body.erc20_token)).id;
+		const [account, contract] = await Promise.all([
+			await this.accountRepository.findById(body.account),
+			await this.contractRepository.findById(contractId),
+		]);
+		await this.balanceRepository.updateOrCreateByAccountAndContract(account._id, contract._id, `-${body.value}`);
 		return this.validateRelation({
 			from: [body.account],
 			assets: [body.fee.asset_id],

@@ -1,6 +1,7 @@
 import AbstractOperation from './abstract.operation';
 import AccountRepository from '../../../repositories/account.repository';
 import AssetRepository from '../../../repositories/asset.repository';
+import BalanceRepository from '../../../repositories/balance.repository';
 import ContractBalanceRepository from '../../../repositories/contract.balance.repository';
 import ContractService from '../../../services/contract.service';
 import ContractRepository from '../../../repositories/contract.repository';
@@ -24,6 +25,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	constructor(
 		private accountRepository: AccountRepository,
 		private assetRepository: AssetRepository,
+		private balanceRepository: BalanceRepository,
 		private contractRepository: ContractRepository,
 		private contractService: ContractService,
 		private echoRepository: EchoRepository,
@@ -46,17 +48,23 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 					assets: [body.fee.asset_id],
 				});
 			}
+			const registrar = await this.accountRepository.findById(body.registrar);
 			const contract: IContract = await this.fullfillContract({
 				_block: dBlock,
 				id: ethAddrToEchoId(hexAddr),
-				_registrar: await this.accountRepository.findById(body.registrar),
+				_registrar: registrar,
 				eth_accuracy: body.eth_accuracy,
 				supported_asset_id: body.supported_asset_id || null,
 				type: this.contractService.getTypeByCode(body.code),
 				problem: false,
 			});
 			contractId = contract.id;
-			await this.createContractAndContractBalance(contract, body.value);
+			const contractMongoId = (await this.createContractAndContractBalance(contract, body.value))._id;
+			if (contract.type === CONTRACT.TYPE.ERC20) {
+				const balance = await this.echoRepository.getAccountTokenBalance(contract.id, body.registrar);
+				await this.balanceRepository
+					.updateOrCreateByAccountAndContract(registrar._id, contractMongoId, balance);
+			}
 		} else logger.warn('x86_64 contract creation parsing is not implemented');
 		return this.validateRelation({
 			from: [body.registrar],
@@ -102,7 +110,12 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 				this.echoRepository.getTokenDecimals(contract.id),
 			]);
 			contract.token_info = {
-				name, symbol, decimals, total_supply: totalSupply,
+				name,
+				symbol,
+				decimals,
+				total_supply: totalSupply,
+				holders_count: 0,
+				transactions_count: 0,
 			};
 		}
 		return contract;

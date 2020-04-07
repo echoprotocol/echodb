@@ -9,6 +9,8 @@ const erc20infoSchema = createSchema<ITokenInfo>({
 	name: String,
 	symbol: String,
 	decimals: String,
+	holders_count: { type: Number, default: 0 },
+	transactions_count: { type: Number, default: 0 },
 });
 
 export default AbstractModel<IContract>(MODEL.NAME.CONTRACT, {

@@ -1,5 +1,6 @@
 import { IERC20TokenObject, IContractObject } from 'echojs-lib/types/interfaces/objects';
 import AbstractOperation from './abstract.operation';
+import BalanceRepository from '../../../repositories/balance.repository';
 import * as ECHO from '../../../constants/echo.constants';
 import EchoRepository from 'repositories/echo.repository';
 import ERC20TokenRepository from 'repositories/erc20-token.repository';
@@ -17,6 +18,7 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 
 	constructor(
 		private accountRepository: AccountRepository,
+		private balanceRepository: BalanceRepository,
 		private contractCreateOperation: ContractCreateOperation,
 		private contractRepository: ContractRepository,
 		private contractService: ContractService,
@@ -47,6 +49,11 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 			}).then((contractToCreate) => this.contractRepository.create(contractToCreate)),
 			this.accountRepository.findById(token.owner),
 		]);
+		const [balance, account] = await Promise.all([
+			this.echoRepository.getAccountTokenBalance(contractDocument.id, body.account),
+			this.accountRepository.findById(body.account),
+		]);
+		await this.balanceRepository.updateOrCreateByAccountAndContract(account._id, contractDocument._id, balance);
 		await this.erc20TokenRepository.create({ ...token, owner: ownerDocument, contract: contractDocument });
 		return this.validateRelation({ from: [body.account], assets: [body.fee.asset_id] });
 	}
