@@ -4,18 +4,16 @@ import BalanceRepository from '../repositories/balance.repository';
 import AssetRepository from '../repositories/asset.repository';
 import ProcessingError from '../errors/processing.error';
 import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
-
 import {
 	IBlock,
 	BlockWithInjectedVirtualOperations,
 	OperationWithInjectedVirtualOperaitons,
 } from '../interfaces/IBlock';
-import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
-
 import { DAY } from '../constants/time.constants';
 import { DECENTRALIZATION_RATE_BLOCK_COUNT } from '../constants/block.constants';
 import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
+import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
 import { removeDuplicates, calculateAverage, parseHistoryOptions } from '../utils/common';
 import { constants, validators } from 'echojs-lib';
 
