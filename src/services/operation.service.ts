@@ -115,11 +115,11 @@ export default class OperationService {
 
 		const generalQuery = accountsQuery.length ?
 			{ $and: [{ $or: accountsQuery }, { $or: mainQuery }] }
-			: { $or: mainQuery }
+			: { $or: mainQuery };
 		const queryWithOperationFilter = params.operations ? {
 			...generalQuery,
-			id: { $in: params.operations }
-		} : generalQuery
+			id: { $in: params.operations },
+		} : generalQuery;
 		const [items, total] = await Promise.all([
 			this.operationRepository.find(queryWithOperationFilter,
 				null, {
