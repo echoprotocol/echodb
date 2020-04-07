@@ -3,6 +3,7 @@ import BlockRepository from '../repositories/block.repository';
 import BalanceRepository from '../repositories/balance.repository';
 import AssetRepository from '../repositories/asset.repository';
 import ProcessingError from '../errors/processing.error';
+import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
 import {
 	IBlock,
 	BlockWithInjectedVirtualOperations,
@@ -12,15 +13,12 @@ import { DAY } from '../constants/time.constants';
 import { DECENTRALIZATION_RATE_BLOCK_COUNT } from '../constants/block.constants';
 import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
-import { removeDuplicates, calculateAverage } from '../utils/common';
-import { HistoryOptionsWithInterval, HistoryOptions } from 'interfaces/IHistoryOptions';
+import { removeDuplicates, calculateAverage, parseHistoryOptions } from '../utils/common';
+import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
 import { constants, validators } from 'echojs-lib';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
-	INVALID_DATES: 'Start date is bigger then end date',
-	INVALID_INTERVAL: 'The choosen period is smaller then interval',
-	INVALID_HISTORY_PARAMS: 'parameter from or interval was not provided',
 };
 
 export default class BlockService {
@@ -46,23 +44,6 @@ export default class BlockService {
 			this.blockRepository.count({}),
 		]);
 		return { total, items };
-	}
-
-	private parseHistoryOptions(historyOpts: HistoryOptionsWithInterval) {
-		if (!historyOpts.from || !historyOpts.interval) {
-			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
-		}
-		const startDate = Date.parse(historyOpts.from) / 1000;
-		const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
-		const interval = historyOpts.interval;
-		if (endDate <= startDate) {
-			throw new Error(ERROR.INVALID_DATES);
-		}
-		if (endDate - startDate < interval) {
-			throw new Error(ERROR.INVALID_INTERVAL);
-		}
-
-		return { startDate, endDate, interval };
 	}
 
 	private divideBlocksByDate(blocks: IBlock[], startDate: number, interval: number): Map<number, IBlock[]> {
@@ -189,7 +170,7 @@ export default class BlockService {
 			return { decentralizationRatePercent, ratesMap };
 		}
 
-		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
+		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
 		const startDateInISO = new Date(startDate * 1000).toISOString();
 		const endDateInISO = new Date(endDate * 1000).toISOString();
 
@@ -244,7 +225,7 @@ export default class BlockService {
 			};
 		}
 
-		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
+		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
 		const filteredBlocks = blocks.filter((block) => {
 			const blockTimestamp = Date.parse(block.timestamp) / 1000;
 			return (blockTimestamp >= startDate) && (blockTimestamp <= endDate);
@@ -265,9 +246,9 @@ export default class BlockService {
 
 	async getFrozenData(historyOpts?: HistoryOptionsWithInterval) {
 		if (!historyOpts) {
-			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
+			throw new Error(HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS);
 		}
-		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
+		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
 		const startDateInISO = new Date(startDate * 1000).toISOString();
 		const endDateInISO = new Date(endDate * 1000).toISOString();
 		const blocks = await this.getBlocksByDate(startDateInISO, endDateInISO);
