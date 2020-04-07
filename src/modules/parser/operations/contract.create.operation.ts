@@ -68,6 +68,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 		} else logger.warn('x86_64 contract creation parsing is not implemented');
 		return this.validateRelation({
 			from: [body.registrar],
+			to: [contractId],
 			assets: [body.fee.asset_id],
 			...contractId === null ? {} : { contracts: contractId },
 		});
