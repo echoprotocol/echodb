@@ -53,7 +53,7 @@ export default class BlockService {
 			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
 		}
 		const startDate = Date.parse(historyOpts.from) / 1000;
-		const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
+		const endDate = Date.parse(historyOpts.to || new Date().toString()) / 1000;
 		const interval = historyOpts.interval;
 		if (endDate <= startDate) {
 			throw new Error(ERROR.INVALID_DATES);
@@ -264,17 +264,27 @@ export default class BlockService {
 	}
 
 	async getFrozenData(historyOpts?: HistoryOptionsWithInterval) {
-		if (!historyOpts) {
-			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
+		const frozenData: Object[] = [];
+		const latestBlock = await this.blockRepository.find({}, null, { sort: { round: -1 }, limit: 1 });
+		if (!latestBlock[0]) {
+			throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
+		}
+		const currentFrozenData = {
+			accounts_freeze_sum: latestBlock[0].frozen_balances_data.accounts_freeze_sum,
+			committee_freeze_sum: latestBlock[0].frozen_balances_data.committee_freeze_sum,
+		};
+		if (Object.keys(historyOpts).length === 0) {
+			return {
+				currentFrozenData,
+				frozenData,
+			};
 		}
 		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
 		const startDateInISO = new Date(startDate * 1000).toISOString();
 		const endDateInISO = new Date(endDate * 1000).toISOString();
 		const blocks = await this.getBlocksByDate(startDateInISO, endDateInISO);
-
 		const orderedBlocks = this.divideBlocksByDate(blocks, startDate, interval);
 
-		const frozenData: Object[] = [];
 		for (const [segment, blocksSegment] of orderedBlocks) {
 			const frozenSums = {
 				accounts_freeze_sum: 0,
@@ -290,6 +300,6 @@ export default class BlockService {
 			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
 			frozenData.push({ startIntervalDateString, frozenSums });
 		}
-		return { frozenData };
+		return { currentFrozenData, frozenData };
 	}
 }
