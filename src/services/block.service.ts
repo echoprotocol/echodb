@@ -83,7 +83,16 @@ export default class BlockService {
 				[...ops, ...trx.operations.filter((op) => op[0] === constants.OPERATIONS_IDS.BALANCE_FREEZE)],
 			[]);
 		const totalFreezeOps = [...freezeVirtualOps, ...freezeOps];
-		return { totalFreezeOps };
+
+		const unfreezeVirtualOps = block.unlinked_virtual_operations
+			.filter((vOp) => vOp.op[1] === constants.OPERATIONS_IDS.BALANCE_UNFREEZE)
+			.map((vOp) => vOp.op);
+		const unfreezeOps: OperationWithInjectedVirtualOperaitons[] = block.transactions
+			.reduce((ops, trx) =>
+				[...ops, ...trx.operations.filter((op) => op[0] === constants.OPERATIONS_IDS.BALANCE_UNFREEZE)],
+				[]);
+		const totalUnfreezeOps = [...unfreezeVirtualOps, ...unfreezeOps];
+		return { totalFreezeOps, totalUnfreezeOps };
 	}
 
 	async getBlocksCount(historyOpts: HistoryOptions) {
@@ -135,7 +144,8 @@ export default class BlockService {
 	}
 
 	async getFrozenAmounts(block: BlockWithInjectedVirtualOperations) {
-		const { totalFreezeOps } = this.getFreezeOperations(block);
+		const latestBlock = (await this.blockRepository.find({}, null, { sort: { round: -1 }, limit: 1 }))[0];
+		const { totalFreezeOps, totalUnfreezeOps } = this.getFreezeOperations(block);
 		const accountsFreezeSum: BN = totalFreezeOps.reduce((sum, op) =>
 			validators.isAccountId(op[1].account) ?
 				sum.plus(op[1].amount.amount) :
@@ -147,9 +157,25 @@ export default class BlockService {
 				sum
 			, new BN(0));
 
+		const accountsUnfreezeSum: BN = totalUnfreezeOps.reduce((sum, op) =>
+			validators.isAccountId(op[1].account) ?
+				sum.plus(op[1].amount.amount) :
+				sum
+			, new BN(0));
+		const committeeUnfreezeSum: BN = totalUnfreezeOps.reduce((sum, op) =>
+			validators.isCommitteeMemberId(op[1].account) ?
+				sum.plus(op[1].amount.amount) :
+				sum
+			, new BN(0));
+
+		const { frozen_balances_data: { accounts_freeze_sum, committee_freeze_sum } } = latestBlock;
+		const currentBlockFreezeAccountsFunds = accountsFreezeSum.minus(accountsUnfreezeSum);
+		const currentBlockFreezeCommitteeFunds = committeeFreezeSum.minus(committeeUnfreezeSum);
+		const totalFreezeAccountsFunds = new BN(accounts_freeze_sum).plus(currentBlockFreezeAccountsFunds)
+		const totalFreezeCommitteeFunds = new BN(committee_freeze_sum).plus(currentBlockFreezeCommitteeFunds)
 		return {
-			accounts_freeze_sum: accountsFreezeSum.toNumber(),
-			committee_freeze_sum: committeeFreezeSum.toNumber(),
+			accounts_freeze_sum: totalFreezeAccountsFunds.toNumber(),
+			committee_freeze_sum: totalFreezeCommitteeFunds.toNumber(),
 		};
 	}
 
