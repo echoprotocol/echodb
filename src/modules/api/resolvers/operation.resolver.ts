@@ -12,9 +12,8 @@ import { Args, Resolver, Query, Subscription, Root, FieldResolver } from 'type-g
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
 import Block from '../types/block.type';
-import BlockRepository from '../../../repositories/block.repository';
-
 import HistoryOperationCountObject from '../types/history.operation.count.type';
+import BlockRepository from '../../../repositories/block.repository';
 import HISTORY_INTERVAL_ERROR from '../../../errors/history.interval.error';
 
 const paginatedOperations = PaginatedResponse(Operation);
