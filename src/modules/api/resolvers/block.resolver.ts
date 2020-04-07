@@ -19,7 +19,7 @@ import OperationService from '../../../services/operation.service';
 import DelegateRateObject from '../types/delegate.rate.type';
 import DecentralizationRateObject from '../types/decentralization.rate.type';
 
-const paginatedBlocks = PaginatedResponse(Block);
+export const paginatedBlocks = PaginatedResponse(Block);
 
 @Resolver(Block)
 export default class BlockResolver extends AbstractResolver {
