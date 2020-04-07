@@ -12,15 +12,12 @@ import { DAY } from '../constants/time.constants';
 import { DECENTRALIZATION_RATE_BLOCK_COUNT } from '../constants/block.constants';
 import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
-import { removeDuplicates, calculateAverage } from '../utils/common';
-import { HistoryOptionsWithInterval, HistoryOptions } from 'interfaces/IHistoryOptions';
+import { removeDuplicates, calculateAverage, parseHistoryOptions } from '../utils/common';
+import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
 import { constants, validators } from 'echojs-lib';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
-	INVALID_DATES: 'Start date is bigger then end date',
-	INVALID_INTERVAL: 'The choosen period is smaller then interval',
-	INVALID_HISTORY_PARAMS: 'parameter from or interval was not provided',
 };
 
 export default class BlockService {
@@ -46,23 +43,6 @@ export default class BlockService {
 			this.blockRepository.count({}),
 		]);
 		return { total, items };
-	}
-
-	private parseHistoryOptions(historyOpts: HistoryOptionsWithInterval) {
-		if (!historyOpts.from || !historyOpts.interval) {
-			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
-		}
-		const startDate = Date.parse(historyOpts.from) / 1000;
-		const endDate = Date.parse(historyOpts.to || new Date().toString()) / 1000;
-		const interval = historyOpts.interval;
-		if (endDate <= startDate) {
-			throw new Error(ERROR.INVALID_DATES);
-		}
-		if (endDate - startDate < interval) {
-			throw new Error(ERROR.INVALID_INTERVAL);
-		}
-
-		return { startDate, endDate, interval };
 	}
 
 	private divideBlocksByDate(blocks: IBlock[], startDate: number, interval: number): Map<number, IBlock[]> {
@@ -144,7 +124,9 @@ export default class BlockService {
 	}
 
 	async getFrozenAmounts(block: BlockWithInjectedVirtualOperations) {
-		const latestBlock = (await this.blockRepository.find({}, null, { sort: { round: -1 }, limit: 1 }))[0];
+		const targetRound = block.round === 1 ? 1 : block.round - 1;
+		const latestBlock = await this.blockRepository.findByRound(targetRound);
+
 		const { totalFreezeOps, totalUnfreezeOps } = this.getFreezeOperations(block);
 		const accountsFreezeSum: BN = totalFreezeOps.reduce((sum, op) =>
 			validators.isAccountId(op[1].account) ?
@@ -171,8 +153,8 @@ export default class BlockService {
 		const { frozen_balances_data: { accounts_freeze_sum, committee_freeze_sum } } = latestBlock;
 		const currentBlockFreezeAccountsFunds = accountsFreezeSum.minus(accountsUnfreezeSum);
 		const currentBlockFreezeCommitteeFunds = committeeFreezeSum.minus(committeeUnfreezeSum);
-		const totalFreezeAccountsFunds = new BN(accounts_freeze_sum).plus(currentBlockFreezeAccountsFunds)
-		const totalFreezeCommitteeFunds = new BN(committee_freeze_sum).plus(currentBlockFreezeCommitteeFunds)
+		const totalFreezeAccountsFunds = new BN(accounts_freeze_sum).plus(currentBlockFreezeAccountsFunds);
+		const totalFreezeCommitteeFunds = new BN(committee_freeze_sum).plus(currentBlockFreezeCommitteeFunds);
 		return {
 			accounts_freeze_sum: totalFreezeAccountsFunds.toNumber(),
 			committee_freeze_sum: totalFreezeCommitteeFunds.toNumber(),
@@ -215,7 +197,7 @@ export default class BlockService {
 			return { decentralizationRatePercent, ratesMap };
 		}
 
-		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
+		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
 		const startDateInISO = new Date(startDate * 1000).toISOString();
 		const endDateInISO = new Date(endDate * 1000).toISOString();
 
@@ -270,7 +252,7 @@ export default class BlockService {
 			};
 		}
 
-		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
+		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
 		const filteredBlocks = blocks.filter((block) => {
 			const blockTimestamp = Date.parse(block.timestamp) / 1000;
 			return (blockTimestamp >= startDate) && (blockTimestamp <= endDate);
@@ -305,7 +287,7 @@ export default class BlockService {
 				frozenData,
 			};
 		}
-		const { startDate, endDate, interval } = this.parseHistoryOptions(historyOpts);
+		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
 		const startDateInISO = new Date(startDate * 1000).toISOString();
 		const endDateInISO = new Date(endDate * 1000).toISOString();
 		const blocks = await this.getBlocksByDate(startDateInISO, endDateInISO);
@@ -316,12 +298,17 @@ export default class BlockService {
 				accounts_freeze_sum: 0,
 				committee_freeze_sum: 0,
 			};
-			for (let i = 0; i < blocksSegment.length; i += 1) {
-				if (blocksSegment[i].frozen_balances_data) {
-					frozenSums.accounts_freeze_sum += blocksSegment[i].frozen_balances_data.accounts_freeze_sum;
-					frozenSums.committee_freeze_sum += blocksSegment[i].frozen_balances_data.committee_freeze_sum;
-				}
-			}
+
+			const accountsFreezeArray = blocksSegment
+				.map(({ frozen_balances_data: { accounts_freeze_sum  } }) => accounts_freeze_sum);
+			const committeeFreezeArray = blocksSegment
+				.map(({ frozen_balances_data: { committee_freeze_sum } }) => committee_freeze_sum);
+
+			frozenSums.accounts_freeze_sum = calculateAverage(accountsFreezeArray)
+				.integerValue(BN.ROUND_CEIL).toNumber();
+			frozenSums.committee_freeze_sum = calculateAverage(committeeFreezeArray)
+				.integerValue(BN.ROUND_CEIL).toNumber();
+
 			const startIntervalDate = startDate + (interval * (segment - 1));
 			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
 			frozenData.push({ startIntervalDateString, frozenSums });

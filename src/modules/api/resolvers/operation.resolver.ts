@@ -1,16 +1,20 @@
-import AbstractResolver, { validateArgs, validateSubscriptionArgs } from './abstract.resolver';
+import AbstractResolver, { handleError, validateArgs, validateSubscriptionArgs } from './abstract.resolver';
 import Operation from '../types/operation.type';
 import OperationService from '../../../services/operation.service';
 import TranasctionRepository from '../../../repositories/transaction.repository';
 import Transaction from '../types/transaction.type';
 import PaginatedResponse from '../types/paginated.response.type';
+import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
+import { ExtendedHistoryForm } from '../forms/history.forms';
 import { GetOperationsHistoryForm, NewOperationSubscribe } from '../forms/operation.forms';
 import { Args, Resolver, Query, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
 import Block from '../types/block.type';
+import HistoryOperationCountObject from '../types/history.operation.count.type';
 import BlockRepository from '../../../repositories/block.repository';
+import HISTORY_INTERVAL_ERROR from '../../../errors/history.interval.error';
 
 const paginatedOperations = PaginatedResponse(Operation);
 
@@ -57,6 +61,18 @@ export default class OperationResolver extends AbstractResolver {
 			offset,
 			{ from, to, accounts, contracts, assets, tokens, operations, sort },
 		);
+	}
+
+	// Query
+	@Query(() => HistoryOperationCountObject)
+	@validateArgs(ExtendedHistoryForm)
+	@handleError({
+		[HISTORY_INTERVAL_ERROR.INVALID_DATES]: [HTTP.CODE.BAD_REQUEST],
+		[HISTORY_INTERVAL_ERROR.INVALID_INTERVAL]: [HTTP.CODE.BAD_REQUEST],
+		[HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS]: [HTTP.CODE.BAD_REQUEST],
+	})
+	getOperationCountHistory(@Args() historyOpts?: ExtendedHistoryForm) {
+		return this.operationService.getOperationCountHistory(historyOpts);
 	}
 
 	// FieldResolver
