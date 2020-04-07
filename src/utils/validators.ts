@@ -6,7 +6,13 @@ import { IOperationRelation } from '../interfaces/IOperation';
 import { ok } from 'assert';
 import { removeDuplicates } from './common';
 
-const { isAccountId, isContractId, isAssetId, isVestingBalanceId } = validators;
+const {
+	isAccountId,
+	isContractId,
+	isAssetId,
+	isVestingBalanceId,
+	isProposalId,
+ } = validators;
 
 export function isMongoObjectId(value: string | number | any): value is mongoose.Types.ObjectId {
 	return mongoose.Types.ObjectId.isValid(value);
@@ -28,10 +34,10 @@ export function relationResponse(
 	return {
 		from: validateArray(from, [isAccountId, isContractId, isVestingBalanceId], {
 			unique: true,
-			canBeEmpty: false,
+			canBeEmpty: true,
 			canBeNotArray: false,
 		}),
-		to: validateArray(to, [isAccountId, isContractId], {
+		to: validateArray(to, [isAccountId, isContractId, isAssetId, isProposalId], {
 			unique: true,
 			canBeEmpty: true,
 			canBeNotArray: true,

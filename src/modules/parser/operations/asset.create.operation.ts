@@ -12,25 +12,8 @@ import { dateFromUtcIso } from '../../../utils/format';
 type OP_ID = ECHO.OPERATION_ID.ASSET_CREATE;
 
 const bitAssetDefaultFields: IAssetDefaultBitasset = {
-	current_feed: {
-		settlement_price: {
-			base: { amount: 0, asset_id: '1.3.0' },
-			quote: { amount: 0, asset_id: '1.3.0' },
-		},
-		maintenance_collateral_ratio: 1750,
-		maximum_short_squeeze_ratio: 1500,
-		core_exchange_rate: {
-			base: { amount: 0, asset_id: '1.3.0' },
-			quote: { amount: 0, asset_id: '1.3.0' },
-		},
-	},
-	settlement_price: {
-		base: { amount: 0, asset_id: '1.3.0' },
-		quote: { amount: 0, asset_id: '1.3.0' },
-	},
 	force_settled_volume: 0,
 	feeds: [],
-	settlement_fund: 0,
 };
 
 export default class AssetCreateOperation extends AbstractOperation<OP_ID> {

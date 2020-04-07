@@ -30,6 +30,7 @@ export default class AssetIssueOperation extends AbstractOperation<OP_ID> {
 		);
 		return this.validateRelation({
 			from: [body.issuer],
+			to: [body.issue_to_account],
 			assets: [body.fee.asset_id, body.asset_to_issue.asset_id],
 			accounts: [body.issue_to_account],
 		});

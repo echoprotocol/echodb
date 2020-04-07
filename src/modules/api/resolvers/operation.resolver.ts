@@ -7,7 +7,7 @@ import PaginatedResponse from '../types/paginated.response.type';
 import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import { ExtendedHistoryForm } from '../forms/history.forms';
-import { GetOperationsHistoryForm, NewOperationSubscribe } from '../forms/operation.forms';
+import { GetOperationsHistoryForm, NewOperationSubscribe, GetSubjectOperation } from '../forms/operation.forms';
 import { Args, Resolver, Query, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
@@ -73,6 +73,31 @@ export default class OperationResolver extends AbstractResolver {
 	})
 	getOperationCountHistory(@Args() historyOpts?: ExtendedHistoryForm) {
 		return this.operationService.getOperationCountHistory(historyOpts);
+	}
+
+	@Query(() => paginatedOperations)
+	@validateArgs(GetSubjectOperation)
+	getSubjectOperations(
+		@Args() {
+			count,
+			offset,
+			subject,
+			relationSubjects,
+			accounts,
+			contracts,
+			assets,
+			tokens,
+			operations,
+			sort,
+		}: GetSubjectOperation,
+		) {
+		return this.operationService.getSubjectOperations(
+			count,
+			offset,
+			subject,
+			relationSubjects,
+			{ accounts, contracts, assets, tokens, operations, sort },
+		);
 	}
 
 	// FieldResolver

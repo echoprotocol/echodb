@@ -28,4 +28,5 @@ export interface IAccount {
 	addresses: string[];
 	concentration_balance_rate?: number;
 	concentration_history_rate?: number;
+	evm_address?: string;
 }

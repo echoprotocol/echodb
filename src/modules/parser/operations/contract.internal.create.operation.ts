@@ -42,6 +42,7 @@ export default class ContractInternalCreateOperaiton extends AbstractOperation<O
 		await this.createContractAndContractBalance(contract, body.value);
 		return this.validateRelation({
 			from: [body.caller],
+			to: [contract.id],
 			assets: [body.value.asset_id, ...body.supported_asset_id === undefined ? [] : [body.supported_asset_id]],
 			contracts: contract.id,
 		});

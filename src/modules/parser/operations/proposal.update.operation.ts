@@ -13,6 +13,7 @@ export default class ProposalUpdateOperation extends AbstractOperation<OP_ID> {
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		return this.validateRelation({
 			from: [body.fee_paying_account],
+			to: [body.proposal],
 			assets: [body.fee.asset_id],
 		});
 	}
