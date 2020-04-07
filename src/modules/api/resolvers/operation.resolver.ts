@@ -11,7 +11,6 @@ import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
 import Block from '../types/block.type';
 import BlockRepository from '../../../repositories/block.repository';
-import { paginatedBlocks } from './block.resolver';
 
 const paginatedOperations = PaginatedResponse(Operation);
 
@@ -60,7 +59,7 @@ export default class OperationResolver extends AbstractResolver {
 		);
 	}
 
-	@Query(() => paginatedBlocks)
+	@Query(() => paginatedOperations)
 	@validateArgs(GetSubjectOperation)
 	getSubjectOperations(
 		@Args() {
