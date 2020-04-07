@@ -113,19 +113,22 @@ export default class OperationService {
 			);
 		}
 
+		const generalQuery = accountsQuery.length ?
+			{ $and: [{ $or: accountsQuery }, { $or: mainQuery }] }
+			: { $or: mainQuery };
+		const queryWithOperationFilter = params.operations ? {
+			...generalQuery,
+			id: { $in: params.operations },
+		} : generalQuery;
 		const [items, total] = await Promise.all([
-			this.operationRepository.find(accountsQuery.length ?
-				{ $and: [{ $or: accountsQuery }, { $or: mainQuery }] }
-				: { $or: mainQuery },
+			this.operationRepository.find(queryWithOperationFilter,
 				null, {
 					skip: offset,
 					limit: count,
 					sort: { timestamp: params.sort === API.SORT_DESTINATION.ASC ? 1 : -1 },
 				},
 			),
-			this.operationRepository.count({
-				$or: [fromQuery, toQuery],
-			}),
+			this.operationRepository.count(queryWithOperationFilter),
 		]);
 
 		return {
