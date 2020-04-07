@@ -30,6 +30,7 @@ export default class BalanceClaimOperation extends AbstractOperation<OP_ID> {
 		);
 		return this.validateRelation({
 			from: [body.deposit_to_account],
+			to: [body.total_claimed.asset_id],
 			assets: [body.fee.asset_id, body.total_claimed.asset_id],
 		});
 	}

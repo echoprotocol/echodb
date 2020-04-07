@@ -17,6 +17,7 @@ export default class Account {
 	@Field() top_n_control_flags: number;
 	@Field() concentration_balance_rate?: number;
 	@Field() concentration_history_rate?: number;
+	@Field() evm_address: string;
 
 	@Field(() => [String])
 	whitelisting_accounts: string[];

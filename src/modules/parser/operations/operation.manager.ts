@@ -61,6 +61,7 @@ import ContractInternalCallOperation from './contract.internal.call.operation';
 import ContractRepository from '../../../repositories/contract.repository';
 import EchoRepository from '../../../repositories/echo.repository';
 import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
+import EVMAddressRegister from './evm.address.register.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -122,6 +123,7 @@ export default class OperationManager {
 		contractUpdateOperation: ContractUpdateOperation,
 		contractInternalCreateOperation: ContractInternalCreateOperaiton,
 		contractInternalCallOperation: ContractInternalCallOperation,
+		evmAddressRegisterOperation: EVMAddressRegister,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -170,6 +172,7 @@ export default class OperationManager {
 			contractUpdateOperation,
 			contractInternalCreateOperation,
 			contractInternalCallOperation,
+			evmAddressRegisterOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;

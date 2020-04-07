@@ -30,20 +30,12 @@ const bitassetSchema = createSchema<IAssetBitasset>({
 	id: String,
 	current_feed_publication_time: Date,
 	force_settled_volume: Number,
-	settlement_fund: Number,
 	feeds: [Schema.Types.Mixed],
 	options: {
 		short_backing_asset: String,
 		feed_lifetime_sec: Number,
 		minimum_feeds: Number,
 	},
-	current_feed: {
-		maintenance_collateral_ratio: Number,
-		maximum_short_squeeze_ratio: Number,
-		settlement_price: assetPriceSchema,
-		core_exchange_rate: assetPriceSchema,
-	},
-	settlement_price: assetPriceSchema,
 }, {
 	_id: false,
 });

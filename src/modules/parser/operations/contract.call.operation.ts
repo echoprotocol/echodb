@@ -91,6 +91,7 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		const relations = await this.contractService.handleErc20Logs(dContract, contractResult, dBlock);
 		return this.validateAndMergeRelations({
 			from: [body.registrar],
+			to: [body.callee],
 			assets: [body.fee.asset_id],
 			contracts: [body.callee],
 			tokens: [body.callee],
