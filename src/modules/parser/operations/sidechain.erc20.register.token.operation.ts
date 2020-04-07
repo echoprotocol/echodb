@@ -52,7 +52,7 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 		const [balance, account] = await Promise.all([
 			this.echoRepository.getAccountTokenBalance(contractDocument.id, body.account),
 			this.accountRepository.findById(body.account),
-		])
+		]);
 		await this.balanceRepository.updateOrCreateByAccountAndContract(account._id, contractDocument._id, balance);
 		await this.erc20TokenRepository.create({ ...token, owner: ownerDocument, contract: contractDocument });
 		return this.validateRelation({ from: [body.account], assets: [body.fee.asset_id] });

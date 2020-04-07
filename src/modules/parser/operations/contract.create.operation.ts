@@ -62,7 +62,8 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			const contractMongoId = (await this.createContractAndContractBalance(contract, body.value))._id;
 			if (contract.type === CONTRACT.TYPE.ERC20) {
 				const balance = await this.echoRepository.getAccountTokenBalance(contract.id, body.registrar);
-				await this.balanceRepository.updateOrCreateByAccountAndContract(registrar._id, contractMongoId, balance);
+				await this.balanceRepository
+					.updateOrCreateByAccountAndContract(registrar._id, contractMongoId, balance);
 			}
 		} else logger.warn('x86_64 contract creation parsing is not implemented');
 		return this.validateRelation({

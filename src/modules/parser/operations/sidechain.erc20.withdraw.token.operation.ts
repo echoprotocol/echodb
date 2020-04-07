@@ -14,13 +14,13 @@ export default class SidechainErc20WithdrawTokenOperation extends AbstractOperat
 		private accountRepository: AccountRepository,
 		private balanceRepository: BalanceRepository,
 		private contractRepository: ContractRepository,
-		private echoRepository: EchoRepository
+		private echoRepository: EchoRepository,
 	) {
 		super();
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
-		const contractId = (await this.echoRepository.getObject(body.erc20_token)).id
+		const contractId = (await this.echoRepository.getObject(body.erc20_token)).id;
 		const [account, contract] = await Promise.all([
 			await this.accountRepository.findById(body.account),
 			await this.contractRepository.findById(contractId),

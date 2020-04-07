@@ -265,11 +265,16 @@ export default class OperationManager {
 				break;
 			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN:
 				const erc20TokenContract = (await this.erc20TokenRepository.findOne({
-					eth_address: (<ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN>>body).erc20_token_addr
+					eth_address:
+						(<ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN>>body).erc20_token_addr,
 				})).contract;
 				contract = await this.contractRepository.findByMongoId(erc20TokenContract);
+				break;
 			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN:
-				contractId = (await this.echoRepository.getObject((<ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN>>body).erc20_token)).id
+				contractId = (await this.echoRepository.getObject(
+					(<ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN>>body).erc20_token,
+				)).id;
+				break;
 			case ECHO.OPERATION_ID.CONTRACT_CREATE:
 			case ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE:
 				const [contractType, contractResult] = await this.echoRepository.getContractResult(<string>result);
