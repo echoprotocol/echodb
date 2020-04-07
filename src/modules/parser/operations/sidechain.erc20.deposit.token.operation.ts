@@ -1,9 +1,9 @@
 import AbstractOperation from './abstract.operation';
-import AccountRepository from 'repositories/account.repository';
+import AccountRepository from '../../../repositories/account.repository';
 import BalanceRepository from '../../../repositories/balance.repository';
-import ContractRepository from 'repositories/contract.repository';
+import ContractRepository from '../../../repositories/contract.repository';
+import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 import * as ECHO from '../../../constants/echo.constants';
-import ERC20TokenRepository from 'repositories/erc20-token.repository';
 
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN;
 
