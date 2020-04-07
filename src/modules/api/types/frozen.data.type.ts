@@ -9,5 +9,6 @@ class FrozenBalancesMap {
 
 @ObjectType()
 export default class FrozenBalancesData {
+	@Field(() => BlockFrozenData) currentFrozenData: BlockFrozenData;
 	@Field(() => [FrozenBalancesMap]) frozenData: FrozenBalancesMap[];
 }
