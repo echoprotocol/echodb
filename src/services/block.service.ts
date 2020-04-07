@@ -53,7 +53,7 @@ export default class BlockService {
 			throw new Error(ERROR.INVALID_HISTORY_PARAMS);
 		}
 		const startDate = Date.parse(historyOpts.from) / 1000;
-		const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
+		const endDate = Date.parse(historyOpts.to || new Date().toISOString()) / 1000;
 		const interval = historyOpts.interval;
 		if (endDate <= startDate) {
 			throw new Error(ERROR.INVALID_DATES);
