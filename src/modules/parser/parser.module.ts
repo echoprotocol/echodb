@@ -74,7 +74,7 @@ export default class ParserModule extends AbstractModule {
 					_block: dBlock,
 				});
 				for (const [opIndex, operation] of tx.operations.entries()) {
-					await this.operationManager.parse(operation, tx.operation_results[opIndex], dTx);
+					await this.operationManager.parse(operation, tx.operation_results[opIndex], dTx, dBlock);
 				}
 				this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 			}

@@ -51,8 +51,8 @@ export class GetOperationsHistoryForm extends QueryOptions {
 
 @ArgsType()
 export class GetSubjectOperation extends QueryOptions {
-	@rule(Joi.string().required())
-	@Field(() => SubjectTypes)
+	@rule(Joi.string())
+	@Field(() => SubjectTypes, { nullable: false })
 	subject: string;
 
 	@rule(stringsArraySchema)
