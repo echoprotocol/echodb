@@ -37,7 +37,7 @@ export function parseHistoryOptions(historyOpts: HistoryOptionsWithInterval) {
 		throw new ProcessingError(HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS);
 	}
 	const startDate = Date.parse(historyOpts.from) / 1000;
-	const endDate = Date.parse(historyOpts.to || Date.now().toString()) / 1000;
+	const endDate = Date.parse(historyOpts.to || new Date().toString()) / 1000;
 	const interval = historyOpts.interval;
 	if (endDate <= startDate) {
 		throw new ProcessingError(HISTORY_INTERVAL_ERROR.INVALID_DATES);
