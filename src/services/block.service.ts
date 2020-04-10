@@ -118,7 +118,7 @@ export default class BlockService {
 		const currentDate = new Date(block.timestamp).toISOString();
 		const currentDateMs = new BN(Date.parse(currentDate));
 		const yesterdayDate = new Date(currentDateMs.minus(DAY).toNumber()).toISOString();
-		const blocksPer24Hours = (await this.getBlocksByDate(currentDate, yesterdayDate)).length;
+		const blocksPer24Hours = (await this.getBlocksByDate(yesterdayDate, currentDate)).length;
 		const averageBlockTime = blocksPer24Hours !== 0 ? new BN(DAY).div(blocksPer24Hours) : new BN(0);
 		return averageBlockTime.integerValue().toNumber();
 	}

@@ -30,6 +30,15 @@ interface GetHistoryParameters {
 	[KEY.SORT]?: API.SORT_DESTINATION;
 }
 
+interface GetSubjectHistoryParameters {
+	[KEY.ACCOUNTS]?: AccountId[];
+	[KEY.CONTRACTS]?: ContractId[];
+	[KEY.ASSETS]?: AssetId[];
+	[KEY.TOKENS]?: ContractId[];
+	[KEY.OPERATIONS]?: ECHO.OPERATION_ID[];
+	[KEY.SORT]?: API.SORT_DESTINATION;
+}
+
 type Query = { [x: string]: Query[] | { $in: (ECHO.OPERATION_ID | string)[] } | { $or: Query[] } };
 
 export default class OperationService {
@@ -133,45 +142,54 @@ export default class OperationService {
 		count: number,
 		offset: number,
 		subject: string,
-		relationsSubjects?: string[],
-		params?: GetHistoryParameters,
+		from?: string,
+		to?: string,
+		params?: GetSubjectHistoryParameters,
 	) {
-		type query = {
-			'_relation.from'?: Object,
-			'_relation.to'?: Object,
-			'_relation.contracts'?: Object,
-			'_relation.assets'?: Object,
-			'_relation.tokens'?: Object,
-		};
-		const query: Query = {};
-		const fromQuery: query = {
+		const fromQuery: any = {
 			'_relation.from': { $in: [subject] },
 		};
-		const toQuery: query = {
+		const toQuery: any = {
 			'_relation.to': { $in: [subject] },
 		};
-		if (relationsSubjects.length) {
-			fromQuery['_relation.to'] = { $in: relationsSubjects };
-			toQuery['_relation.from'] = { $in: relationsSubjects };
+
+		const mainQuery = [];
+		const generalQuery: any = {};
+
+		if (from && to) {
+			if (![from, to].includes(subject)) {
+				return {
+					total: 0,
+					items: [],
+				};
+			}
+			fromQuery['_relation.from']['$in'] = [from];
+			toQuery['_relation.to']['$in'] = [to];
+			mainQuery.push(fromQuery, toQuery);
+			generalQuery['$and'] = mainQuery;
+		} else {
+			if (from) {
+				if (from === subject) {
+					mainQuery.push(fromQuery);
+				} else {
+					fromQuery['_relation.from']['$in'] = [from];
+					mainQuery.push(fromQuery, toQuery);
+				}
+				generalQuery['$and'] = mainQuery;
+			} else if (to) {
+				if (to === subject) {
+					mainQuery.push(toQuery);
+				} else {
+					toQuery['_relation.to']['$in'] = [to];
+					mainQuery.push(fromQuery, toQuery);
+				}
+				generalQuery['$and'] = mainQuery;
+			} else {
+				mainQuery.push(fromQuery, toQuery);
+				generalQuery['$or'] = mainQuery;
+			}
 		}
 
-		const mainQuery = [fromQuery, toQuery];
-		if (params.contracts) mainQuery.push({ '_relation.contracts': { $in: params.contracts } });
-		if (params.assets) mainQuery.push({ '_relation.assets': { $in: params.assets } });
-		if (params.tokens) mainQuery.push({ '_relation.tokens': { $in: params.tokens } });
-
-		const accountsQuery = [];
-		if (params.accounts) {
-			accountsQuery.push(
-				{ '_relation.from': { $in: params.accounts } },
-				{ '_relation.to': { $in: params.accounts } },
-				{ '_relation.accounts': { $in: params.accounts } },
-			);
-		}
-
-		const generalQuery = accountsQuery.length ?
-			{ $and: [{ $or: accountsQuery }, { $or: mainQuery }] }
-			: { $or: mainQuery };
 		const queryWithOperationFilter = params.operations ? {
 			...generalQuery,
 			id: { $in: params.operations },
