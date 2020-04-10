@@ -3,7 +3,7 @@ import AccountId from '../types/account.id.type';
 import AssetId from '../types/asset.id.type';
 import ContractId from '../types/contract.id.type';
 import SubjectTypes from '../types/account.or.contract.or.asset.id.type';
-import RelationsTypes from '../types/account.or.contract.or.asset.id.type.or.proposal';
+// import AccountIdOrContractIdOrAssetIdOrProposalId from '../types/account.or.contract.or.asset.id.type.or.proposal';
 import PaginationForm from './pagination.form';
 import * as ECHO from '../../../constants/echo.constants';
 import * as API from '../../../constants/api.constants';
@@ -55,9 +55,13 @@ export class GetSubjectOperation extends QueryOptions {
 	@Field(() => SubjectTypes, { nullable: false })
 	subject: string;
 
-	@rule(stringsArraySchema)
-	@Field(() => [RelationsTypes], { nullable: true, defaultValue: [] })
-	relationSubjects: string[];
+	@rule(Joi.string())
+	@Field(() => AccountId, { nullable: true })
+	from: string;
+
+	@rule(Joi.string())
+	@Field(() => AccountId, { nullable: true })
+	to: string;
 }
 
 @ArgsType()
