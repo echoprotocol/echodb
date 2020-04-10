@@ -82,8 +82,8 @@ export default class OperationResolver extends AbstractResolver {
 			count,
 			offset,
 			subject,
-			from,
-			to,
+			fromFilter,
+			toFilter,
 			accounts,
 			contracts,
 			assets,
@@ -96,8 +96,8 @@ export default class OperationResolver extends AbstractResolver {
 			count,
 			offset,
 			subject,
-			from,
-			to,
+			fromFilter,
+			toFilter,
 			{ accounts, contracts, assets, tokens, operations, sort },
 		);
 	}

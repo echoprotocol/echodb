@@ -169,12 +169,20 @@ export default class OperationService {
 			generalQuery['$and'] = mainQuery;
 		} else {
 			if (from) {
-				fromQuery['_relation.from']['$in'] = [from];
-				mainQuery.push(fromQuery, toQuery);
+				if (from === subject) {
+					mainQuery.push(fromQuery);
+				} else {
+					fromQuery['_relation.from']['$in'] = [from];
+					mainQuery.push(fromQuery, toQuery);
+				}
 				generalQuery['$and'] = mainQuery;
 			} else if (to) {
-				toQuery['_relation.to']['$in'] = [to];
-				mainQuery.push(fromQuery, toQuery);
+				if (to === subject) {
+					mainQuery.push(toQuery);
+				} else {
+					toQuery['_relation.to']['$in'] = [to];
+					mainQuery.push(fromQuery, toQuery);
+				}
 				generalQuery['$and'] = mainQuery;
 			} else {
 				mainQuery.push(fromQuery, toQuery);

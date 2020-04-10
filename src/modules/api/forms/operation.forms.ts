@@ -3,12 +3,12 @@ import AccountId from '../types/account.id.type';
 import AssetId from '../types/asset.id.type';
 import ContractId from '../types/contract.id.type';
 import SubjectTypes from '../types/account.or.contract.or.asset.id.type';
-// import AccountIdOrContractIdOrAssetIdOrProposalId from '../types/account.or.contract.or.asset.id.type.or.proposal';
 import PaginationForm from './pagination.form';
 import * as ECHO from '../../../constants/echo.constants';
 import * as API from '../../../constants/api.constants';
 import * as Joi from 'joi';
 import { ArgsType, Field } from 'type-graphql';
+import AccountOrContractOrAssetIdTypeOrProposal from '../types/account.or.contract.or.asset.id.type.or.proposal';
 
 const stringsArraySchema = Joi.array().items(Joi.string()).max(100).unique();
 
@@ -56,12 +56,12 @@ export class GetSubjectOperation extends QueryOptions {
 	subject: string;
 
 	@rule(Joi.string())
-	@Field(() => AccountId, { nullable: true })
-	from: string;
+	@Field(() => AccountOrContractOrAssetIdTypeOrProposal, { nullable: true })
+	fromFilter: string;
 
 	@rule(Joi.string())
-	@Field(() => AccountId, { nullable: true })
-	to: string;
+	@Field(() => AccountOrContractOrAssetIdTypeOrProposal, { nullable: true })
+	toFilter: string;
 }
 
 @ArgsType()
