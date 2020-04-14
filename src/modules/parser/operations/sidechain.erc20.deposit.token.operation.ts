@@ -21,7 +21,7 @@ export default class SidechainErc20DepositTokenOperation extends AbstractOperati
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		const erc20TokenContract = (await this.erc20TokenRepository.findOne({
-			eth_address: body.erc20_token_addr,
+			eth_addr: body.erc20_token_addr,
 		})).contract;
 		const [account, contract] = await Promise.all([
 			await this.accountRepository.findById(body.account),
