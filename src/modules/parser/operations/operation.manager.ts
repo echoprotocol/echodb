@@ -204,6 +204,8 @@ export default class OperationManager {
 		};
 		if (this.map[id]) {
 			operation._relation = await this.parseKnownOperation(id, body, result, dTx ? dTx._block : dBlock);
+			operation.body = <T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_WITH_INJECTED_VIRTUALS<T> : unknown>
+				await this.map[id].modifyBody(operation, result, dBlock);
 		} else {
 			logger.warn(`Operation ${id} is not supported`);
 			const feePayer = OPERATION.FEE_PAYER_FIELD[id];
