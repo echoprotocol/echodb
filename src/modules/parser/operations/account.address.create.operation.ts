@@ -3,6 +3,7 @@ import EchoRepository from 'repositories/echo.repository';
 import AbstractOperation from './abstract.operation';
 import { addToArray } from '../../../utils/common';
 import * as ECHO from '../../../constants/echo.constants';
+import { IOperation } from '../../../interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.ACCOUNT_ADDRESS_CREATE;
 
@@ -27,5 +28,13 @@ export default class AccountAddressCreateOperation extends AbstractOperation<OP_
 			from: [body.owner],
 			assets: [body.fee.asset_id],
 		});
+	}
+
+	async modifyBody(operation: IOperation<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
+		const { body } = operation;
+
+		body.address = result;
+
+		return body;
 	}
 }

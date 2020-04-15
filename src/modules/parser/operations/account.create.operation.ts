@@ -1,6 +1,7 @@
 import AbstractOperation from './abstract.operation';
 import AccountRepository from 'repositories/account.repository';
 import RedisConnection from 'connections/redis.connection';
+import { IOperation } from '../../../interfaces/IOperation';
 import * as ECHO from '../../../constants/echo.constants';
 import * as REDIS from '../../../constants/redis.constants';
 
@@ -46,6 +47,13 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 			accounts: [result],
 			assets: [body.fee.asset_id],
 		});
+	}
+
+	async modifyBody(operation: IOperation<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
+		const { body } = operation;
+		body.new_account_id = result;
+
+		return body;
 	}
 
 }
