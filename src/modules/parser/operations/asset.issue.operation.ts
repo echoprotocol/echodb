@@ -4,6 +4,7 @@ import AssetRepository from '../../../repositories/asset.repository';
 import BalanceRepository from 'repositories/balance.repository';
 import EchoService from '../../../services/echo.service';
 import * as ECHO from '../../../constants/echo.constants';
+import { IOperation } from 'interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.ASSET_ISSUE;
 export default class AssetIssueOperation extends AbstractOperation<OP_ID> {
@@ -34,5 +35,15 @@ export default class AssetIssueOperation extends AbstractOperation<OP_ID> {
 			assets: [body.fee.asset_id, body.asset_to_issue.asset_id],
 			accounts: [body.issue_to_account],
 		});
+	}
+
+	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
+		const { body } = <IOperation<OP_ID>>operation;
+		body.sender = body.issuer;
+		body.asset = body.asset_to_issue.asset_id;
+		body.receiver = body.issue_to_account;
+		const asset = (await this.assetRepository.findById(body.asset_to_issue.asset_id)).dynamic.current_supply;
+		body.current_asset_total_supply = asset;
+		return <any>body;
 	}
 }

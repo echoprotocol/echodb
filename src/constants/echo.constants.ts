@@ -445,6 +445,10 @@ interface AssetIssueOperation {
 	asset_to_issue: IAmount;
 	issue_to_account: AccountId;
 	extensions: ExtensionsArr;
+	sender?: AccountId;
+	asset?: AssetId;
+	receiver?: AccountId;
+	current_asset_total_supply?: string;
 }
 
 interface AssetReserveOperation {
@@ -452,6 +456,9 @@ interface AssetReserveOperation {
 	payer: AccountId;
 	amount_to_reserve: IAmount;
 	extensions: ExtensionsArr;
+	sender?: AccountId;
+	asset?: AssetId;
+	current_asset_total_supply?: string;
 }
 
 interface AssetFundFeePoolOperation {
@@ -459,6 +466,9 @@ interface AssetFundFeePoolOperation {
 	from_account: AccountId;
 	asset_id: AssetId;
 	amount: string | number;
+	sender?: AccountId;
+	asset?: AssetId;
+	current_asset_fee_pool?: string;
 }
 
 interface AssetPublishFeed {
