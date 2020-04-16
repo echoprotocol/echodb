@@ -42,8 +42,6 @@ export default class AssetIssueOperation extends AbstractOperation<OP_ID> {
 		body.sender = body.issuer;
 		body.asset = body.asset_to_issue.asset_id;
 		body.receiver = body.issue_to_account;
-		const asset = (await this.assetRepository.findById(body.asset_to_issue.asset_id)).dynamic.current_supply;
-		body.current_asset_total_supply = asset;
 		return <any>body;
 	}
 }

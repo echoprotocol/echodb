@@ -44,8 +44,6 @@ export default class AssetReserveOperation extends AbstractOperation<OP_ID> {
 		const { body } = <IOperation<OP_ID>>operation;
 		body.sender = body.payer;
 		body.asset = body.amount_to_reserve.asset_id;
-		const asset = (await this.assetRepository.findById(body.amount_to_reserve.asset_id)).dynamic.current_supply;
-		body.current_asset_total_supply = asset;
 		return <any>body;
 	}
 }

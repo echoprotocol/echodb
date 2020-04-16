@@ -58,8 +58,6 @@ export default class AssetFundFeePoolOperation extends AbstractOperation<OP_ID> 
 		const { body } = <IOperation<OP_ID>>operation;
 		body.sender = body.from_account;
 		body.asset = body.asset_id;
-		const asset = (await this.assetRepository.findById(body.asset_id)).dynamic.fee_pool;
-		body.current_asset_fee_pool = asset;
 		return <any>body;
 	}
 }

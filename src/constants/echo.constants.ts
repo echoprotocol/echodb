@@ -448,7 +448,6 @@ interface AssetIssueOperation {
 	sender?: AccountId;
 	asset?: AssetId;
 	receiver?: AccountId;
-	current_asset_total_supply?: string;
 }
 
 interface AssetReserveOperation {
@@ -458,7 +457,6 @@ interface AssetReserveOperation {
 	extensions: ExtensionsArr;
 	sender?: AccountId;
 	asset?: AssetId;
-	current_asset_total_supply?: string;
 }
 
 interface AssetFundFeePoolOperation {
@@ -468,7 +466,6 @@ interface AssetFundFeePoolOperation {
 	amount: string | number;
 	sender?: AccountId;
 	asset?: AssetId;
-	current_asset_fee_pool?: string;
 }
 
 interface AssetPublishFeed {
@@ -477,12 +474,17 @@ interface AssetPublishFeed {
 	asset_id: AssetId;
 	core_exchange_rate: IAssetPrice;
 	extensions: ExtensionsArr;
+	sender?: AccountId;
+	asset?: AssetId;
+	feeded_asset_price?: string;
 }
 
 interface AssetClaimFeesOperation {
 	fee: IAmount;
 	issuer: AccountId;
 	amount_to_claim: IAmount;
+	sender?: AccountId;
+	asset?: AssetId;
 }
 
 interface AssetUpdateFeedProducers {
