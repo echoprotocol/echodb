@@ -1,6 +1,5 @@
 import AbstractOperation from './abstract.operation';
 import * as ECHO from '../../../constants/echo.constants';
-import { IOperation } from 'interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.PROPOSAL_CREATE;
 
