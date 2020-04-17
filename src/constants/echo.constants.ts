@@ -615,7 +615,7 @@ interface ProposalCreateOperation {
 	fee_paying_account: AccountId;
 	proposed_ops: unknown[];
 	expiration_time: string;
-	review_period_seconds: number;
+	review_period_seconds?: number;
 	extensions: ExtensionsArr;
 }
 
