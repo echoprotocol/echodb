@@ -14,12 +14,12 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 		dBlock: TDoc<IBlock>,
 	): IOperationRelation | Promise<IOperationRelation>;
 
-	public modifyBody<Y extends ECHO.KNOWN_OPERATION>(
+	public async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
 		operation: IOperation<Y>,
 		_result: Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<Y> : unknown,
 		_dBlock: TDoc<IBlock>,
-	): Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_PROPS<Y> | Promise<ECHO.OPERATION_PROPS<Y>> : unknown
-	{ return operation.body; }
+	): Promise<Y extends ECHO.KNOWN_OPERATION ?
+		ECHO.OPERATION_PROPS<Y> : unknown> { return operation.body; }
 
 	public postInternalParse<Y extends ECHO.KNOWN_OPERATION>(
 		_body: ECHO.OPERATION_PROPS<Y>,

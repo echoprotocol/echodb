@@ -63,6 +63,7 @@ import EchoRepository from '../../../repositories/echo.repository';
 import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 import EVMAddressRegister from './evm.address.register.operation';
 import { IERC20TokenObject } from 'echojs-lib/types/interfaces/objects';
+import SidechainEthSendDepositOperation from './sidechain.eth.send.deposit.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -109,6 +110,7 @@ export default class OperationManager {
 		transferToAddressOperation: TransferToAddressOperation,
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
 		sidechainEthDepositOperation: SidechainEthDepositOperation,
+		sidechainEthSendDepositOperation: SidechainEthSendDepositOperation,
 		sidechainEthWithdrawOperation: SidechainEthWithdrawOperation,
 		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation,
 		sidechainEthApproveWithdrawOperation: SidechainEthApproveWithdrawOperation,
@@ -158,6 +160,7 @@ export default class OperationManager {
 			transferToAddressOperation,
 			sidechainEthCreateAddressOperation,
 			sidechainEthDepositOperation,
+			sidechainEthSendDepositOperation,
 			sidechainEthWithdrawOperation,
 			sidechainEthApproveAddressOperation,
 			sidechainEthApproveWithdrawOperation,
