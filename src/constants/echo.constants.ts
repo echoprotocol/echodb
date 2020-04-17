@@ -1,4 +1,4 @@
-import { AccountId, AssetId, ContractResultId } from '../types/echo';
+import { AccountId, AssetId, ContractResultId, WithdrawId } from '../types/echo';
 import { BlockVirtualOperation, constants } from 'echojs-lib';
 
 export const ZERO_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.0`;
@@ -124,6 +124,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: SidechainErc20RegisterTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: SidechainErc20DepositTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: SidechainErc20WithdrawTokenOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN]: SidechainErc20SendWithdrawTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: SidechainErc20ApproveTokenWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: SidechainErc20Issue;
 	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: SidechainErc20Burn;
@@ -188,7 +189,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_BURN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: unknown;
-	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: unknown;
@@ -773,6 +774,15 @@ interface SidechainErc20WithdrawTokenOperation {
 	to: string;
 	erc20_token: string;
 	value: string;
+	withdraw_id?: WithdrawId;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20SendWithdrawTokenOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	withdraw_id: WithdrawId;
+	sidchain_erc_20_withdraw_token?: string;
 	extensions: ExtensionsArr;
 }
 
