@@ -42,8 +42,6 @@ export default class AssetReserveOperation extends AbstractOperation<OP_ID> {
 
 	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
 		const { body } = <IOperation<OP_ID>>operation;
-		body.sender = body.payer;
-		body.asset = body.amount_to_reserve.asset_id;
 		return <any>body;
 	}
 }

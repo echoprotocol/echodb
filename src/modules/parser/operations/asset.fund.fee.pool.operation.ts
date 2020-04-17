@@ -56,8 +56,6 @@ export default class AssetFundFeePoolOperation extends AbstractOperation<OP_ID> 
 
 	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
 		const { body } = <IOperation<OP_ID>>operation;
-		body.sender = body.from_account;
-		body.asset = body.asset_id;
 		return <any>body;
 	}
 }

@@ -39,9 +39,6 @@ export default class AssetIssueOperation extends AbstractOperation<OP_ID> {
 
 	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
 		const { body } = <IOperation<OP_ID>>operation;
-		body.sender = body.issuer;
-		body.asset = body.asset_to_issue.asset_id;
-		body.receiver = body.issue_to_account;
 		return <any>body;
 	}
 }

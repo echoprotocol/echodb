@@ -45,8 +45,6 @@ export default class AssetClaimFeesOperation extends AbstractOperation<OP_ID> {
 
 	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation:  IOperation<Y>) {
 		const { body } = <IOperation<OP_ID>>operation;
-		body.sender = body.issuer;
-		body.asset = body.amount_to_claim.asset_id;
 		return <any>body;
 	}
 
