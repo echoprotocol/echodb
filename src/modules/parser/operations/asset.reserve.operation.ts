@@ -5,7 +5,6 @@ import BalanceRepository from 'repositories/balance.repository';
 import EchoService from '../../../services/echo.service';
 import * as ECHO from '../../../constants/echo.constants';
 import { BigNumber as BN } from 'bignumber.js';
-import { IOperation } from 'interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.ASSET_RESERVE;
 export default class AssetReserveOperation extends AbstractOperation<OP_ID> {
@@ -40,8 +39,4 @@ export default class AssetReserveOperation extends AbstractOperation<OP_ID> {
 		});
 	}
 
-	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
-		const { body } = <IOperation<OP_ID>>operation;
-		return <any>body;
-	}
 }

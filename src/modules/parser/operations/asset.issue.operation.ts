@@ -4,7 +4,6 @@ import AssetRepository from '../../../repositories/asset.repository';
 import BalanceRepository from 'repositories/balance.repository';
 import EchoService from '../../../services/echo.service';
 import * as ECHO from '../../../constants/echo.constants';
-import { IOperation } from 'interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.ASSET_ISSUE;
 export default class AssetIssueOperation extends AbstractOperation<OP_ID> {
@@ -37,8 +36,4 @@ export default class AssetIssueOperation extends AbstractOperation<OP_ID> {
 		});
 	}
 
-	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
-		const { body } = <IOperation<OP_ID>>operation;
-		return <any>body;
-	}
 }

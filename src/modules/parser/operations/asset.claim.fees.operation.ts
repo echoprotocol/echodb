@@ -5,7 +5,6 @@ import BalanceRepository from 'repositories/balance.repository';
 import BN from 'bignumber.js';
 import EchoService from 'services/echo.service';
 import * as ECHO from '../../../constants/echo.constants';
-import { IOperation } from 'interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.ASSET_CLAIM_FEES;
 
@@ -41,11 +40,6 @@ export default class AssetClaimFeesOperation extends AbstractOperation<OP_ID> {
 			from: [body.issuer],
 			assets: [body.fee.asset_id, body.amount_to_claim.asset_id],
 		});
-	}
-
-	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation:  IOperation<Y>) {
-		const { body } = <IOperation<OP_ID>>operation;
-		return <any>body;
 	}
 
 }

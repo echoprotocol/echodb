@@ -8,7 +8,6 @@ import { BigNumber as BN } from 'bignumber.js';
 import { IAsset } from '../../../interfaces/IAsset';
 import { IAccount } from '../../../interfaces/IAccount';
 import { TDoc } from '../../../types/mongoose';
-import { IOperation } from 'interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.ASSET_FUND_FEE_POOL;
 export default class AssetFundFeePoolOperation extends AbstractOperation<OP_ID> {
@@ -54,8 +53,4 @@ export default class AssetFundFeePoolOperation extends AbstractOperation<OP_ID> 
 		await dAsset.save();
 	}
 
-	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
-		const { body } = <IOperation<OP_ID>>operation;
-		return <any>body;
-	}
 }
