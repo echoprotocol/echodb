@@ -17,9 +17,4 @@ export default class ProposalCreateOperation extends AbstractOperation<OP_ID> {
 			assets: [body.fee.asset_id],
 		});
 	}
-
-	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
-		const { body } = <IOperation<OP_ID>>operation;
-		return <any>body;
-	}
 }
