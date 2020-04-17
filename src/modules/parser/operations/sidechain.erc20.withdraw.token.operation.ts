@@ -4,6 +4,7 @@ import BalanceRepository from '../../../repositories/balance.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import EchoRepository from '../../../repositories/echo.repository';
 import * as ECHO from '../../../constants/echo.constants';
+import { IERC20TokenObject } from 'echojs-lib/types/interfaces/objects';
 
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN;
 
@@ -20,7 +21,7 @@ export default class SidechainErc20WithdrawTokenOperation extends AbstractOperat
 	}
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
-		const contractId = (await this.echoRepository.getObject(body.erc20_token)).id;
+		const contractId = (<IERC20TokenObject>(await this.echoRepository.getObject(body.erc20_token))).contract;
 		const [account, contract] = await Promise.all([
 			await this.accountRepository.findById(body.account),
 			await this.contractRepository.findById(contractId),

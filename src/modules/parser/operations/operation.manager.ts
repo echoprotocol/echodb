@@ -62,6 +62,7 @@ import ContractRepository from '../../../repositories/contract.repository';
 import EchoRepository from '../../../repositories/echo.repository';
 import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 import EVMAddressRegister from './evm.address.register.operation';
+import { IERC20TokenObject } from 'echojs-lib/types/interfaces/objects';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -274,9 +275,9 @@ export default class OperationManager {
 				contract = await this.contractRepository.findByMongoId(erc20TokenContract);
 				break;
 			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN:
-				contractId = (await this.echoRepository.getObject(
+				contractId = (<IERC20TokenObject>(await this.echoRepository.getObject(
 					(<ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN>>body).erc20_token,
-				)).id;
+				))).contract;
 				break;
 			case ECHO.OPERATION_ID.CONTRACT_CREATE:
 			case ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE:
