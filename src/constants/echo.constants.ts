@@ -467,6 +467,7 @@ interface AssetPublishFeed {
 	asset_id: AssetId;
 	core_exchange_rate: IAssetPrice;
 	extensions: ExtensionsArr;
+	feeded_asset_price?: string;
 }
 
 interface AssetClaimFeesOperation {
@@ -614,7 +615,7 @@ interface ProposalCreateOperation {
 	fee_paying_account: AccountId;
 	proposed_ops: unknown[];
 	expiration_time: string;
-	review_period_seconds: number;
+	review_period_seconds?: number;
 	extensions: ExtensionsArr;
 }
 
