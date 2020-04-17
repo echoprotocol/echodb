@@ -9,7 +9,7 @@ export default class SidechainEthDepositOperation extends AbstractOperation<OP_I
 	id = ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT;
 
 	constructor(
-    private echoRepository: EchoRepository,
+		private echoRepository: EchoRepository,
 	) {
 		super();
 	}

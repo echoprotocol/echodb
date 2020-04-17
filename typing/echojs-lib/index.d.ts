@@ -165,13 +165,13 @@ declare module 'echojs-lib' {
 	}
 
 	export interface GlobalProperties {
-		id: string,
+		id: string;
 		parameters: {
 			echorand_config: {
-				_creator_count: number
-			}
-		},
-		active_committee_members: Array<Array<string>>,
+				_creator_count: number,
+			},
+		};
+		active_committee_members: string[][];
 	}
 
 	export interface ContractResult {
@@ -202,12 +202,12 @@ declare module 'echojs-lib' {
 	}
 
 	export default interface AccountEthAddress {
-		id: string,
-		account: string,
-		eth_addr: string,
-		is_approved: boolean,
-		approves: Array<any>,
-		extensions: Array<any>,
+		id: string;
+		account: string;
+		eth_addr: string;
+		is_approved: boolean;
+		approves: any[];
+		extensions: any[];
 	}
 
 	export type BigNumber = import('echojs-lib/types').BigNumber;
