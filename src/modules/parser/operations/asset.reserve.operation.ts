@@ -38,5 +38,4 @@ export default class AssetReserveOperation extends AbstractOperation<OP_ID> {
 			assets: [body.fee.asset_id, body.amount_to_reserve.asset_id],
 		});
 	}
-
 }

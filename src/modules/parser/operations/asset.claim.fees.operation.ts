@@ -41,5 +41,4 @@ export default class AssetClaimFeesOperation extends AbstractOperation<OP_ID> {
 			assets: [body.fee.asset_id, body.amount_to_claim.asset_id],
 		});
 	}
-
 }

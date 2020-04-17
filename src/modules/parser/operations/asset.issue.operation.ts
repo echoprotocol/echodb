@@ -35,5 +35,4 @@ export default class AssetIssueOperation extends AbstractOperation<OP_ID> {
 			accounts: [body.issue_to_account],
 		});
 	}
-
 }
