@@ -2,6 +2,9 @@ import AbstractOperation from './abstract.operation';
 import * as ECHO from '../../../constants/echo.constants';
 import EchoRepository from '../../../repositories/echo.repository';
 import { IOperation } from 'interfaces/IOperation';
+import BlockRepository from 'repositories/block.repository';
+import TransactionRepository from 'repositories/transaction.repository';
+import OperationRepository from 'repositories/operation.repository';
 
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE;
 
@@ -10,6 +13,9 @@ export default class SidechainBtcApproveAggregateOperation extends AbstractOpera
 
 	constructor(
 		private echoRepository: EchoRepository,
+		private blockRepository: BlockRepository,
+		private operationRepository: OperationRepository,
+		private transactionRepository: TransactionRepository,
 	) {
 		super();
 	}
@@ -26,6 +32,14 @@ export default class SidechainBtcApproveAggregateOperation extends AbstractOpera
 		const committeeMemberId = body.committee_member_id;
 		const committeeMember = await this.echoRepository.getCommitteeMemberByAccount(committeeMemberId);
 		body.committee_member = committeeMember;
+
+		const relatedOperation = (await this.operationRepository.find({
+			id: ECHO.OPERATION_ID.SIDECHAIN_BTC_AGGREGATE,
+			'body.transaction_id': body.transaction_id,
+		}))[0];
+		const block = await this.blockRepository.findByMongoId(relatedOperation.block);
+		body.aggregate_request_operation =
+			`${block.round}-${relatedOperation.trx_in_block}-${relatedOperation.op_in_trx}`;
 		return <any>body;
 	}
 

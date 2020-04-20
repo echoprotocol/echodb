@@ -27,6 +27,7 @@ export default class SidechainBtcDepositOperation extends AbstractOperation<OP_I
 		const committeeMember = await this.echoRepository.getCommitteeMemberByAccount(committeeMemberId);
 		body.committee_member = committeeMember;
 		body.amount = body.tx_info.out.amount;
+		body.transaction_hash = body.tx_info.out.tx_id;
 		return <any>body;
 	}
 

@@ -29,6 +29,7 @@ export default class SidechainBtcCreateIntermediateDepositOperation extends Abst
 		const depositAddress = await this.echoRepository.getObject(addressId);
 		body.committee_member = committeeMember;
 		body.deposit_address = (<any>depositAddress).deposit_address.address;
+		body.transaction_hash = body.tx_info.out.tx_id;
 		return <any>body;
 	}
 

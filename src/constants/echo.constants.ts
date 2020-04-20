@@ -193,7 +193,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_BTC_DEPOSIT]: unknown;
@@ -806,6 +806,7 @@ interface SidechainBtcCreateAddress {
 	fee: IAmount;
 	account: string;
 	backup_address: string;
+	received_deposit_address?: string;
 }
 
 interface BtcTransactionDetails {
@@ -826,6 +827,7 @@ interface SidechainBtcCreateIntermediateDeposit {
 	extensions: ExtensionsArr;
 	committee_member?: Committee;
 	deposit_address?: string;
+	transaction_hash?: string;
 }
 
 interface SidechainBtcIntermediateDeposit {
@@ -847,6 +849,7 @@ interface SidechainBtcDeposit {
 	extensions: ExtensionsArr;
 	amount?: number;
 	committee_member?: Committee;
+	transaction_hash?: string;
 }
 
 interface SidechainBtcWithdraw {
@@ -879,6 +882,7 @@ interface SidechainBtcApproveAggregate {
 	transaction_id: string;
 	extensions: ExtensionsArr;
 	committee_member?: Committee;
+	aggregate_request_operation?: string;
 }
 
 interface ContractUpdateOperation {
