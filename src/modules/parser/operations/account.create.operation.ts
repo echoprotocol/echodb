@@ -49,11 +49,14 @@ export default class AccountCreateOperation extends AbstractOperation<OP_ID> {
 		});
 	}
 
-	async modifyBody(operation: IOperation<OP_ID>, result: ECHO.OPERATION_RESULT<OP_ID>) {
-		const { body } = operation;
-		body.new_account_id = result;
+	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
+		operation: IOperation<Y>,
+		result: Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<Y> : unknown,
+	) {
+		const { body } = <IOperation<OP_ID>>operation;
+		body.new_account_id = (<ECHO.OPERATION_RESULT<OP_ID>>result);
 
-		return body;
+		return <any>body;
 	}
 
 }
