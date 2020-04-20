@@ -1,5 +1,6 @@
 import { AccountId, AssetId, ContractResultId } from '../types/echo';
 import { BlockVirtualOperation, constants } from 'echojs-lib';
+import Committee from 'echojs-lib/types/interfaces/Committee';
 
 export const ZERO_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.0`;
 export const CORE_ASSET = '1.3.0';
@@ -809,9 +810,11 @@ interface SidechainBtcCreateAddress {
 
 interface BtcTransactionDetails {
 	block_number: number | string;
-	tx_id: string;
-	value: number | string;
-	vout: number;
+	out: {
+		tx_id: string;
+		index: number;
+		amount: number
+	};
 }
 
 interface SidechainBtcCreateIntermediateDeposit {
@@ -821,6 +824,8 @@ interface SidechainBtcCreateIntermediateDeposit {
 	btc_address_id: string;
 	tx_info: BtcTransactionDetails;
 	extensions: ExtensionsArr;
+	committee_member?: Committee;
+	deposit_address?: string;
 }
 
 interface SidechainBtcIntermediateDeposit {
@@ -829,6 +834,8 @@ interface SidechainBtcIntermediateDeposit {
 	intermediate_address_id: string;
 	signature: string;
 	extensions: ExtensionsArr;
+	committee_member?: Committee;
+	intermediate_address?: string;
 }
 
 interface SidechainBtcDeposit {
@@ -838,6 +845,8 @@ interface SidechainBtcDeposit {
 	intermediate_deposit_id: string;
 	tx_info: BtcTransactionDetails;
 	extensions: ExtensionsArr;
+	amount?: number;
+	committee_member?: Committee;
 }
 
 interface SidechainBtcWithdraw {
@@ -861,6 +870,7 @@ interface SidechainBtcAggregate {
 	cpfp_depth: number;
 	signatures: [number, string];
 	extensions: ExtensionsArr;
+	committee_member?: Committee;
 }
 
 interface SidechainBtcApproveAggregate {
@@ -868,6 +878,7 @@ interface SidechainBtcApproveAggregate {
 	committee_member_id: string;
 	transaction_id: string;
 	extensions: ExtensionsArr;
+	committee_member?: Committee;
 }
 
 interface ContractUpdateOperation {

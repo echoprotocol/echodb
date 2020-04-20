@@ -259,4 +259,11 @@ export default class EchoRepository {
 		}
 	}
 
+	async getCommitteeMemberByAccount(accountId: AccountId): Promise<any> {
+		try {
+			return await this.echoConnection.echo.api.getCommitteeMemberByAccount(accountId);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getCommitteeMemberByAccount');
+		}
+	}
 }

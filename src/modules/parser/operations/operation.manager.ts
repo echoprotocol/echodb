@@ -63,6 +63,11 @@ import EchoRepository from '../../../repositories/echo.repository';
 import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 import EVMAddressRegister from './evm.address.register.operation';
 import { IERC20TokenObject } from 'echojs-lib/types/interfaces/objects';
+import SidechainBtcCreateIntermediateDepositOperation from './sidechain.btc.create.intermediate.deposit.operation';
+import SidechainBtcIntermediateDepositOperation from './sidechain.btc.intermediate.deposit.operation';
+import SidechainBtcDepositOperation from './sidechain.btc.deposit.operation';
+import SidechainBtcAggregateOperation from './sidechain.btc.aggregate.operation';
+import SidechainBtcApproveAggregateOperation from './sidechain.btc.approve.aggregate.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -107,6 +112,11 @@ export default class OperationManager {
 		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
 		accountAddressCreateOperation: AccountAddressCreateOperation,
 		transferToAddressOperation: TransferToAddressOperation,
+		sidechainBtcDepositOperation: SidechainBtcDepositOperation,
+		sidechainBtcIntermediateDepositOperation: SidechainBtcIntermediateDepositOperation,
+		sidechainBtcCreateIntermediateDepositOperation: SidechainBtcCreateIntermediateDepositOperation,
+		sidechainBtcAggregateOperation: SidechainBtcAggregateOperation,
+		sidechainBtcApproveAggregateOperation: SidechainBtcApproveAggregateOperation,
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
 		sidechainEthDepositOperation: SidechainEthDepositOperation,
 		sidechainEthWithdrawOperation: SidechainEthWithdrawOperation,
@@ -164,6 +174,11 @@ export default class OperationManager {
 			contractFundPoolOperation,
 			blockRewardOperation,
 			contractWhitelistOperation,
+			sidechainBtcAggregateOperation,
+			sidechainBtcDepositOperation,
+			sidechainBtcIntermediateDepositOperation,
+			sidechainBtcCreateIntermediateDepositOperation,
+			sidechainBtcApproveAggregateOperation,
 			sidechainEthIssueOperation,
 			sidechainEthBurnOperation,
 			sidechainErc20RegisterTokenOperation,

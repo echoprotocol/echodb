@@ -201,6 +201,15 @@ declare module 'echojs-lib' {
 		virtual_op: number;
 	}
 
+	export default interface Committee {
+		id: string;
+		committee_member_account: string;
+		url: string;
+		eth_address: string;
+		btc_public_key: string;
+		last_committee_quit: number;
+	}
+
 	export type BigNumber = import('echojs-lib/types').BigNumber;
 	type IObject = import('echojs-lib/types/interfaces/objects').IObject;
 	type Contract = import('echojs-lib/types/interfaces/Contract').Contract;
@@ -222,6 +231,7 @@ declare module 'echojs-lib' {
 		getContractResult(resultId: string): Promise<[number, ContractResult]>;
 		getBlockVirtualOperations(blockNum: number): Promise<[BlockVirtualOperation]>;
 		getAssets(ids: string[]): Promise<Asset[]>;
+		getCommitteeMemberByAccount(accountId: string, force?: boolean): Promise<Committee>;
 		callContractNoChangingState(
 			contractId: string,
 			accountId: string,
