@@ -333,6 +333,7 @@ interface AccountCreateOperation {
 	owner_special_authority?: Authority;
 	active_special_authority?: Authority;
 	evm_address?: string;
+	new_account_id?: string;
 }
 
 interface AccountUpdateOperation {
@@ -663,6 +664,7 @@ interface AccountAddressCreateOperation {
 	owner: AccountId;
 	label: string;
 	extensions: ExtensionsArr;
+	address?: string;
 }
 
 interface TransferToAddressOperation {
