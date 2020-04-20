@@ -3,7 +3,7 @@ import { BlockVirtualOperation, constants } from 'echojs-lib';
 
 export const ZERO_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.0`;
 export const CORE_ASSET = '1.3.0';
-
+export const COMMITTEE_GLOBAL_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.1`;
 export const CONNECT_STATUS = 'connect';
 
 export enum OPERATION_ID {
@@ -792,6 +792,7 @@ interface SidechainErc20ApproveTokenWithdrawOperation {
 	fee: IAmount;
 	committee_member_id: AccountId;
 	withdraw_id: number;
+	sidchain_erc_20_withdraw_token?: string;
 	extensions: ExtensionsArr;
 }
 
@@ -801,6 +802,7 @@ interface SidechainErc20Issue {
 	account: string;
 	token: string;
 	amount: string;
+	sidchain_erc_20_deposit_token?: string;
 	extensions: ExtensionsArr;
 }
 
@@ -810,6 +812,7 @@ interface SidechainErc20Burn {
 	account: string;
 	token: string;
 	amount: string;
+	sidchain_erc_20_withdraw_token?: string;
 	extensions: ExtensionsArr;
 }
 

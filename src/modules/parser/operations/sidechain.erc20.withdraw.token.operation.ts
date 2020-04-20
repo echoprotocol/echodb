@@ -34,10 +34,13 @@ export default class SidechainErc20WithdrawTokenOperation extends AbstractOperat
 		});
 	}
 
-	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>, result: ECHO.OPERATION_RESULT<OP_ID>) {
+	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
+		operation: IOperation<Y>,
+		result: Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<Y> : unknown,
+	) {
 		const { body } = <IOperation<OP_ID>>operation;
 		if (result) {
-			body.withdraw_id = result;
+			body.withdraw_id = (<ECHO.OPERATION_RESULT<OP_ID>>result);
 		}
 		return <any>body;
 	}
