@@ -19,7 +19,7 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 		_result: Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<Y> : unknown,
 		_dBlock: TDoc<IBlock>,
 	): Promise<Y extends ECHO.KNOWN_OPERATION ?
-		ECHO.OPERATION_PROPS<Y> : unknown> { return operation.body; }
+	ECHO.OPERATION_PROPS<Y> : unknown> { return operation.body; }
 
 	public postInternalParse<Y extends ECHO.KNOWN_OPERATION>(
 		_body: ECHO.OPERATION_PROPS<Y>,
