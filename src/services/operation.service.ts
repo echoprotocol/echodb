@@ -7,6 +7,7 @@ import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHisto
 import { IOperation } from '../interfaces/IOperation';
 import { parseHistoryOptions } from '../utils/common';
 import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
+import BlockRepository from 'repositories/block.repository';
 
 export enum KEY {
 	FROM = 'from',
@@ -45,7 +46,18 @@ export default class OperationService {
 
 	constructor(
 		readonly operationRepository: OperationRepository,
+		readonly blockRepository: BlockRepository,
 	) { }
+
+	async getOperationByBlockAndPosition(block: number, trxInBlock: number, opInTrx: number) {
+		const blockMongoId = (await this.blockRepository.findOne({ round: block }))._id;
+		const operation = await this.operationRepository.findOne({
+			block: blockMongoId,
+			trx_in_block: trxInBlock,
+			op_in_trx: opInTrx,
+		});
+		return operation;
+	}
 
 	async getHistory(count: number, offset: number, params: GetHistoryParameters) {
 		const query: Query = {};
