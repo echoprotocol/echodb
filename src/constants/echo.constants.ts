@@ -126,6 +126,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: SidechainErc20DepositTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN]: SidechainErc20SendDepositTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: SidechainErc20WithdrawTokenOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN]: SidechainErc20SendWithdrawTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: SidechainErc20ApproveTokenWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: SidechainErc20Issue;
 	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: SidechainErc20Burn;
@@ -189,7 +190,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ISSUE]: unknown;
 	[OPERATION_ID.SIDECHAIN_BURN]: unknown;
-	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: string;
+	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: unknown;
@@ -801,6 +802,14 @@ interface SidechainErc20WithdrawTokenOperation {
 	to: string;
 	erc20_token: string;
 	value: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20SendWithdrawTokenOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	withdraw_id: string;
+	sidchain_erc_20_withdraw_token?: string;
 	extensions: ExtensionsArr;
 }
 

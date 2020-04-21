@@ -26,7 +26,6 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 		private contractService: ContractService,
 		private echoRepository: EchoRepository,
 		private erc20TokenRepository: ERC20TokenRepository,
-		private operationRepository: OperationRepository,
 	) { super(); }
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, tokenId: ECHO.OPERATION_RESULT<OP_ID>, blockDocument: TDoc<IBlock>) {
