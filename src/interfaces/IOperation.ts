@@ -11,8 +11,9 @@ export type IOperation<T extends ECHO.OPERATION_ID = ECHO.OPERATION_ID> = {
 	_tx: MongoId;
 	timestamp: Date;
 	_relation: IOperationRelation | null;
-	op_in_trx: Number;
-	trx_in_block: Number;
+	op_in_trx: number;
+	trx_in_block: number;
+	vop_index: number | null;
 };
 
 // TODO: add block or tx

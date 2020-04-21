@@ -63,6 +63,8 @@ import EchoRepository from '../../../repositories/echo.repository';
 import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 import EVMAddressRegister from './evm.address.register.operation';
 import { IERC20TokenObject } from 'echojs-lib/types/interfaces/objects';
+import { BlockVirtualOperation } from 'echojs-lib';
+import ContractSelfdestructOperation from './contract.selfdestruct.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -95,6 +97,7 @@ export default class OperationManager {
 		balanceUnfreezeOperation: BalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
+		contractSelfdestructOperation: ContractSelfdestructOperation,
 		balanceClaimOperation: BalanceClaimOperation,
 		overrideTransferOperation: OverrideTransferOperation,
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
@@ -162,6 +165,7 @@ export default class OperationManager {
 			sidechainEthApproveAddressOperation,
 			sidechainEthApproveWithdrawOperation,
 			contractFundPoolOperation,
+			contractSelfdestructOperation,
 			blockRewardOperation,
 			contractWhitelistOperation,
 			sidechainEthIssueOperation,
@@ -189,6 +193,7 @@ export default class OperationManager {
 		dBlock?: TDoc<IBlock>,
 		opIndex: number = 0,
 		txIndex: number = 0,
+		vopIndex: number | null = null,
 	) {
 		const operation: IOperation<T> = {
 			id,
@@ -201,9 +206,15 @@ export default class OperationManager {
 			op_in_trx: opIndex,
 			trx_in_block: txIndex,
 			_relation: null,
+			vop_index: vopIndex,
 		};
 		if (this.map[id]) {
-			operation._relation = await this.parseKnownOperation(id, body, result, dTx ? dTx._block : dBlock);
+			operation._relation = await this.parseKnownOperation(
+				operation,
+				dTx ? dTx._block : dBlock,
+				dTx,
+				body.virtual_operations,
+			);
 			operation.body = <T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_WITH_INJECTED_VIRTUALS<T> : unknown>
 				await this.map[id].modifyBody(operation, result, dBlock);
 		} else {
@@ -221,22 +232,32 @@ export default class OperationManager {
 	}
 
 	async parseKnownOperation<T extends ECHO.KNOWN_OPERATION>(
-		id: T,
-		body: ECHO.OPERATION_WITH_INJECTED_VIRTUALS<T>,
-		result: ECHO.OPERATION_RESULT<T>,
+		operation: IOperation<T>,
 		dBlock: TDoc<IBlock>,
+		dTx: TDoc<ITransactionExtended> | null,
+		virtualOperations: BlockVirtualOperation['op'][],
 	): Promise<IOperationRelation> {
+		const { id, body, result } = operation;
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
 		const preInternalRelation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
 		if (body.fee) await this.balanceService.takeFee(preInternalRelation.from[0], body.fee);
-		if (body.virtual_operations) {
-			for (const virtualOperation of body.virtual_operations) {
+		if (virtualOperations) {
+			for (let vopIndex = 0; vopIndex < virtualOperations.length; vopIndex += 1) {
+				const virtualOperation = virtualOperations[vopIndex];
 				const [vopId, vopProps] = virtualOperation;
 				if (!this.map[vopId as ECHO.OPERATION_ID]) {
 					logger.warn(`Internal operation ${vopId} is not supported`);
 					continue;
 				}
-				await this.parseKnownOperation(vopId, vopProps, result, dBlock);
+				await this.parse(
+					[vopId, vopProps],
+					[null, result],
+					dTx,
+					dBlock,
+					operation.op_in_trx,
+					operation.trx_in_block,
+					vopIndex,
+				);
 			}
 		}
 

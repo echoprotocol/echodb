@@ -250,19 +250,19 @@ type NewParameters = {
 	};
 	sidechain_config: {
 		eth_contract_address: String;
-		eth_committee_update_method : IEth;
-		eth_gen_address_method : IEth;
-		eth_withdraw_method : IEth;
-		eth_update_addr_method : IEth;
-		eth_withdraw_token_method : IEth;
-		eth_collect_tokens_method : IEth;
+		eth_committee_update_method: IEth;
+		eth_gen_address_method: IEth;
+		eth_withdraw_method: IEth;
+		eth_update_addr_method: IEth;
+		eth_withdraw_token_method: IEth;
+		eth_collect_tokens_method: IEth;
 		eth_committee_updated_topic: String;
 		eth_gen_address_topic: String;
 		eth_deposit_topic: String;
 		eth_withdraw_topic: String;
 		erc20_deposit_topic: String;
 		ETH_asset_id: String;
-		fines : {
+		fines: {
 			generate_eth_address: Number;
 		}
 		waiting_blocks: Number;
@@ -557,7 +557,7 @@ interface ContractSelfdestruct {
 	extensions: ExtensionsArr;
 }
 
-interface VestingBalanceCreate{
+interface VestingBalanceCreate {
 	fee: IAmount;
 	creator: AccountId;
 	owner: AccountId;
@@ -574,7 +574,7 @@ interface VestingBalanceWithdraw {
 	extensions: ExtensionsArr;
 }
 
-interface CommitteeMemberUpdateGlobalParametersProps{
+interface CommitteeMemberUpdateGlobalParametersProps {
 	fee: IAmount;
 	new_parameters: NewParameters;
 	extensions: ExtensionsArr;
