@@ -7,7 +7,7 @@ import PaginationForm from './pagination.form';
 import * as ECHO from '../../../constants/echo.constants';
 import * as API from '../../../constants/api.constants';
 import * as Joi from 'joi';
-import { ArgsType, Field } from 'type-graphql';
+import { ArgsType, Field, Int } from 'type-graphql';
 import AccountOrContractOrAssetIdTypeOrProposal from '../types/account.or.contract.or.asset.id.type.or.proposal';
 
 const stringsArraySchema = Joi.array().items(Joi.string()).max(100).unique();
@@ -81,4 +81,19 @@ export class NewOperationSubscribe extends AbstractForm {
 	@rule(Joi.array().items(Joi.number()))
 	@Field(() => [ECHO.OPERATION_ID], { nullable: true })
 	operations: ECHO.OPERATION_ID[];
+}
+
+@ArgsType()
+export class GetSingleOperation extends AbstractForm {
+	@rule(Joi.number().positive())
+	@Field(() => Int)
+	block: number;
+
+	@rule(Joi.number().integer().min(0))
+	@Field(() => Int)
+	trxInBlock: number;
+
+	@rule(Joi.number().integer().min(0))
+	@Field(() => Int)
+	opInTrx: number;
 }
