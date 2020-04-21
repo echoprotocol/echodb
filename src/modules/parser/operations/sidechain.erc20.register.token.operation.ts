@@ -1,7 +1,9 @@
 import { IERC20TokenObject, IContractObject } from 'echojs-lib/types/interfaces/objects';
 import AbstractOperation from './abstract.operation';
 import BalanceRepository from '../../../repositories/balance.repository';
+import OperationRepository from '../../../repositories/operation.repository';
 import * as ECHO from '../../../constants/echo.constants';
+import { IOperation } from 'interfaces/IOperation';
 import EchoRepository from 'repositories/echo.repository';
 import ERC20TokenRepository from 'repositories/erc20-token.repository';
 import AccountRepository from 'repositories/account.repository';
@@ -24,6 +26,7 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 		private contractService: ContractService,
 		private echoRepository: EchoRepository,
 		private erc20TokenRepository: ERC20TokenRepository,
+		private operationRepository: OperationRepository,
 	) { super(); }
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, tokenId: ECHO.OPERATION_RESULT<OP_ID>, blockDocument: TDoc<IBlock>) {
@@ -56,5 +59,24 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 		await this.balanceRepository.updateOrCreateByAccountAndContract(account._id, contractDocument._id, balance);
 		await this.erc20TokenRepository.create({ ...token, owner: ownerDocument, contract: contractDocument });
 		return this.validateRelation({ from: [body.account], assets: [body.fee.asset_id] });
+	}
+
+	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
+		operation: IOperation<Y>,
+		result: Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<Y> : unknown,
+	) {
+		const { body } = <IOperation<OP_ID>>operation;
+
+		if (!result) {
+			return <any>body;
+		}
+
+		const contractRegisterObject = <any>
+				(await this.echoRepository.getObject(<ECHO.OPERATION_RESULT<OP_ID>>result));
+		if (contractRegisterObject) {
+			body.associated_contract = contractRegisterObject.contract;
+		}
+
+		return <any>body;
 	}
 }
