@@ -1,6 +1,6 @@
 import AbstractResolver, { handleError, validateArgs, validateSubscriptionArgs } from './abstract.resolver';
 import Operation from '../types/operation.type';
-import OperationService from '../../../services/operation.service';
+import OperationService, { ERROR } from '../../../services/operation.service';
 import TranasctionRepository from '../../../repositories/transaction.repository';
 import Transaction from '../types/transaction.type';
 import PaginatedResponse from '../types/paginated.response.type';
@@ -109,6 +109,9 @@ export default class OperationResolver extends AbstractResolver {
 
 	@Query(() => Operation, { nullable: true })
 	@validateArgs(GetSingleOperation)
+	@handleError({
+		[ERROR.BLOCK_NOT_FOUND]: [HTTP.CODE.BAD_REQUEST],
+	})
 	getOperationByBlockAndPosition(
 		@Args() {
 			block,
