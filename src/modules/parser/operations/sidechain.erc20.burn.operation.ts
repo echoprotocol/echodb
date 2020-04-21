@@ -27,7 +27,7 @@ export default class SidechainErc20BurnOperation extends AbstractOperation<OP_ID
 	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
 		const { body } = <IOperation<OP_ID>>operation;
 		const depositOperation =  await this.operationRepository.findOne({
-			withdraw_id: body.withdraw,
+			'body.withdraw_id': body.withdraw,
 			id: ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN,
 		});
 
