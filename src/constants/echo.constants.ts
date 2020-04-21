@@ -508,17 +508,17 @@ interface ContractCreateOperation {
 	eth_accuracy: true;
 	extensions: ExtensionsArr;
 
-  result?: {
-    contract_id: string;
-    logs: Array<{
-      address: string;
-      log: string[];
-      data: string;
-      block_num: number;
-      trx_num: number;
-      op_num: number;
-    }>,
-  };
+	result?: {
+		contract_id: string;
+		logs: {
+			address: string;
+			log: string[];
+			data: string;
+			block_num: number;
+			trx_num: number;
+			op_num: number;
+		}[],
+	};
 }
 
 interface ContractCallOperation {
