@@ -115,6 +115,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: SidechainEthCreateAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: SidechainEthDepositOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT]: SidechainEthSendDepositOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: SidechainEthWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
@@ -182,6 +183,7 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ISSUE]: unknown;
@@ -695,9 +697,18 @@ interface SidechainEthDepositOperation {
 	deposit_id: number;
 	account: AccountId;
 	value: number;
+	from_address?: string;
 	extensions: ExtensionsArr;
 }
 
+interface SidechainEthSendDepositOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	deposit_id: string;
+	extensions: ExtensionsArr;
+	amount?: number;
+	account?: AccountId;
+}
 interface SidechainEthWithdrawOperation {
 	fee: IAmount;
 	account: AccountId;

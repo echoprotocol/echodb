@@ -259,4 +259,11 @@ export default class EchoRepository {
 		}
 	}
 
+	async getEthAddress(accountId: string): Promise<any> {
+		try {
+			return await this.echoConnection.echo.api.getEthAddress(accountId);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getEthAddress');
+		}
+	}
 }
