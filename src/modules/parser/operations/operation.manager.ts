@@ -207,6 +207,7 @@ export default class OperationManager {
 			trx_in_block: txIndex,
 			_relation: null,
 			vop_index: vopIndex,
+			internal_operations_count: (body.virtual_operations && body.virtual_operations.length) || 0,
 		};
 		if (this.map[id]) {
 			operation._relation = await this.parseKnownOperation(

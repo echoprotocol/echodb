@@ -25,4 +25,5 @@ export default AbstractModel<IOperation<ECHO.OPERATION_ID>>(MODEL.NAME.OPERATION
 	trx_in_block: { type: Number, default: 0 },
 	_relation: relationSchema,
 	vop_index: { type: Number, required: false, default: null },
+	internal_operations_count: { type: Number, required: true, default: 0 },
 });
