@@ -1,7 +1,6 @@
 import { IERC20TokenObject, IContractObject } from 'echojs-lib/types/interfaces/objects';
 import AbstractOperation from './abstract.operation';
 import BalanceRepository from '../../../repositories/balance.repository';
-import OperationRepository from '../../../repositories/operation.repository';
 import * as ECHO from '../../../constants/echo.constants';
 import { IOperation } from 'interfaces/IOperation';
 import EchoRepository from 'repositories/echo.repository';
