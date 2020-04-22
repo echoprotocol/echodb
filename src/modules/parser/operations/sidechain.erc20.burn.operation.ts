@@ -4,10 +4,10 @@ import OperationRepository from '../../../repositories/operation.repository';
 import * as ECHO from '../../../constants/echo.constants';
 import { IOperation } from 'interfaces/IOperation';
 
-type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW;
+type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ERC20_BURN;
 
-export default class SidechainErc20ApproveTokenWithdrawOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW;
+export default class SidechainErc20BurnOperation extends AbstractOperation<OP_ID> {
+	id = ECHO.OPERATION_ID.SIDECHAIN_ERC20_BURN;
 
 	constructor(
 		private blockRepository: BlockRepository,
@@ -18,29 +18,30 @@ export default class SidechainErc20ApproveTokenWithdrawOperation extends Abstrac
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		return this.validateRelation({
-			from: [body.committee_member_id],
-			assets: [body.fee.asset_id],
+			from: [body.account],
+			to: [ECHO.COMMITTEE_GLOBAL_ACCOUNT],
+			assets: [ECHO.CORE_ASSET],
 		});
 	}
 
 	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
 		const { body } = <IOperation<OP_ID>>operation;
-		const withdrawOperation =  await this.operationRepository.findOne({
-			'body.withdraw_id': `1.18.${body.withdraw_id}`,
+		const depositOperation =  await this.operationRepository.findOne({
+			'body.withdraw_id': body.withdraw,
 			id: ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN,
 		});
 
-		if (!withdrawOperation) {
+		if (!depositOperation) {
 			return <any>body;
 		}
 
-		const block = await this.blockRepository.findByMongoId(withdrawOperation.block);
+		const block = await this.blockRepository.findByMongoId(depositOperation.block);
 
 		if (!block) {
 			return <any>body;
 		}
 
-		const result = `${block.round}-${withdrawOperation.trx_in_block}-${withdrawOperation.op_in_trx}`;
+		const result = `${block.round}-${depositOperation.trx_in_block}-${depositOperation.op_in_trx}`;
 		body.sidchain_erc_20_withdraw_token = result;
 		return <any>body;
 	}
