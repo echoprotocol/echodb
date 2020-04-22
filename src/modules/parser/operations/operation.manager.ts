@@ -44,7 +44,6 @@ import SidechainErc20WithdrawTokenOperation from './sidechain.erc20.withdraw.tok
 import SidechainErc20ApproveTokenWithdrawOperation from './sidechain.erc20.approve.token.withdraw.operation';
 import SidechainErc20BurnOperation from './sidechain.erc20.burn.operation';
 import SidechainErc20IssueOperation from './sidechain.erc20.issue.operation';
-import SidechainErc20SendWithdrawOperation from './sidechain.erc20.send.withdraw.token.operation';
 import ContractUpdateOperation from './contract.update.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
@@ -128,7 +127,6 @@ export default class OperationManager {
 		sidechainErc20ApproveTokenWithdrawOperation: SidechainErc20ApproveTokenWithdrawOperation,
 		sidechainErc20BurnOperation: SidechainErc20BurnOperation,
 		sidechainErc20IssueOperation: SidechainErc20IssueOperation,
-		sidechainErc20SendWithdrawOperation: SidechainErc20SendWithdrawOperation,
 		contractUpdateOperation: ContractUpdateOperation,
 		contractInternalCreateOperation: ContractInternalCreateOperaiton,
 		contractInternalCallOperation: ContractInternalCallOperation,
@@ -181,7 +179,6 @@ export default class OperationManager {
 			sidechainErc20ApproveTokenWithdrawOperation,
 			sidechainErc20BurnOperation,
 			sidechainErc20IssueOperation,
-			sidechainErc20SendWithdrawOperation,
 			contractUpdateOperation,
 			contractInternalCreateOperation,
 			contractInternalCallOperation,

@@ -20,7 +20,7 @@ export default class SidechainErc20BurnOperation extends AbstractOperation<OP_ID
 		return this.validateRelation({
 			from: [body.account],
 			to: [ECHO.COMMITTEE_GLOBAL_ACCOUNT],
-			assets: [body.fee.asset_id],
+			assets: [ECHO.CORE_ASSET],
 		});
 	}
 
