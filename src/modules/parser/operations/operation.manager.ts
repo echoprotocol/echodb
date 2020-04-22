@@ -71,7 +71,7 @@ import SidechainBtcIntermediateDepositOperation from './sidechain.btc.intermedia
 import SidechainBtcDepositOperation from './sidechain.btc.deposit.operation';
 import SidechainBtcAggregateOperation from './sidechain.btc.aggregate.operation';
 import SidechainBtcApproveAggregateOperation from './sidechain.btc.approve.aggregate.operation';
-import SidechainBtcCreateAddress from './sidechain.btc.create.address.operation';
+import SidechainBtcCreateAddressOperation from './sidechain.btc.create.address.operation';
 import ContractSelfdestructOperation from './contract.selfdestruct.operation';
 import SidechainEthSendDepositOperation from './sidechain.eth.send.deposit.operation';
 
@@ -119,7 +119,7 @@ export default class OperationManager {
 		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
 		accountAddressCreateOperation: AccountAddressCreateOperation,
 		transferToAddressOperation: TransferToAddressOperation,
-		sidechainBtcCreateAddress: SidechainBtcCreateAddress,
+		sidechainBtcCreateAddressOperation: SidechainBtcCreateAddressOperation,
 		sidechainBtcDepositOperation: SidechainBtcDepositOperation,
 		sidechainBtcIntermediateDepositOperation: SidechainBtcIntermediateDepositOperation,
 		sidechainBtcCreateIntermediateDepositOperation: SidechainBtcCreateIntermediateDepositOperation,
@@ -187,7 +187,7 @@ export default class OperationManager {
 			contractSelfdestructOperation,
 			blockRewardOperation,
 			contractWhitelistOperation,
-			sidechainBtcCreateAddress,
+			sidechainBtcCreateAddressOperation,
 			sidechainBtcAggregateOperation,
 			sidechainBtcDepositOperation,
 			sidechainBtcIntermediateDepositOperation,

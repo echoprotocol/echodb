@@ -4,7 +4,7 @@ import { IOperation } from 'interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS;
 
-export default class SidechainBtcCreateAddress extends AbstractOperation<OP_ID> {
+export default class SidechainBtcCreateAddressOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS;
 
 	constructor() {
