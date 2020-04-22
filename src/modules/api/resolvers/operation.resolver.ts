@@ -1,13 +1,18 @@
 import AbstractResolver, { handleError, validateArgs, validateSubscriptionArgs } from './abstract.resolver';
 import Operation from '../types/operation.type';
-import OperationService from '../../../services/operation.service';
+import OperationService, { ERROR } from '../../../services/operation.service';
 import TranasctionRepository from '../../../repositories/transaction.repository';
 import Transaction from '../types/transaction.type';
 import PaginatedResponse from '../types/paginated.response.type';
 import * as HTTP from '../../../constants/http.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import { ExtendedHistoryForm } from '../forms/history.forms';
-import { GetOperationsHistoryForm, NewOperationSubscribe, GetSubjectOperation } from '../forms/operation.forms';
+import {
+	GetOperationsHistoryForm,
+	NewOperationSubscribe,
+	GetSubjectOperation,
+	GetSingleOperation,
+} from '../forms/operation.forms';
 import { Args, Resolver, Query, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
@@ -100,6 +105,21 @@ export default class OperationResolver extends AbstractResolver {
 			toFilter,
 			{ accounts, contracts, assets, tokens, operations, sort },
 		);
+	}
+
+	@Query(() => Operation, { nullable: true })
+	@validateArgs(GetSingleOperation)
+	@handleError({
+		[ERROR.BLOCK_NOT_FOUND]: [HTTP.CODE.BAD_REQUEST],
+	})
+	getOperationByBlockAndPosition(
+		@Args() {
+			block,
+			trxInBlock,
+			opInTrx,
+		}: GetSingleOperation,
+	) {
+		return this.operationService.getOperationByBlockAndPosition(block, trxInBlock, opInTrx);
 	}
 
 	// FieldResolver

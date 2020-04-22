@@ -1,10 +1,10 @@
-import { AccountId, AssetId, ContractResultId } from '../types/echo';
+import { AccountId, AssetId, ContractResultId, WithdrawId } from '../types/echo';
 import { BlockVirtualOperation, constants } from 'echojs-lib';
 import Committee from 'echojs-lib/types/interfaces/Committee';
 
 export const ZERO_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.0`;
 export const CORE_ASSET = '1.3.0';
-
+export const COMMITTEE_GLOBAL_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.1`;
 export const CONNECT_STATUS = 'connect';
 
 export enum OPERATION_ID {
@@ -116,6 +116,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: SidechainEthCreateAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: SidechainEthDepositOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT]: SidechainEthSendDepositOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: SidechainEthWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
@@ -125,6 +126,7 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: SidechainErc20RegisterTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: SidechainErc20DepositTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: SidechainErc20WithdrawTokenOperation;
+	[OPERATION_ID.SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN]: SidechainErc20SendWithdrawTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: SidechainErc20ApproveTokenWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: SidechainErc20Issue;
 	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: SidechainErc20Burn;
@@ -183,13 +185,15 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ISSUE]: unknown;
 	[OPERATION_ID.SIDECHAIN_BURN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: unknown;
-	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: string;
+	[OPERATION_ID.SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: unknown;
@@ -251,19 +255,19 @@ type NewParameters = {
 	};
 	sidechain_config: {
 		eth_contract_address: String;
-		eth_committee_update_method : IEth;
-		eth_gen_address_method : IEth;
-		eth_withdraw_method : IEth;
-		eth_update_addr_method : IEth;
-		eth_withdraw_token_method : IEth;
-		eth_collect_tokens_method : IEth;
+		eth_committee_update_method: IEth;
+		eth_gen_address_method: IEth;
+		eth_withdraw_method: IEth;
+		eth_update_addr_method: IEth;
+		eth_withdraw_token_method: IEth;
+		eth_collect_tokens_method: IEth;
 		eth_committee_updated_topic: String;
 		eth_gen_address_topic: String;
 		eth_deposit_topic: String;
 		eth_withdraw_topic: String;
 		erc20_deposit_topic: String;
 		ETH_asset_id: String;
-		fines : {
+		fines: {
 			generate_eth_address: Number;
 		}
 		waiting_blocks: Number;
@@ -508,6 +512,18 @@ interface ContractCreateOperation {
 	supported_asset_id?: string;
 	eth_accuracy: true;
 	extensions: ExtensionsArr;
+
+	result?: {
+		contract_id: string;
+		logs: {
+			address: string;
+			log: string[];
+			data: string;
+			block_num: number;
+			trx_num: number;
+			op_num: number;
+		}[],
+	};
 }
 
 interface ContractCallOperation {
@@ -546,7 +562,7 @@ interface ContractSelfdestruct {
 	extensions: ExtensionsArr;
 }
 
-interface VestingBalanceCreate{
+interface VestingBalanceCreate {
 	fee: IAmount;
 	creator: AccountId;
 	owner: AccountId;
@@ -563,7 +579,7 @@ interface VestingBalanceWithdraw {
 	extensions: ExtensionsArr;
 }
 
-interface CommitteeMemberUpdateGlobalParametersProps{
+interface CommitteeMemberUpdateGlobalParametersProps {
 	fee: IAmount;
 	new_parameters: NewParameters;
 	extensions: ExtensionsArr;
@@ -696,9 +712,18 @@ interface SidechainEthDepositOperation {
 	deposit_id: number;
 	account: AccountId;
 	value: number;
+	from_address?: string;
 	extensions: ExtensionsArr;
 }
 
+interface SidechainEthSendDepositOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	deposit_id: string;
+	extensions: ExtensionsArr;
+	amount?: number;
+	account?: AccountId;
+}
 interface SidechainEthWithdrawOperation {
 	fee: IAmount;
 	account: AccountId;
@@ -776,6 +801,15 @@ interface SidechainErc20WithdrawTokenOperation {
 	to: string;
 	erc20_token: string;
 	value: string;
+	withdraw_id?: WithdrawId;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20SendWithdrawTokenOperation {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	withdraw_id: WithdrawId;
+	sidchain_erc_20_withdraw_token?: string;
 	extensions: ExtensionsArr;
 }
 
@@ -783,6 +817,7 @@ interface SidechainErc20ApproveTokenWithdrawOperation {
 	fee: IAmount;
 	committee_member_id: AccountId;
 	withdraw_id: number;
+	sidchain_erc_20_withdraw_token?: string;
 	extensions: ExtensionsArr;
 }
 
@@ -792,6 +827,7 @@ interface SidechainErc20Issue {
 	account: string;
 	token: string;
 	amount: string;
+	sidchain_erc_20_deposit_token?: string;
 	extensions: ExtensionsArr;
 }
 
@@ -801,6 +837,7 @@ interface SidechainErc20Burn {
 	account: string;
 	token: string;
 	amount: string;
+	sidchain_erc_20_withdraw_token?: string;
 	extensions: ExtensionsArr;
 }
 

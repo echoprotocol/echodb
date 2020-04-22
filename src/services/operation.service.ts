@@ -7,6 +7,8 @@ import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHisto
 import { IOperation } from '../interfaces/IOperation';
 import { parseHistoryOptions } from '../utils/common';
 import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
+import BlockRepository from 'repositories/block.repository';
+import ProcessingError from '../errors/processing.error';
 
 export enum KEY {
 	FROM = 'from',
@@ -18,6 +20,10 @@ export enum KEY {
 	OPERATIONS = 'operations',
 	SORT = 'sort',
 }
+
+export const ERROR = {
+	BLOCK_NOT_FOUND: 'invalid block round',
+};
 
 interface GetHistoryParameters {
 	[KEY.FROM]?: AccountId[];
@@ -45,7 +51,21 @@ export default class OperationService {
 
 	constructor(
 		readonly operationRepository: OperationRepository,
+		readonly blockRepository: BlockRepository,
 	) { }
+
+	async getOperationByBlockAndPosition(block: number, trxInBlock: number, opInTrx: number) {
+		const dBlock = await this.blockRepository.findOne({ round: block });
+		if (dBlock === null) {
+			throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
+		}
+		const operation = await this.operationRepository.findOne({
+			block: dBlock._id,
+			trx_in_block: trxInBlock,
+			op_in_trx: opInTrx,
+		});
+		return operation;
+	}
 
 	async getHistory(count: number, offset: number, params: GetHistoryParameters) {
 		const query: Query = {};

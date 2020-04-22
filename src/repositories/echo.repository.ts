@@ -266,4 +266,12 @@ export default class EchoRepository {
 			throw this.ravenHelper.error(error, 'echoRepository#getCommitteeMemberByAccount');
 		}
 	}
+
+	async getEthAddress(accountId: string): Promise<any> {
+		try {
+			return await this.echoConnection.echo.api.getEthAddress(accountId);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getEthAddress');
+		}
+	}
 }

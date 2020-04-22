@@ -1,3 +1,4 @@
+import { BlockVirtualOperation } from 'echojs-lib';
 import AbstractOperation from './abstract.operation';
 import BalanceService from '../../../services/balance.service';
 import AccountCreateOperation from './account.create.operation';
@@ -42,6 +43,8 @@ import SidechainErc20RegisterTokenOperation from './sidechain.erc20.register.tok
 import SidechainErc20DepositTokenOperation from './sidechain.erc20.deposit.token.operation';
 import SidechainErc20WithdrawTokenOperation from './sidechain.erc20.withdraw.token.operation';
 import SidechainErc20ApproveTokenWithdrawOperation from './sidechain.erc20.approve.token.withdraw.operation';
+import SidechainErc20BurnOperation from './sidechain.erc20.burn.operation';
+import SidechainErc20IssueOperation from './sidechain.erc20.issue.operation';
 import ContractUpdateOperation from './contract.update.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
@@ -69,6 +72,8 @@ import SidechainBtcDepositOperation from './sidechain.btc.deposit.operation';
 import SidechainBtcAggregateOperation from './sidechain.btc.aggregate.operation';
 import SidechainBtcApproveAggregateOperation from './sidechain.btc.approve.aggregate.operation';
 import SidechainBtcCreateAddress from './sidechain.btc.create.address.operation';
+import ContractSelfdestructOperation from './contract.selfdestruct.operation';
+import SidechainEthSendDepositOperation from './sidechain.eth.send.deposit.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -101,6 +106,7 @@ export default class OperationManager {
 		balanceUnfreezeOperation: BalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
+		contractSelfdestructOperation: ContractSelfdestructOperation,
 		balanceClaimOperation: BalanceClaimOperation,
 		overrideTransferOperation: OverrideTransferOperation,
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
@@ -121,6 +127,7 @@ export default class OperationManager {
 		sidechainBtcApproveAggregateOperation: SidechainBtcApproveAggregateOperation,
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
 		sidechainEthDepositOperation: SidechainEthDepositOperation,
+		sidechainEthSendDepositOperation: SidechainEthSendDepositOperation,
 		sidechainEthWithdrawOperation: SidechainEthWithdrawOperation,
 		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation,
 		sidechainEthApproveWithdrawOperation: SidechainEthApproveWithdrawOperation,
@@ -133,6 +140,8 @@ export default class OperationManager {
 		sidechainErc20DepositTokenOperation: SidechainErc20DepositTokenOperation,
 		sidechainErc20WithdrawTokenOperation: SidechainErc20WithdrawTokenOperation,
 		sidechainErc20ApproveTokenWithdrawOperation: SidechainErc20ApproveTokenWithdrawOperation,
+		sidechainErc20BurnOperation: SidechainErc20BurnOperation,
+		sidechainErc20IssueOperation: SidechainErc20IssueOperation,
 		contractUpdateOperation: ContractUpdateOperation,
 		contractInternalCreateOperation: ContractInternalCreateOperaiton,
 		contractInternalCallOperation: ContractInternalCallOperation,
@@ -170,10 +179,12 @@ export default class OperationManager {
 			transferToAddressOperation,
 			sidechainEthCreateAddressOperation,
 			sidechainEthDepositOperation,
+			sidechainEthSendDepositOperation,
 			sidechainEthWithdrawOperation,
 			sidechainEthApproveAddressOperation,
 			sidechainEthApproveWithdrawOperation,
 			contractFundPoolOperation,
+			contractSelfdestructOperation,
 			blockRewardOperation,
 			contractWhitelistOperation,
 			sidechainBtcCreateAddress,
@@ -188,6 +199,8 @@ export default class OperationManager {
 			sidechainErc20DepositTokenOperation,
 			sidechainErc20WithdrawTokenOperation,
 			sidechainErc20ApproveTokenWithdrawOperation,
+			sidechainErc20BurnOperation,
+			sidechainErc20IssueOperation,
 			contractUpdateOperation,
 			contractInternalCreateOperation,
 			contractInternalCallOperation,
@@ -207,6 +220,7 @@ export default class OperationManager {
 		dBlock?: TDoc<IBlock>,
 		opIndex: number = 0,
 		txIndex: number = 0,
+		vopIndex: number | null = null,
 	) {
 		const operation: IOperation<T> = {
 			id,
@@ -219,9 +233,16 @@ export default class OperationManager {
 			op_in_trx: opIndex,
 			trx_in_block: txIndex,
 			_relation: null,
+			vop_index: vopIndex,
+			internal_operations_count: (body.virtual_operations && body.virtual_operations.length) || 0,
 		};
 		if (this.map[id]) {
-			operation._relation = await this.parseKnownOperation(id, body, result, dTx ? dTx._block : dBlock);
+			operation._relation = await this.parseKnownOperation(
+				operation,
+				dTx ? dTx._block : dBlock,
+				dTx,
+				body.virtual_operations,
+			);
 			operation.body = <T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_WITH_INJECTED_VIRTUALS<T> : unknown>
 				await this.map[id].modifyBody(operation, result, dBlock);
 		} else {
@@ -239,22 +260,32 @@ export default class OperationManager {
 	}
 
 	async parseKnownOperation<T extends ECHO.KNOWN_OPERATION>(
-		id: T,
-		body: ECHO.OPERATION_WITH_INJECTED_VIRTUALS<T>,
-		result: ECHO.OPERATION_RESULT<T>,
+		operation: IOperation<T>,
 		dBlock: TDoc<IBlock>,
+		dTx: TDoc<ITransactionExtended> | null,
+		virtualOperations: BlockVirtualOperation['op'][],
 	): Promise<IOperationRelation> {
+		const { id, body, result } = operation;
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
 		const preInternalRelation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
 		if (body.fee) await this.balanceService.takeFee(preInternalRelation.from[0], body.fee);
-		if (body.virtual_operations) {
-			for (const virtualOperation of body.virtual_operations) {
+		if (virtualOperations) {
+			for (let vopIndex = 0; vopIndex < virtualOperations.length; vopIndex += 1) {
+				const virtualOperation = virtualOperations[vopIndex];
 				const [vopId, vopProps] = virtualOperation;
 				if (!this.map[vopId as ECHO.OPERATION_ID]) {
 					logger.warn(`Internal operation ${vopId} is not supported`);
 					continue;
 				}
-				await this.parseKnownOperation(vopId, vopProps, result, dBlock);
+				await this.parse(
+					[vopId, vopProps],
+					[null, result],
+					dTx,
+					dBlock,
+					operation.op_in_trx,
+					operation.trx_in_block,
+					vopIndex,
+				);
 			}
 		}
 
