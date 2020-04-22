@@ -3,7 +3,6 @@ import * as ECHO from '../../../constants/echo.constants';
 import EchoRepository from '../../../repositories/echo.repository';
 import { IOperation } from 'interfaces/IOperation';
 import BlockRepository from 'repositories/block.repository';
-import TransactionRepository from 'repositories/transaction.repository';
 import OperationRepository from 'repositories/operation.repository';
 
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE;
@@ -15,7 +14,6 @@ export default class SidechainBtcApproveAggregateOperation extends AbstractOpera
 		private echoRepository: EchoRepository,
 		private blockRepository: BlockRepository,
 		private operationRepository: OperationRepository,
-		private transactionRepository: TransactionRepository,
 	) {
 		super();
 	}
