@@ -33,15 +33,18 @@ export default class SidechainErc20SendDepositTokenOperation extends AbstractOpe
 
 		const { transaction_hash: txHash } = depositObject;
 
-		const operation = <TDoc<IOperation<ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN>>>
-			(await this.operationRepository.findOne({
+		const operations = <TDoc<IOperation<ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN>>[]>
+			(await this.operationRepository.find({
 				id: ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN,
 				'body.transaction_hash': txHash,
 			}));
 
-		operation.body.deposit_id = body.deposit_id;
+		const modifaedOps = operations.map((op) => {
+			op.body.deposit_id = body.deposit_id;
+			return op.save();
+		});
 
-		await operation.save();
+		await Promise.all(modifaedOps);
 
 		return this.validateRelation({
 			from: [body.committee_member_id],

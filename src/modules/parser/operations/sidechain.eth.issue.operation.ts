@@ -5,6 +5,7 @@ import AssetRepository from 'repositories/asset.repository';
 import AccountRepository from 'repositories/account.repository';
 import BlockRepository from '../../../repositories/block.repository';
 import OperationRepository from '../../../repositories/operation.repository';
+import EchoRepository from '../../../repositories/echo.repository';
 import * as ECHO from '../../../constants/echo.constants';
 import { IOperation } from 'interfaces/IOperation';
 
@@ -19,6 +20,7 @@ export default class SidechainEthIssueOperation extends AbstractOperation<OP_ID>
 		private accountRepository: AccountRepository,
 		private blockRepository: BlockRepository,
 		private operationRepository: OperationRepository,
+		private echoRepository: EchoRepository,
 
 	) {
 		super();
@@ -44,18 +46,21 @@ export default class SidechainEthIssueOperation extends AbstractOperation<OP_ID>
 
 	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
 		const { body } = <IOperation<OP_ID>>operation;
-		const depositIdNumber = body.deposit_id.split('.')[2];
-		const depositOperation =  await this.operationRepository.findOne({
-			'body.deposit_id': depositIdNumber,
-			id: ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT,
-		});
+		const depositObject = <any>(await this.echoRepository.getObject(body.deposit_id));
 
-		if (depositOperation) {
-			const block = await this.blockRepository.findByMongoId(depositOperation.block);
+		if (depositObject) {
+			const depositOperation =  await this.operationRepository.findOne({
+				'body.deposit_id': depositObject.deposit_id,
+				id: ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT,
+			});
 
-			if (block) {
-				const result = `${block.round}-${depositOperation.trx_in_block}-${depositOperation.op_in_trx}`;
-				body.sidchain_eth_deposit = result;
+			if (depositOperation) {
+				const block = await this.blockRepository.findByMongoId(depositOperation.block);
+
+				if (block) {
+					const result = `${block.round}-${depositOperation.trx_in_block}-${depositOperation.op_in_trx}`;
+					body.sidchain_eth_deposit = result;
+				}
 			}
 		}
 
@@ -69,12 +74,11 @@ export default class SidechainEthIssueOperation extends AbstractOperation<OP_ID>
 		}
 
 		const uniqueBlocksIds = depositSendOperations.map(({ block }) => block);
-
 		const blocks = await this.blockRepository.find({ _id: { $in: uniqueBlocksIds } });
 
 		const listOfApprovals = depositSendOperations.map((op) => {
-			const operationBlock = blocks.find((b) => b._id === op.block);
-			return `${operationBlock.round}-${op.trx_in_block}-${op.op_in_trx}`;
+			const operationBlock = blocks.find((b) => String(b._id) === String(op.block));
+			return `${operationBlock.round}-${op.trx_in_block}`;
 		});
 
 		body.list_of_approvals = listOfApprovals;

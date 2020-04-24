@@ -72,8 +72,8 @@ export default class SidechainEthBurnOperation extends AbstractOperation<OP_ID> 
 		const blocks = await this.blockRepository.find({ _id: { $in: uniqueBlocksIds } });
 
 		const listOfApprovals = withdrawApproveOperations.map((op) => {
-			const operationBlock = blocks.find((b) => b._id === op.block);
-			return `${operationBlock.round}-${op.trx_in_block}-${op.op_in_trx}`;
+			const operationBlock = blocks.find((b) => String(b._id) === String(op.block));
+			return `${operationBlock.round}-${op.trx_in_block}`;
 		});
 
 		body.list_of_approvals = listOfApprovals;
