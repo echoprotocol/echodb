@@ -67,18 +67,34 @@ export default class SidechainErc20IssueOperation extends AbstractOperation<OP_I
 			id: ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN,
 		});
 
-		if (!depositOperation) {
+		if (depositOperation) {
+			const block = await this.blockRepository.findByMongoId(depositOperation.block);
+
+			if (block) {
+				const result = `${block.round}-${depositOperation.trx_in_block}-${depositOperation.op_in_trx}`;
+				body.sidchain_erc_20_deposit_token = result;
+			}
+		}
+
+		const depositSendOperations =  await this.operationRepository.find({
+			'body.deposit_id': body.deposit,
+			id: ECHO.OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN,
+		});
+
+		if (!depositSendOperations.length) {
 			return <any>body;
 		}
 
-		const block = await this.blockRepository.findByMongoId(depositOperation.block);
+		const uniqueBlocksIds = depositSendOperations.map(({ block }) => block);
+		const blocks = await this.blockRepository.find({ _id: { $in: uniqueBlocksIds } });
 
-		if (!block) {
-			return <any>body;
-		}
+		const listOfApprovals = depositSendOperations.map((op) => {
+			const operationBlock = blocks.find((b) => String(b._id) === String(op.block));
+			return `${operationBlock.round}-${op.trx_in_block}-${op.op_in_trx}`;
+		});
 
-		const result = `${block.round}-${depositOperation.trx_in_block}-${depositOperation.op_in_trx}`;
-		body.sidchain_erc_20_deposit_token = result;
+		body.list_of_approvals = listOfApprovals;
+
 		return <any>body;
 	}
 }

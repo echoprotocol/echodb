@@ -852,6 +852,7 @@ interface SidechainErc20Issue {
 	token: string;
 	amount: string;
 	sidchain_erc_20_deposit_token?: string;
+	list_of_approvals?: string[];
 	extensions: ExtensionsArr;
 }
 
@@ -862,6 +863,7 @@ interface SidechainErc20Burn {
 	token: string;
 	amount: string;
 	sidchain_erc_20_withdraw_token?: string;
+	list_of_approvals?: string[];
 	extensions: ExtensionsArr;
 }
 
