@@ -13,7 +13,6 @@ export default class SidechainBtcWithdrawOperation extends AbstractOperation<OP_
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
 		return this.validateRelation({
 			from: [body.account],
-			to: [body.btc_addr],
 			assets: [body.fee.asset_id],
 		});
 	}
