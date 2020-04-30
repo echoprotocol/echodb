@@ -1,4 +1,5 @@
 import AbstractOperation from './abstract.operation';
+import { IOperationRelation, IOperation } from '../../../interfaces/IOperation';
 import AccountRepository from '../../../repositories/account.repository';
 import AssetRepository from '../../../repositories/asset.repository';
 import BalanceRepository from '../../../repositories/balance.repository';
@@ -12,7 +13,6 @@ import { ethAddrToEchoId } from '../../../utils/format';
 import { IContract } from '../../../interfaces/IContract';
 import { TDoc } from '../../../types/mongoose';
 import { IBlock } from '../../../interfaces/IBlock';
-import { IOperationRelation } from 'interfaces/IOperation';
 import { getLogger } from 'log4js';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_CREATE;
@@ -120,6 +120,19 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			};
 		}
 		return contract;
+	}
+
+	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
+		operation: IOperation<Y>,
+		result: Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<Y> : unknown,
+	) {
+		const { body } = <IOperation<OP_ID>>operation;
+		const contractResult = await this.echoRepository.getContractResult(<ECHO.OPERATION_RESULT<OP_ID>>result);
+		body.result = {
+			contract_id: ethAddrToEchoId(contractResult[1].exec_res.new_address),
+			logs: <any[]>contractResult[1].tr_receipt.log,
+		};
+		return <any>body;
 	}
 
 }

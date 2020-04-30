@@ -2,6 +2,7 @@ import { IERC20TokenObject, IContractObject } from 'echojs-lib/types/interfaces/
 import AbstractOperation from './abstract.operation';
 import BalanceRepository from '../../../repositories/balance.repository';
 import * as ECHO from '../../../constants/echo.constants';
+import { IOperation } from 'interfaces/IOperation';
 import EchoRepository from 'repositories/echo.repository';
 import ERC20TokenRepository from 'repositories/erc20-token.repository';
 import AccountRepository from 'repositories/account.repository';
@@ -28,11 +29,11 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 
 	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, tokenId: ECHO.OPERATION_RESULT<OP_ID>, blockDocument: TDoc<IBlock>) {
 		const [[token, contractObject, contract], registrarDocument] = await Promise.all([
-			this.echoRepository.getObject<IERC20TokenObject>(tokenId)
+			this.echoRepository.getObject(tokenId)
 				.then((token) => Promise.all([
 					Promise.resolve(token),
-					this.echoRepository.getObject<IContractObject>(token.contract),
-					this.echoRepository.getContract(token.contract),
+					this.echoRepository.getObject((<IERC20TokenObject>token).contract),
+					this.echoRepository.getContract((<IERC20TokenObject>token).contract),
 				])),
 			this.accountRepository.findById('1.2.1'),
 		]);
@@ -44,17 +45,37 @@ export default class SidechainErc20RegisterTokenOperation extends AbstractOperat
 				eth_accuracy: true,
 				id: contractObject.id,
 				problem: false,
-				supported_asset_id: contractObject.supported_asset_id,
+				supported_asset_id: (<IContractObject>contractObject).supported_asset_id,
 				type: this.contractService.getTypeByCode(contract[1].code),
 			}).then((contractToCreate) => this.contractRepository.create(contractToCreate)),
-			this.accountRepository.findById(token.owner),
+			this.accountRepository.findById((<IERC20TokenObject>token).owner),
 		]);
 		const [balance, account] = await Promise.all([
 			this.echoRepository.getAccountTokenBalance(contractDocument.id, body.account),
 			this.accountRepository.findById(body.account),
 		]);
 		await this.balanceRepository.updateOrCreateByAccountAndContract(account._id, contractDocument._id, balance);
-		await this.erc20TokenRepository.create({ ...token, owner: ownerDocument, contract: contractDocument });
+		await this.erc20TokenRepository
+			.create({ ...(<IERC20TokenObject>token), owner: ownerDocument, contract: contractDocument });
 		return this.validateRelation({ from: [body.account], assets: [body.fee.asset_id] });
+	}
+
+	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
+		operation: IOperation<Y>,
+		result: Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<Y> : unknown,
+	) {
+		const { body } = <IOperation<OP_ID>>operation;
+
+		if (!result) {
+			return <any>body;
+		}
+
+		const contractRegisterObject = <any>
+				(await this.echoRepository.getObject(<ECHO.OPERATION_RESULT<OP_ID>>result));
+		if (contractRegisterObject) {
+			body.associated_contract = contractRegisterObject.contract;
+		}
+
+		return <any>body;
 	}
 }

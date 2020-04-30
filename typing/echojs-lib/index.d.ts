@@ -165,13 +165,13 @@ declare module 'echojs-lib' {
 	}
 
 	export interface GlobalProperties {
-		id: string,
+		id: string;
 		parameters: {
 			echorand_config: {
-				_creator_count: number
-			}
-		},
-		active_committee_members: Array<Array<string>>,
+				_creator_count: number,
+			},
+		};
+		active_committee_members: string[][];
 	}
 
 	export interface ContractResult {
@@ -201,6 +201,23 @@ declare module 'echojs-lib' {
 		virtual_op: number;
 	}
 
+	export default interface Committee {
+		id: string;
+		committee_member_account: string;
+		url: string;
+		eth_address: string;
+		btc_public_key: string;
+		last_committee_quit: number;
+	}
+	export default interface AccountEthAddress {
+		id: string;
+		account: string;
+		eth_addr: string;
+		is_approved: boolean;
+		approves: any[];
+		extensions: any[];
+	}
+
 	export type BigNumber = import('echojs-lib/types').BigNumber;
 	type IObject = import('echojs-lib/types/interfaces/objects').IObject;
 	type Contract = import('echojs-lib/types/interfaces/Contract').Contract;
@@ -215,6 +232,7 @@ declare module 'echojs-lib' {
 		getBlockHeader(blockNum: number): Promise<BlockHeader>;
 		getBlock(blockNum: number, force: boolean = false): Promise<Block>;
 		getAssets(assets: string[]): Promise<Asset[]>;
+		getEthAddress(accountId: string): Promise<AccountEthAddress>;
 		getDynamicGlobalProperties(): Promise<DynamicGlobalProperties>;
 		getGlobalProperties(): Promise<GlobalProperties>;
 		getAccounts(ids: string[]): Promise<Account[]>;
@@ -222,6 +240,7 @@ declare module 'echojs-lib' {
 		getContractResult(resultId: string): Promise<[number, ContractResult]>;
 		getBlockVirtualOperations(blockNum: number): Promise<[BlockVirtualOperation]>;
 		getAssets(ids: string[]): Promise<Asset[]>;
+		getCommitteeMemberByAccount(accountId: string, force?: boolean): Promise<Committee>;
 		callContractNoChangingState(
 			contractId: string,
 			accountId: string,

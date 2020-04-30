@@ -1,3 +1,4 @@
+import { BlockVirtualOperation } from 'echojs-lib';
 import AbstractOperation from './abstract.operation';
 import BalanceService from '../../../services/balance.service';
 import AccountCreateOperation from './account.create.operation';
@@ -20,6 +21,8 @@ import ContractCallOperation from './contract.call.operation';
 import BalanceClaimOperation from './balance.claim.operation';
 import OverrideTransferOperation from './override.transfer.operation';
 import CommitteeMemberUpdateGlobalParametersOperation from './committee.member.update.global.parameters.operation';
+import CommitteeMemberActivateOperation from './committee.member.activate.operation';
+import CommitteeFrozenBalanceOperation from './committee.frozen.balance.operation';
 import VestingBalanceWithdrawOperation from './vesting.balance.withdraw.operation';
 import VestingBalanceCreateOperation from './vesting.balance.create.operation';
 import ProposalCreateOperation from './proposal.create.operation';
@@ -38,10 +41,15 @@ import ContractFundPoolOperation from './contract.fund.pool.operation';
 import ContractWhitelistOperation from './contract.whitelist.operation';
 import SidechainEthIssueOperation from './sidechain.eth.issue.operation';
 import SidechainEthBurnOperation from './sidechain.eth.burn.operation';
+import SidechainEthSendWithdrawOperation from './sidechain.eth.send.withdraw.operation';
 import SidechainErc20RegisterTokenOperation from './sidechain.erc20.register.token.operation';
 import SidechainErc20DepositTokenOperation from './sidechain.erc20.deposit.token.operation';
+import SidechainErc20SendDepositTokenOperation from './sidechain.erc20.send.deposit.token.operation';
+import SidechainErc20SendWithdrawTokenOperation from './sidechain.erc20.send.withdraw.token.operation';
 import SidechainErc20WithdrawTokenOperation from './sidechain.erc20.withdraw.token.operation';
 import SidechainErc20ApproveTokenWithdrawOperation from './sidechain.erc20.approve.token.withdraw.operation';
+import SidechainErc20BurnOperation from './sidechain.erc20.burn.operation';
+import SidechainErc20IssueOperation from './sidechain.erc20.issue.operation';
 import ContractUpdateOperation from './contract.update.operation';
 import OperationRepository from '../../../repositories/operation.repository';
 import RedisConnection from '../../../connections/redis.connection';
@@ -63,6 +71,15 @@ import EchoRepository from '../../../repositories/echo.repository';
 import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 import EVMAddressRegister from './evm.address.register.operation';
 import { IERC20TokenObject } from 'echojs-lib/types/interfaces/objects';
+import SidechainBtcCreateIntermediateDepositOperation from './sidechain.btc.create.intermediate.deposit.operation';
+import SidechainBtcIntermediateDepositOperation from './sidechain.btc.intermediate.deposit.operation';
+import SidechainBtcDepositOperation from './sidechain.btc.deposit.operation';
+import SidechainBtcAggregateOperation from './sidechain.btc.aggregate.operation';
+import SidechainBtcApproveAggregateOperation from './sidechain.btc.approve.aggregate.operation';
+import SidechainBtcCreateAddressOperation from './sidechain.btc.create.address.operation';
+import SidechainBtcWithdrawOperation from './sidechain.btc.withdraw.operation';
+import ContractSelfdestructOperation from './contract.selfdestruct.operation';
+import SidechainEthSendDepositOperation from './sidechain.eth.send.deposit.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -95,9 +112,13 @@ export default class OperationManager {
 		balanceUnfreezeOperation: BalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
+		contractSelfdestructOperation: ContractSelfdestructOperation,
+		sidechainBtcWithdrawOperation: SidechainBtcWithdrawOperation,
 		balanceClaimOperation: BalanceClaimOperation,
 		overrideTransferOperation: OverrideTransferOperation,
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
+		committeeMemberActivateOperation: CommitteeMemberActivateOperation,
+		committeeFrozenBalanceOperation: CommitteeFrozenBalanceOperation,
 		vestingBalanceCreateOperation: VestingBalanceCreateOperation,
 		vestingBalanceWithdrawOperation: VestingBalanceWithdrawOperation,
 		proposalCreateOperation: ProposalCreateOperation,
@@ -107,8 +128,15 @@ export default class OperationManager {
 		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
 		accountAddressCreateOperation: AccountAddressCreateOperation,
 		transferToAddressOperation: TransferToAddressOperation,
+		sidechainBtcCreateAddressOperation: SidechainBtcCreateAddressOperation,
+		sidechainBtcDepositOperation: SidechainBtcDepositOperation,
+		sidechainBtcIntermediateDepositOperation: SidechainBtcIntermediateDepositOperation,
+		sidechainBtcCreateIntermediateDepositOperation: SidechainBtcCreateIntermediateDepositOperation,
+		sidechainBtcAggregateOperation: SidechainBtcAggregateOperation,
+		sidechainBtcApproveAggregateOperation: SidechainBtcApproveAggregateOperation,
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
 		sidechainEthDepositOperation: SidechainEthDepositOperation,
+		sidechainEthSendDepositOperation: SidechainEthSendDepositOperation,
 		sidechainEthWithdrawOperation: SidechainEthWithdrawOperation,
 		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation,
 		sidechainEthApproveWithdrawOperation: SidechainEthApproveWithdrawOperation,
@@ -118,9 +146,14 @@ export default class OperationManager {
 		sidechainEthIssueOperation: SidechainEthIssueOperation,
 		sidechainEthBurnOperation: SidechainEthBurnOperation,
 		sidechainErc20RegisterTokenOperation: SidechainErc20RegisterTokenOperation,
+		sidechainEthSendWithdrawOperation: SidechainEthSendWithdrawOperation,
 		sidechainErc20DepositTokenOperation: SidechainErc20DepositTokenOperation,
+		sidechainErc20SendDepositTokenOperation: SidechainErc20SendDepositTokenOperation,
+		sidechainErc20SendWithdrawTokenOperation: SidechainErc20SendWithdrawTokenOperation,
 		sidechainErc20WithdrawTokenOperation: SidechainErc20WithdrawTokenOperation,
 		sidechainErc20ApproveTokenWithdrawOperation: SidechainErc20ApproveTokenWithdrawOperation,
+		sidechainErc20BurnOperation: SidechainErc20BurnOperation,
+		sidechainErc20IssueOperation: SidechainErc20IssueOperation,
 		contractUpdateOperation: ContractUpdateOperation,
 		contractInternalCreateOperation: ContractInternalCreateOperaiton,
 		contractInternalCallOperation: ContractInternalCallOperation,
@@ -147,6 +180,8 @@ export default class OperationManager {
 			balanceClaimOperation,
 			overrideTransferOperation,
 			committeeMemberUpdateGlobalParametersOperation,
+			committeeMemberActivateOperation,
+			committeeFrozenBalanceOperation,
 			vestingBalanceCreateOperation,
 			vestingBalanceWithdrawOperation,
 			proposalCreateOperation,
@@ -158,18 +193,32 @@ export default class OperationManager {
 			transferToAddressOperation,
 			sidechainEthCreateAddressOperation,
 			sidechainEthDepositOperation,
+			sidechainEthSendDepositOperation,
 			sidechainEthWithdrawOperation,
 			sidechainEthApproveAddressOperation,
 			sidechainEthApproveWithdrawOperation,
 			contractFundPoolOperation,
+			contractSelfdestructOperation,
+			sidechainBtcWithdrawOperation,
 			blockRewardOperation,
 			contractWhitelistOperation,
+			sidechainBtcCreateAddressOperation,
+			sidechainBtcAggregateOperation,
+			sidechainBtcDepositOperation,
+			sidechainBtcIntermediateDepositOperation,
+			sidechainBtcCreateIntermediateDepositOperation,
+			sidechainBtcApproveAggregateOperation,
 			sidechainEthIssueOperation,
 			sidechainEthBurnOperation,
 			sidechainErc20RegisterTokenOperation,
+			sidechainEthSendWithdrawOperation,
 			sidechainErc20DepositTokenOperation,
+			sidechainErc20SendDepositTokenOperation,
+			sidechainErc20SendWithdrawTokenOperation,
 			sidechainErc20WithdrawTokenOperation,
 			sidechainErc20ApproveTokenWithdrawOperation,
+			sidechainErc20BurnOperation,
+			sidechainErc20IssueOperation,
 			contractUpdateOperation,
 			contractInternalCreateOperation,
 			contractInternalCallOperation,
@@ -189,6 +238,7 @@ export default class OperationManager {
 		dBlock?: TDoc<IBlock>,
 		opIndex: number = 0,
 		txIndex: number = 0,
+		vopIndex: number | null = null,
 	) {
 		const operation: IOperation<T> = {
 			id,
@@ -201,9 +251,18 @@ export default class OperationManager {
 			op_in_trx: opIndex,
 			trx_in_block: txIndex,
 			_relation: null,
+			vop_index: vopIndex,
+			internal_operations_count: (body.virtual_operations && body.virtual_operations.length) || 0,
 		};
 		if (this.map[id]) {
-			operation._relation = await this.parseKnownOperation(id, body, result, dTx ? dTx._block : dBlock);
+			operation._relation = await this.parseKnownOperation(
+				operation,
+				dTx ? dTx._block : dBlock,
+				dTx,
+				body.virtual_operations,
+			);
+			operation.body = <T extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_WITH_INJECTED_VIRTUALS<T> : unknown>
+				await this.map[id].modifyBody(operation, result, dBlock);
 		} else {
 			logger.warn(`Operation ${id} is not supported`);
 			const feePayer = OPERATION.FEE_PAYER_FIELD[id];
@@ -219,22 +278,32 @@ export default class OperationManager {
 	}
 
 	async parseKnownOperation<T extends ECHO.KNOWN_OPERATION>(
-		id: T,
-		body: ECHO.OPERATION_WITH_INJECTED_VIRTUALS<T>,
-		result: ECHO.OPERATION_RESULT<T>,
+		operation: IOperation<T>,
 		dBlock: TDoc<IBlock>,
+		dTx: TDoc<ITransactionExtended> | null,
+		virtualOperations: BlockVirtualOperation['op'][],
 	): Promise<IOperationRelation> {
+		const { id, body, result } = operation;
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
 		const preInternalRelation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
 		if (body.fee) await this.balanceService.takeFee(preInternalRelation.from[0], body.fee);
-		if (body.virtual_operations) {
-			for (const virtualOperation of body.virtual_operations) {
+		if (virtualOperations) {
+			for (let vopIndex = 0; vopIndex < virtualOperations.length; vopIndex += 1) {
+				const virtualOperation = virtualOperations[vopIndex];
 				const [vopId, vopProps] = virtualOperation;
 				if (!this.map[vopId as ECHO.OPERATION_ID]) {
 					logger.warn(`Internal operation ${vopId} is not supported`);
 					continue;
 				}
-				await this.parseKnownOperation(vopId, vopProps, result, dBlock);
+				await this.parse(
+					[vopId, vopProps],
+					[null, result],
+					dTx,
+					dBlock,
+					operation.op_in_trx,
+					operation.trx_in_block,
+					vopIndex,
+				);
 			}
 		}
 

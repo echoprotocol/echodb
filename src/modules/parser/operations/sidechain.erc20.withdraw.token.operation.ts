@@ -4,6 +4,7 @@ import BalanceRepository from '../../../repositories/balance.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import EchoRepository from '../../../repositories/echo.repository';
 import * as ECHO from '../../../constants/echo.constants';
+import { IOperation } from 'interfaces/IOperation';
 import { IERC20TokenObject } from 'echojs-lib/types/interfaces/objects';
 
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN;
@@ -31,5 +32,16 @@ export default class SidechainErc20WithdrawTokenOperation extends AbstractOperat
 			from: [body.account],
 			assets: [body.fee.asset_id],
 		});
+	}
+
+	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
+		operation: IOperation<Y>,
+		result: Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<Y> : unknown,
+	) {
+		const { body } = <IOperation<OP_ID>>operation;
+		if (result) {
+			body.withdraw_id = (<ECHO.OPERATION_RESULT<OP_ID>>result);
+		}
+		return <any>body;
 	}
 }
