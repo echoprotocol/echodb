@@ -21,6 +21,8 @@ import ContractCallOperation from './contract.call.operation';
 import BalanceClaimOperation from './balance.claim.operation';
 import OverrideTransferOperation from './override.transfer.operation';
 import CommitteeMemberUpdateGlobalParametersOperation from './committee.member.update.global.parameters.operation';
+import CommitteeMemberActivateOperation from './committee.member.activate.operation';
+import CommitteeFrozenBalanceOperation from './committee.frozen.balance.operation';
 import VestingBalanceWithdrawOperation from './vesting.balance.withdraw.operation';
 import VestingBalanceCreateOperation from './vesting.balance.create.operation';
 import ProposalCreateOperation from './proposal.create.operation';
@@ -39,6 +41,7 @@ import ContractFundPoolOperation from './contract.fund.pool.operation';
 import ContractWhitelistOperation from './contract.whitelist.operation';
 import SidechainEthIssueOperation from './sidechain.eth.issue.operation';
 import SidechainEthBurnOperation from './sidechain.eth.burn.operation';
+import SidechainEthSendWithdrawOperation from './sidechain.eth.send.withdraw.operation';
 import SidechainErc20RegisterTokenOperation from './sidechain.erc20.register.token.operation';
 import SidechainErc20DepositTokenOperation from './sidechain.erc20.deposit.token.operation';
 import SidechainErc20SendDepositTokenOperation from './sidechain.erc20.send.deposit.token.operation';
@@ -74,6 +77,7 @@ import SidechainBtcDepositOperation from './sidechain.btc.deposit.operation';
 import SidechainBtcAggregateOperation from './sidechain.btc.aggregate.operation';
 import SidechainBtcApproveAggregateOperation from './sidechain.btc.approve.aggregate.operation';
 import SidechainBtcCreateAddressOperation from './sidechain.btc.create.address.operation';
+import SidechainBtcWithdrawOperation from './sidechain.btc.withdraw.operation';
 import ContractSelfdestructOperation from './contract.selfdestruct.operation';
 import SidechainEthSendDepositOperation from './sidechain.eth.send.deposit.operation';
 
@@ -109,9 +113,12 @@ export default class OperationManager {
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractSelfdestructOperation: ContractSelfdestructOperation,
+		sidechainBtcWithdrawOperation: SidechainBtcWithdrawOperation,
 		balanceClaimOperation: BalanceClaimOperation,
 		overrideTransferOperation: OverrideTransferOperation,
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
+		committeeMemberActivateOperation: CommitteeMemberActivateOperation,
+		committeeFrozenBalanceOperation: CommitteeFrozenBalanceOperation,
 		vestingBalanceCreateOperation: VestingBalanceCreateOperation,
 		vestingBalanceWithdrawOperation: VestingBalanceWithdrawOperation,
 		proposalCreateOperation: ProposalCreateOperation,
@@ -139,6 +146,7 @@ export default class OperationManager {
 		sidechainEthIssueOperation: SidechainEthIssueOperation,
 		sidechainEthBurnOperation: SidechainEthBurnOperation,
 		sidechainErc20RegisterTokenOperation: SidechainErc20RegisterTokenOperation,
+		sidechainEthSendWithdrawOperation: SidechainEthSendWithdrawOperation,
 		sidechainErc20DepositTokenOperation: SidechainErc20DepositTokenOperation,
 		sidechainErc20SendDepositTokenOperation: SidechainErc20SendDepositTokenOperation,
 		sidechainErc20SendWithdrawTokenOperation: SidechainErc20SendWithdrawTokenOperation,
@@ -172,6 +180,8 @@ export default class OperationManager {
 			balanceClaimOperation,
 			overrideTransferOperation,
 			committeeMemberUpdateGlobalParametersOperation,
+			committeeMemberActivateOperation,
+			committeeFrozenBalanceOperation,
 			vestingBalanceCreateOperation,
 			vestingBalanceWithdrawOperation,
 			proposalCreateOperation,
@@ -189,6 +199,7 @@ export default class OperationManager {
 			sidechainEthApproveWithdrawOperation,
 			contractFundPoolOperation,
 			contractSelfdestructOperation,
+			sidechainBtcWithdrawOperation,
 			blockRewardOperation,
 			contractWhitelistOperation,
 			sidechainBtcCreateAddressOperation,
@@ -200,6 +211,7 @@ export default class OperationManager {
 			sidechainEthIssueOperation,
 			sidechainEthBurnOperation,
 			sidechainErc20RegisterTokenOperation,
+			sidechainEthSendWithdrawOperation,
 			sidechainErc20DepositTokenOperation,
 			sidechainErc20SendDepositTokenOperation,
 			sidechainErc20SendWithdrawTokenOperation,
