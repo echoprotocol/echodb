@@ -638,6 +638,8 @@ interface ProposalCreateOperation {
 	proposed_ops: unknown[];
 	expiration_time: string;
 	review_period_seconds?: number;
+	have_delete_operation?: boolean;
+	approvals?: string[];
 	extensions: ExtensionsArr;
 }
 
@@ -650,6 +652,7 @@ interface ProposalUpdateOperation {
 	owner_approvals_to_remove: AccountId[];
 	key_approvals_to_add: string[];
 	key_approvals_to_remove: string[];
+	create_operation?: string;
 	extensions: ExtensionsArr;
 }
 
@@ -658,6 +661,7 @@ interface ProposalDeleteOperation {
 	fee_paying_account: AccountId;
 	using_owner_authority: boolean;
 	proposal: string;
+	create_operation?: string;
 	extensions: ExtensionsArr;
 }
 
