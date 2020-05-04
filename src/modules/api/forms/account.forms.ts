@@ -22,6 +22,17 @@ export class GetAccountForm extends AbstractForm {
 }
 
 @ArgsType()
+export class GetAccountConditionForm extends AbstractForm {
+	@rule(Joi.string())
+	@Field(() => AccountId)
+	id: string;
+
+	@rule(Joi.date().iso())
+	@Field(() => String, { nullable: false, description: 'Expect ISO format' })
+	timestamp: string;
+}
+
+@ArgsType()
 export class GetAccountsForm extends PaginationForm {
 	@rule(Joi.string().max(100))
 	@Field(() => String, { nullable: true })
