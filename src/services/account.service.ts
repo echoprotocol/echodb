@@ -180,6 +180,15 @@ export default class AccountService {
 			account.active = (<TDocument<IOperation<OPERATION_ID.ACCOUNT_UPDATE>>>currentAccountUpdateOperations[0])
 				.body.active;
 		}
-		return account;
+		const authority = {
+			weight_threshold: account.active.weight_threshold,
+			account_auths: account.active.account_auths.length ?
+				account.active.account_auths.map((el: any[]) => ({ key: el[0], value: el[1] })) : [],
+			key_auths: account.active.key_auths.length ?
+				account.active.key_auths.map((el: any[]) => ({ key: el[0], value: el[1] })) : [],
+			address_auths: account.active.address_auths.length ?
+				account.active.address_auths.map((el: any[]) => ({ key: el[0], value: el[1] })) : [],
+		};
+		return authority;
 	}
 }

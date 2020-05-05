@@ -17,6 +17,7 @@ import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
 import { Document } from 'mongoose';
 import { isMongoObjectId } from '../../../utils/validators';
+import AccountAuthority from '../types/account.authority.type';
 
 const paginatedAccounts = PaginatedResponse(Account);
 
@@ -61,7 +62,7 @@ export default class AccountResolver extends AbstractResolver {
 	}
 
 	@validateArgs(GetAccountConditionForm)
-	@Query(() => Account)
+	@Query(() => AccountAuthority)
 	getAccountCondition(@Args() {
 		id,
 		timestamp,
