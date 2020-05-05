@@ -515,7 +515,8 @@ interface AssetTransfer {
 		amount: number;
 		asset_id: string;
 	};
-};
+}
+
 interface ContractCreateOperation {
 	fee: IAmount;
 	registrar: string;

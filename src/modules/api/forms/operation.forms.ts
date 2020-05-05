@@ -96,4 +96,8 @@ export class GetSingleOperation extends AbstractForm {
 	@rule(Joi.number().integer().min(0))
 	@Field(() => Int)
 	opInTrx: number;
+
+	@rule(Joi.bool())
+	@Field(() => Boolean, { nullable: true })
+	isVirtual?: boolean;
 }

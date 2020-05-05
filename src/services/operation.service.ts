@@ -54,16 +54,27 @@ export default class OperationService {
 		readonly blockRepository: BlockRepository,
 	) { }
 
-	async getOperationByBlockAndPosition(block: number, trxInBlock: number, opInTrx: number) {
+	async getOperationByBlockAndPosition(block: number, trxInBlock: number, opInTrx: number, isVirtual: boolean) {
 		const dBlock = await this.blockRepository.findOne({ round: block });
 		if (dBlock === null) {
 			throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
 		}
-		const operation = await this.operationRepository.findOne({
-			block: dBlock._id,
-			trx_in_block: trxInBlock,
-			op_in_trx: opInTrx,
-		});
+
+		let operation;
+		if (isVirtual !== null && isVirtual !== undefined) {
+			operation = await this.operationRepository.findOne({
+				block: dBlock._id,
+				trx_in_block: trxInBlock,
+				op_in_trx: opInTrx,
+				virtual: isVirtual,
+			});
+		} else {
+			operation = await this.operationRepository.findOne({
+				block: dBlock._id,
+				trx_in_block: trxInBlock,
+				op_in_trx: opInTrx,
+			});
+		}
 		return operation;
 	}
 
