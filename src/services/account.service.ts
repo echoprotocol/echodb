@@ -176,7 +176,7 @@ export default class AccountService {
 			'body.active': { $exists: true },
 		}, {}, { sort: { timestamp: -1 }, limit: 1 });
 		const account = await this.accountRepository.findById(id);
-		if (currentAccountUpdateOperations) {
+		if (currentAccountUpdateOperations.length) {
 			account.active = (<TDocument<IOperation<OPERATION_ID.ACCOUNT_UPDATE>>>currentAccountUpdateOperations[0])
 				.body.active;
 		}
