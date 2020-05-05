@@ -8,13 +8,16 @@ import { IBlock } from '../interfaces/IBlock';
 import { IAccount } from '../interfaces/IAccount';
 import { IAsset } from '../interfaces/IAsset';
 import { TDoc } from '../types/mongoose';
-import { CORE_ASSET } from '../constants/echo.constants';
+import { CORE_ASSET, OPERATION_ID } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
 import { SORT_DESTINATION } from '../constants/api.constants';
 import ProcessingError from '../errors/processing.error';
 import { escapeRegExp } from '../utils/format';
 
 import { removeDuplicates } from '../utils/common';
+import OperationRepository from 'repositories/operation.repository';
+import { TDocument } from 'types/mongoose/tdocument';
+import { IOperation } from 'interfaces/IOperation';
 
 export const ERROR = {
 	ACCOUNT_NOT_FOUND: 'account not found',
@@ -31,6 +34,7 @@ export default class AccountService {
 		readonly assetRepository: AssetRepository,
 		readonly echoRepository: EchoRepository,
 		readonly blockRepository: BlockRepository,
+		readonly operationRepository: OperationRepository,
 	) {}
 
 	async getAccount(id?: string, name?: string) {
@@ -163,4 +167,19 @@ export default class AccountService {
 			this.updateAccountConcentrationRate(acc, baseAsset, allBalance, allBlocks, createCount)));
 	}
 
+	async getAccountCondition(id: string, timestamp: string) {
+
+		const currentAccountUpdateOperations = await this.operationRepository.find({
+			id: OPERATION_ID.ACCOUNT_UPDATE,
+			timestamp: { $lt: timestamp },
+			'body.account': id,
+			'body.active': { $exists: true },
+		}, {}, { sort: { timestamp: -1 }, limit: 1 });
+		const account = await this.accountRepository.findById(id);
+		if (currentAccountUpdateOperations.length) {
+			account.active = (<TDocument<IOperation<OPERATION_ID.ACCOUNT_UPDATE>>>currentAccountUpdateOperations[0])
+				.body.active;
+		}
+		return account;
+	}
 }
