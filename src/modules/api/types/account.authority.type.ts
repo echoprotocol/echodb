@@ -1,16 +1,21 @@
 import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
+class Key {
+	@Field() key: string;
+	@Field() value: number;
+}
+@ObjectType()
 export default class AccountAuthority {
 	@Field()
 	weight_threshold: number;
 
-	@Field(() => [[String, Number]])
-	account_auths: [string, number][];
+	@Field(() => [Key])
+	account_auths: Key[];
 
-	@Field(() => [[String, Number]])
-	key_auths: [string, number][];
+	@Field(() => [Key])
+	key_auths: Key[];
 
-	@Field(() => [[String, Number]])
-	address_auths: [string, number][];
+	@Field(() => [Key])
+	address_auths?: Key[];
 }
