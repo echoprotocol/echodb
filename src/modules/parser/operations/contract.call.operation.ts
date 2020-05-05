@@ -9,7 +9,7 @@ import * as CONTRACT from '../../../constants/contract.constants';
 import * as ECHO from '../../../constants/echo.constants';
 import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
-import { IOperationRelation } from '../../../interfaces/IOperation';
+import { IOperationRelation, IOperation } from '../../../interfaces/IOperation';
 import { IContract } from '../../../interfaces/IContract';
 import { IBlock } from '../../../interfaces/IBlock';
 import AssetRepository from 'repositories/asset.repository';
@@ -96,6 +96,20 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 			contracts: [body.callee],
 			tokens: [body.callee],
 		}, relations);
+	}
+
+	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
+		operation: IOperation<Y>,
+	) {
+		const { body } = <IOperation<OP_ID>>operation;
+		const assetTransfers = body.virtual_operations.filter((op) => op[1].value && op[1].value.amount !== 0)
+			.map((op) => ({
+				from: op[1].caller,
+				to: op[1].callee,
+				value: op[1].value,
+			}));
+		body.asset_tranfers = assetTransfers;
+		return <any>body;
 	}
 
 }

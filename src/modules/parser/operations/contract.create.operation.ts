@@ -132,6 +132,13 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			contract_id: ethAddrToEchoId(contractResult[1].exec_res.new_address),
 			logs: <any[]>contractResult[1].tr_receipt.log,
 		};
+		const assetTransfers = body.virtual_operations.filter((op) => op[1].value && op[1].value.amount !== 0)
+			.map((op) => ({
+				from: op[1].caller,
+				to: op[1].callee,
+				value: op[1].value,
+			}));
+		body.asset_tranfers = assetTransfers;
 		return <any>body;
 	}
 

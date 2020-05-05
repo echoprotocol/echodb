@@ -508,6 +508,15 @@ interface BalanceUnfreezeOperation {
 	extensions: ExtensionsArr;
 }
 
+interface AssetTransfer {
+	from: string;
+	to: string;
+	value: {
+		amount: number;
+		asset_id: string;
+	};
+}
+
 interface ContractCreateOperation {
 	fee: IAmount;
 	registrar: string;
@@ -515,6 +524,8 @@ interface ContractCreateOperation {
 	code: string;
 	supported_asset_id?: string;
 	eth_accuracy: true;
+	virtual_operations?: any[];
+	asset_tranfers?: AssetTransfer[];
 	extensions: ExtensionsArr;
 
 	result?: {
@@ -536,6 +547,8 @@ interface ContractCallOperation {
 	value: IAmount;
 	code: string;
 	callee: string;
+	virtual_operations?: any[];
+	asset_tranfers?: AssetTransfer[];
 	extensions: ExtensionsArr;
 }
 

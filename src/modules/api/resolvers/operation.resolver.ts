@@ -117,9 +117,10 @@ export default class OperationResolver extends AbstractResolver {
 			block,
 			trxInBlock,
 			opInTrx,
+			isVirtual,
 		}: GetSingleOperation,
 	) {
-		return this.operationService.getOperationByBlockAndPosition(block, trxInBlock, opInTrx);
+		return this.operationService.getOperationByBlockAndPosition(block, trxInBlock, opInTrx, isVirtual);
 	}
 
 	// FieldResolver
