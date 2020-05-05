@@ -245,7 +245,7 @@ export default class OperationManager {
 			body,
 			result,
 			block: dBlock ? dBlock._id : null,
-			virtual: !!dBlock,
+			virtual: !dTx,
 			_tx: dTx,
 			timestamp: dateFromUtcIso(dTx ? dTx._block.timestamp : dBlock.timestamp),
 			op_in_trx: opIndex,
