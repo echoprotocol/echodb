@@ -239,13 +239,14 @@ export default class OperationManager {
 		opIndex: number = 0,
 		txIndex: number = 0,
 		vopIndex: number | null = null,
+		virtual?: boolean,
 	) {
 		const operation: IOperation<T> = {
 			id,
 			body,
 			result,
 			block: dBlock ? dBlock._id : null,
-			virtual: !dTx,
+			virtual: !!virtual,
 			_tx: dTx,
 			timestamp: dateFromUtcIso(dTx ? dTx._block.timestamp : dBlock.timestamp),
 			op_in_trx: opIndex,
@@ -303,6 +304,7 @@ export default class OperationManager {
 					operation.op_in_trx,
 					operation.trx_in_block,
 					vopIndex,
+					true,
 				);
 			}
 		}

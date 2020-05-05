@@ -78,6 +78,8 @@ export default class ParserModule extends AbstractModule {
 					dBlock,
 					virtualOpIndex,
 					0,
+					null,
+					true,
 				);
 				virtualOpIndex += 1;
 			}
@@ -97,6 +99,8 @@ export default class ParserModule extends AbstractModule {
 						dBlock,
 						opIndex,
 						txIndex,
+						null,
+						false,
 					);
 					txIndex += 1;
 				}
