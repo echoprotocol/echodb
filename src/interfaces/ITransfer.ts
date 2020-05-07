@@ -14,6 +14,7 @@ interface IBasic {
 	valueType: BALANCE.TYPE;
 	amount: string;
 	timestamp: Date;
+	block: number;
 }
 
 // asset

@@ -43,6 +43,7 @@ export default class TransferToAddressOperation extends AbstractOperation<OP_ID>
 				_asset: dAsset,
 				valueType: BALANCE.TYPE.ASSET,
 				timestamp: dateFromUtcIso(dBlock.timestamp),
+				block: dBlock.round,
 			}),
 		]);
 		return this.validateRelation({

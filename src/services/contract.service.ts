@@ -200,6 +200,7 @@ export default class ContractService {
 					_contract: dContract,
 					valueType: BALANCE.TYPE.TOKEN,
 					timestamp: dateFromUtcIso(dBlock.timestamp),
+					block: dBlock.round,
 				},
 				dFrom,
 				dTo,

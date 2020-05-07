@@ -14,6 +14,7 @@ export default AbstractModel<ITransfer>(MODEL.NAME.TANSFER, {
 	_asset: { ref: MODEL.NAME.ASSET, $type: Schema.Types.ObjectId },
 	amount: String,
 	timestamp: Date,
+	block: Number,
 	relationType: { enum: Object.values(TRANSFER.TYPE), $type: String },
 	valueType: { enum: Object.values(BALANCE.TYPE), $type: String },
 }, {
