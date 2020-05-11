@@ -15,7 +15,7 @@ interface IBasic {
 	amount: string;
 	timestamp: Date;
 	block: number;
-	trx_in_block: number,
+	trx_in_block: number;
 	op_in_trx: number;
 	virtual: boolean;
 }

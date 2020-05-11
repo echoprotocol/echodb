@@ -43,6 +43,7 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 			this.transferBalance(dFrom, dTo, dAsset, amount),
 			this.transferRepository.createAndEmit({
 				amount,
+				virtual,
 				relationType: await this.transferRepository.determineRelationType(dFrom.id, dTo.id),
 				_fromAccount: dFrom,
 				_toAccount: dTo,
@@ -52,7 +53,6 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 				block: dBlock.round,
 				trx_in_block: trxInBlock,
 				op_in_trx: opInTrx,
-				virtual,
 			}),
 		]);
 		return this.validateRelation({

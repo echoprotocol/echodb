@@ -81,7 +81,10 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		if (dContract.type !== CONTRACT.TYPE.ERC20) {
 			return relations;
 		}
-		return this.validateAndMergeRelations(relations, await this.handleERC20(dContract, body, result, dBlock, trxInBlock, opInTrx, virtual));
+		return this.validateAndMergeRelations(
+			relations,
+			await this.handleERC20(dContract, body, result, dBlock, trxInBlock, opInTrx, virtual),
+		);
 	}
 
 	private async handleERC20(
@@ -94,7 +97,14 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 		virtual: boolean,
 	): Promise<IOperationRelation> {
 		const [, contractResult] = await this.echoRepository.getContractResult(result);
-		const relations = await this.contractService.handleErc20Logs(dContract, contractResult, dBlock, trxInBlock, opInTrx, virtual);
+		const relations = await this.contractService.handleErc20Logs(
+			dContract,
+			contractResult,
+			dBlock,
+			trxInBlock,
+			opInTrx,
+			virtual,
+		);
 		return this.validateAndMergeRelations({
 			from: [body.registrar],
 			to: [body.callee],

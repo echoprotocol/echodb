@@ -201,6 +201,7 @@ export default class ContractService {
 		await Promise.all([
 			this.transferRepository.createAndEmit(
 				{
+					virtual,
 					relationType: this.transferRepository.determineRelationType(from, to),
 					amount: amount.toString(),
 					_contract: dContract,
@@ -209,7 +210,6 @@ export default class ContractService {
 					block: dBlock.round,
 					trx_in_block: trxInBlock,
 					op_in_trx: opInTrx,
-					virtual,
 				},
 				dFrom,
 				dTo,
