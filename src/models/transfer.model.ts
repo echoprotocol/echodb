@@ -17,6 +17,9 @@ export default AbstractModel<ITransfer>(MODEL.NAME.TANSFER, {
 	block: Number,
 	relationType: { enum: Object.values(TRANSFER.TYPE), $type: String },
 	valueType: { enum: Object.values(BALANCE.TYPE), $type: String },
+	trx_in_block: Number,
+	op_in_trx: Number,
+	virtual: Boolean,
 }, {
 	typeKey: '$type',
 });
