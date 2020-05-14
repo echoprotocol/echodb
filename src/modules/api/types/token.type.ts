@@ -12,6 +12,8 @@ export default class Token {
 	@Field() decimals: string;
 	@Field() registrar: Account;
 
+	@Field() holders_count: number;
+	@Field() transactions_count: number;
 	@Field(() => Contract)
 	contract: Contract;
 }

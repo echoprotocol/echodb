@@ -12,6 +12,9 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 		body: ECHO.OPERATION_PROPS<Y>,
 		result: ECHO.OPERATION_RESULT<Y>,
 		dBlock: TDoc<IBlock>,
+		trxInBlock?: number,
+		opInTrx?: number,
+		virtual?: boolean,
 	): IOperationRelation | Promise<IOperationRelation>;
 
 	public async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
@@ -26,6 +29,9 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 		_result: ECHO.OPERATION_RESULT<Y>,
 		_dBlock: TDoc<IBlock>,
 		relation: IOperationRelation,
+		_trxInBlock?: number,
+		_opInTrx?: number,
+		_virtual?: boolean,
 	): IOperationRelation | Promise<IOperationRelation> { return relation; }
 
 	validateRelation(params: RelationParameters) {

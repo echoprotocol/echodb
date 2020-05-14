@@ -60,6 +60,14 @@ export default class ContractResolver extends AbstractResolver {
 		return dContract.token_info.total_supply;
 	}
 	@FieldResolver()
+	holders_count(@Root() dContract: TDoc<IContract>) {
+		return dContract.token_info.holders_count;
+	}
+	@FieldResolver()
+	transactions_count(@Root() dContract: TDoc<IContract>) {
+		return dContract.token_info.transactions_count;
+	}
+	@FieldResolver()
 	registrar(@Root() dContract: TDoc<IContract>) {
 		return this.resolveMongoField(dContract._registrar, this.accountRepository);
 	}

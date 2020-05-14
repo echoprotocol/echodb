@@ -189,13 +189,14 @@ export default class TransferService {
 
 		query.push(...unwind);
 		match.$and.length && query.push({ $match: match });
+		const total = (await this.transferRepository.aggregate(query)).length;
 		query.push({ $skip : offset });
 		query.push({ $limit : count });
 		query.push({ $sort: { timestamp: sortDestination } });
 
 		const items = await this.transferRepository.aggregate(query);
 
-		return { items, total: items.length };
+		return { items, total };
 	}
 
 }

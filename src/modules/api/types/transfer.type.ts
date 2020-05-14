@@ -17,6 +17,11 @@ export default class Transfer {
 	_toContract: MongoId;
 	_asset: MongoId;
 	_contract: MongoId;
+	@Field() block: number;
+	@Field() trx_in_block: number;
+	@Field() op_in_trx: number;
+	@Field() virtual: boolean;
+	@Field() timestamp: Date;
 	@Field(() => Account) from: string;
 	@Field(() => Account) to: string;
 	@Field(() => StringifiedNumber) amount: string;

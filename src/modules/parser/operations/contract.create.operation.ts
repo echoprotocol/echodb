@@ -79,12 +79,22 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 		result: ECHO.OPERATION_RESULT<OP_ID>,
 		dBlock: TDoc<IBlock>,
 		relations: IOperationRelation,
+		trxInBlock: number,
+		opInTrx: number,
+		virtual: boolean,
 	) {
 		const [contractType, contractResult] = await this.echoRepository.getContractResult(result);
 		if (contractType === 1) return relations;
 		const contract = await this.contractRepository.findById(ethAddrToEchoId(contractResult.exec_res.new_address));
 		if (contract.type !== CONTRACT.TYPE.ERC20) return relations;
-		const newRelations = await this.contractService.handleErc20Logs(contract, contractResult, dBlock);
+		const newRelations = await this.contractService.handleErc20Logs(
+			contract,
+			contractResult,
+			dBlock,
+			trxInBlock,
+			opInTrx,
+			virtual,
+		);
 		return this.validateAndMergeRelations(relations, newRelations);
 	}
 

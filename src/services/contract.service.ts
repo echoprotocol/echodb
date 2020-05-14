@@ -138,6 +138,9 @@ export default class ContractService {
 		dContract: TDoc<IContract>,
 		contractResult: ContractResult,
 		dBlock: TDoc<IBlock>,
+		trxInBlock: number,
+		opInTrx: number,
+		virtual: boolean,
 	): Promise<Partial<IOperationRelation>> {
 		const { tr_receipt: { log: logs } } = contractResult;
 
@@ -163,7 +166,7 @@ export default class ContractService {
 					});
 					relations.from.push(from);
 					relations.to.push(to);
-					await this.handleTokenTransfer(contract, from, to, amount, dBlock);
+					await this.handleTokenTransfer(contract, from, to, amount, dBlock, trxInBlock, opInTrx, virtual);
 			}
 		}
 
@@ -183,6 +186,9 @@ export default class ContractService {
 		to: AccountId | ContractId,
 		amount: string | number,
 		dBlock: TDoc<IBlock>,
+		trxInBlock: number,
+		opInTrx: number,
+		virtual: boolean,
 	) {
 		const senderType = this.transferRepository.determineParticipantType(from);
 		const receiverType = this.transferRepository.determineParticipantType(to);
@@ -195,11 +201,15 @@ export default class ContractService {
 		await Promise.all([
 			this.transferRepository.createAndEmit(
 				{
+					virtual,
 					relationType: this.transferRepository.determineRelationType(from, to),
 					amount: amount.toString(),
 					_contract: dContract,
 					valueType: BALANCE.TYPE.TOKEN,
 					timestamp: dateFromUtcIso(dBlock.timestamp),
+					block: dBlock.round,
+					trx_in_block: trxInBlock,
+					op_in_trx: opInTrx,
 				},
 				dFrom,
 				dTo,

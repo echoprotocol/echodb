@@ -286,7 +286,14 @@ export default class OperationManager {
 	): Promise<IOperationRelation> {
 		const { id, body, result } = operation;
 		logger.trace(`Parsing ${ECHO.OPERATION_ID[id]} [${id}] operation`);
-		const preInternalRelation = <IOperationRelation>await this.map[id].parse(body, result, dBlock);
+		const preInternalRelation = <IOperationRelation>await this.map[id].parse(
+			body,
+			result,
+			dBlock,
+			operation.op_in_trx,
+			operation.trx_in_block,
+			operation.virtual,
+		);
 		if (body.fee) await this.balanceService.takeFee(preInternalRelation.from[0], body.fee);
 		if (virtualOperations) {
 			for (let vopIndex = 0; vopIndex < virtualOperations.length; vopIndex += 1) {
@@ -309,7 +316,15 @@ export default class OperationManager {
 			}
 		}
 
-		const postInternalRelation = await this.map[id].postInternalParse(body, result, dBlock, preInternalRelation);
+		const postInternalRelation = await this.map[id].postInternalParse(
+			body,
+			result,
+			dBlock,
+			preInternalRelation,
+			operation.op_in_trx,
+			operation.trx_in_block,
+			operation.virtual,
+		);
 		await this.checkForTokenBalancesUpdating(id, body, result);
 		return postInternalRelation;
 	}
