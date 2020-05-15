@@ -51,7 +51,7 @@ export default class SidechainEthIssueOperation extends AbstractOperation<OP_ID>
 		if (depositObject) {
 			const depositOperation =  await this.operationRepository.findOne({
 				'body.deposit_id': depositObject.deposit_id,
-				id: ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT,
+				$or: [{ id: ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT }, { id: ECHO.OPERATION_ID.SIDECHAIN_BTC_DEPOSIT }],
 			});
 
 			if (depositOperation) {
