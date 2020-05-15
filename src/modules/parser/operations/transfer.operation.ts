@@ -26,7 +26,14 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>, _: any, dBlock: TDoc<IBlock>) {
+	async parse(
+		body: ECHO.OPERATION_PROPS<OP_ID>,
+		_: any, dBlock:
+		TDoc<IBlock>,
+		trxInBlock: number,
+		opInTrx: number,
+		virtual: boolean,
+	) {
 		const [[dFrom, dTo], dAsset] = await Promise.all([
 			this.accountRepository.findManyByIds([body.from, body.to]),
 			this.assetRepository.findById(body.amount.asset_id),
@@ -36,12 +43,16 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 			this.transferBalance(dFrom, dTo, dAsset, amount),
 			this.transferRepository.createAndEmit({
 				amount,
+				virtual,
 				relationType: await this.transferRepository.determineRelationType(dFrom.id, dTo.id),
 				_fromAccount: dFrom,
 				_toAccount: dTo,
 				_asset: dAsset,
 				valueType: BALANCE.TYPE.ASSET,
 				timestamp: dateFromUtcIso(dBlock.timestamp),
+				block: dBlock.round,
+				trx_in_block: trxInBlock,
+				op_in_trx: opInTrx,
 			}),
 		]);
 		return this.validateRelation({

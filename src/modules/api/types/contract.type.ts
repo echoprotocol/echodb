@@ -51,6 +51,4 @@ export default class Contract {
 
 	@Field(() => ERC20TokenType, { nullable: true }) sidechainERC20Token: ERC20TokenType;
 
-	@Field() holders_count: number;
-	@Field() transactions_count: number;
 }
