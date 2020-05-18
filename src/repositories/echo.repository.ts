@@ -71,8 +71,12 @@ export default class EchoRepository {
 				unlinkedVirtualOperations.push(virtualOperation);
 			} else {
 				const transaction = transactionsWithInjectedVirtualOperations[virtualOperation.trx_in_block];
-				const parentOperation = transaction.operations[virtualOperation.op_in_trx];
-				parentOperation[1].virtual_operations.push(virtualOperation.op);
+				if (virtualOperation.op_in_trx === transaction.operations.length) {
+					unlinkedVirtualOperations.push(virtualOperation);
+				} else {
+					const parentOperation = transaction.operations[virtualOperation.op_in_trx];
+					parentOperation[1].virtual_operations.push(virtualOperation.op);
+				}
 			}
 		}
 		return {
