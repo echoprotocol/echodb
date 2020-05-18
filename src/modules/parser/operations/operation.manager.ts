@@ -80,6 +80,9 @@ import SidechainBtcCreateAddressOperation from './sidechain.btc.create.address.o
 import SidechainBtcWithdrawOperation from './sidechain.btc.withdraw.operation';
 import ContractSelfdestructOperation from './contract.selfdestruct.operation';
 import SidechainEthSendDepositOperation from './sidechain.eth.send.deposit.operation';
+import DidCreateOperation from './did.create.operation';
+import DidUpdateOperation from './did.update.operation';
+import DidDeleteOperation from './did.delete.operation';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -158,6 +161,9 @@ export default class OperationManager {
 		contractInternalCreateOperation: ContractInternalCreateOperaiton,
 		contractInternalCallOperation: ContractInternalCallOperation,
 		evmAddressRegisterOperation: EVMAddressRegister,
+		didCreateOperation: DidCreateOperation,
+		didUpdateOperation: DidUpdateOperation,
+		didDeleteOperation: DidDeleteOperation,
 	) {
 		const operations: AbstractOperation<ECHO.KNOWN_OPERATION>[] = [
 			accountCreateOperation,
@@ -223,6 +229,9 @@ export default class OperationManager {
 			contractInternalCreateOperation,
 			contractInternalCallOperation,
 			evmAddressRegisterOperation,
+			didCreateOperation,
+			didUpdateOperation,
+			didDeleteOperation,
 		];
 		for (const operation of operations) {
 			if (!operation.status) return;
