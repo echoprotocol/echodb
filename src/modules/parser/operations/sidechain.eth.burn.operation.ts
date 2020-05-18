@@ -45,7 +45,7 @@ export default class SidechainEthBurnOperation extends AbstractOperation<OP_ID> 
 		const { body } = <IOperation<OP_ID>>operation;
 		const withdrawOperation =  await this.operationRepository.findOne({
 			'body.withdraw_id': body.withdraw_id,
-			id: ECHO.OPERATION_ID.SIDECHAIN_ETH_WITHDRAW,
+			$or: [{ id: ECHO.OPERATION_ID.SIDECHAIN_ETH_WITHDRAW }, { id: ECHO.OPERATION_ID.SIDECHAIN_BTC_WITHDRAW }],
 		});
 
 		if (withdrawOperation) {
