@@ -5,10 +5,10 @@ import { ObjectType, Field } from 'type-graphql';
 
 @ObjectType()
 export default class Account {
-	@Field(() => AccountId) id: string;
+	@Field(() => AccountId, { nullable: true }) id: string;
 	@Field(() => Account) registrar: string;
 	@Field() network_fee_percentage: number;
-	@Field() name: string;
+	@Field({ nullable: true }) name: string;
 	@Field() owner: AccountAuthority;
 	@Field() active: AccountAuthority;
 	@Field() echorand_key: string;
