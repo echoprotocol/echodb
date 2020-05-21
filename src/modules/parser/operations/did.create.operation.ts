@@ -1,10 +1,10 @@
 import AbstractOperation from './abstract.operation';
 import * as ECHO from '../../../constants/echo.constants';
 
-type OP_ID = ECHO.OPERATION_ID.DID_CREATE;
+type OP_ID = ECHO.OPERATION_ID.DID_CREATE_OPERATION;
 
 export default class DidCreateOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.DID_CREATE;
+	id = ECHO.OPERATION_ID.DID_CREATE_OPERATION;
 
 	constructor() {
 		super();
