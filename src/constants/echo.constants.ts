@@ -74,6 +74,9 @@ export enum OPERATION_ID {
 	SIDECHAIN_BTC_APPROVE_AGGREGATE = 63,
 	BLOCK_REWARD = 64, // VIRTUAL
 	EVM_ADDRESS_REGISTER = 65,
+	DID_CREATE = 66,
+	DID_UPDATE = 67,
+	DID_DELETE = 68,
 }
 
 export type Operations = {
@@ -142,6 +145,9 @@ export type Operations = {
 	[OPERATION_ID.CONTRACT_UPDATE]: ContractUpdateOperation;
 	[OPERATION_ID.BLOCK_REWARD]: BlockRewardOperation;
 	[OPERATION_ID.EVM_ADDRESS_REGISTER]: EVMAddressRegister;
+	[OPERATION_ID.DID_CREATE]: DidCreate;
+	[OPERATION_ID.DID_UPDATE]: DidUpdate;
+	[OPERATION_ID.DID_DELETE]: DidDelete;
 };
 
 export type OperationResult = {
@@ -185,16 +191,16 @@ export type OperationResult = {
 	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
 	[OPERATION_ID.CONTRACT_WHITELIST]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
-	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: string;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT]: unknown;
-	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: string;
 	[OPERATION_ID.SIDECHAIN_ETH_SEND_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ISSUE]: unknown;
 	[OPERATION_ID.SIDECHAIN_BURN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: string;
-	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_WITHDRAW_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN]: string;
@@ -202,14 +208,17 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: unknown;
 	[OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS]: string;
-	[OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_BTC_DEPOSIT]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: unknown;
-	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: string;
+	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: string;
+	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: string;
 	[OPERATION_ID.BLOCK_REWARD]: unknown;
 	[OPERATION_ID.EVM_ADDRESS_REGISTER]: unknown;
+	[OPERATION_ID.DID_CREATE]: unknown;
+	[OPERATION_ID.DID_UPDATE]: unknown;
+	[OPERATION_ID.DID_DELETE]: unknown;
 };
 
 export type KNOWN_OPERATION = Extract<keyof Operations, OPERATION_ID>;
@@ -724,6 +733,7 @@ interface SidechainEthApproveAddressOperation {
 	malicious_committeemen: AccountId[];
 	account: AccountId;
 	eth_addr: string;
+	transaction_hash: string;
 	extensions: ExtensionsArr;
 }
 
@@ -735,6 +745,7 @@ interface SidechainEthDepositOperation {
 	value: number;
 	from_address?: string;
 	extensions: ExtensionsArr;
+	transaction_hash: string;
 }
 
 interface SidechainEthSendDepositOperation {
@@ -758,6 +769,7 @@ interface SidechainEthApproveWithdraw {
 	committee_member_id: AccountId;
 	withdraw_id: number;
 	extensions: ExtensionsArr;
+	transaction_hash: string;
 }
 
 interface SidechainEthSendWithdraw {
@@ -869,6 +881,7 @@ interface SidechainErc20ApproveTokenWithdrawOperation {
 	withdraw_id: number;
 	sidchain_erc_20_withdraw_token?: string;
 	extensions: ExtensionsArr;
+	transaction_hash: string;
 }
 
 interface SidechainErc20Issue {
@@ -996,4 +1009,25 @@ interface EVMAddressRegister {
 	owner: string;
 	evm_address: string;
 	extensions: ExtensionsArr;
+}
+
+interface DidCreate {
+	fee: IAmount;
+	registrar: string;
+	essence: string;
+	public_keys: string[];
+}
+
+interface DidUpdate {
+	fee: IAmount;
+	registrar: string;
+	did_identifier: string;
+	pub_keys_to_delete: string[];
+	pub_keys_to_add: string[];
+}
+
+interface DidDelete {
+	fee: IAmount;
+	registrar: string;
+	did_identifier: string;
 }
