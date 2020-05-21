@@ -1,5 +1,6 @@
 import AccountAuthority from './account.authority.type';
 import AccountOptions from './account.options.type';
+import AccountCommitteeOptions from './account.committee.options.type';
 import AccountId from './account.id.type';
 import { ObjectType, Field } from 'type-graphql';
 
@@ -17,6 +18,8 @@ export default class Account {
 	@Field() top_n_control_flags: number;
 	@Field() concentration_balance_rate?: number;
 	@Field() concentration_history_rate?: number;
+	@Field(() => AccountCommitteeOptions, { nullable: true }) committee_options: AccountCommitteeOptions;
+
 	@Field() evm_address: string;
 
 	@Field(() => [String])

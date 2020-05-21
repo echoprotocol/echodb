@@ -22,6 +22,7 @@ import BalanceClaimOperation from './balance.claim.operation';
 import OverrideTransferOperation from './override.transfer.operation';
 import CommitteeMemberUpdateGlobalParametersOperation from './committee.member.update.global.parameters.operation';
 import CommitteeMemberActivateOperation from './committee.member.activate.operation';
+import CommitteeMemberDeactivateOperation from './committee.member.deactivate.operation';
 import CommitteeFrozenBalanceOperation from './committee.frozen.balance.operation';
 import VestingBalanceWithdrawOperation from './vesting.balance.withdraw.operation';
 import VestingBalanceCreateOperation from './vesting.balance.create.operation';
@@ -121,6 +122,7 @@ export default class OperationManager {
 		overrideTransferOperation: OverrideTransferOperation,
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
 		committeeMemberActivateOperation: CommitteeMemberActivateOperation,
+		committeeMemberDeactivateOperation: CommitteeMemberDeactivateOperation,
 		committeeFrozenBalanceOperation: CommitteeFrozenBalanceOperation,
 		vestingBalanceCreateOperation: VestingBalanceCreateOperation,
 		vestingBalanceWithdrawOperation: VestingBalanceWithdrawOperation,
@@ -187,6 +189,7 @@ export default class OperationManager {
 			overrideTransferOperation,
 			committeeMemberUpdateGlobalParametersOperation,
 			committeeMemberActivateOperation,
+			committeeMemberDeactivateOperation,
 			committeeFrozenBalanceOperation,
 			vestingBalanceCreateOperation,
 			vestingBalanceWithdrawOperation,

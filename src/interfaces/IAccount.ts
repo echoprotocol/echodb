@@ -5,6 +5,7 @@ export interface ICommitteeOptions {
 	committee_member_id?: String;
 	proposal_operation?: String;
 	approves_count?: Number;
+	last_atction_time?: String;
 }
 
 export interface IAccount {

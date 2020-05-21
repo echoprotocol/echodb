@@ -171,7 +171,7 @@ export default class ParserModule extends AbstractModule {
 		const currentCommitteeMembersObjects = await this.echoRepository.lookupCommitteeMemberAccounts();
 		const transformedCommitteeMembersIds = currentCommitteeMembersObjects.map((value: string[]) => value[1]);
 		const committeeMembers = await this.echoRepository.getCommitteeMembers(transformedCommitteeMembersIds);
-
+		const firstBlock = await this.echoRepository.getBlock(1);
 		const updatedAccounts = committeeMembers.map((committee: any) => {
 			const { id: committee_member_id, committee_member_account: id, eth_address, btc_public_key } = committee;
 
@@ -182,6 +182,7 @@ export default class ParserModule extends AbstractModule {
 				status: COMMITTEE.STATUS.ACTIVE,
 				proposal_operation: '',
 				approves_count: 0,
+				last_atction_time: firstBlock.timestamp,
 			};
 
 			return this.accountRepository.findOneAndUpdate({ id }, { committee_options });
