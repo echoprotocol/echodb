@@ -278,4 +278,22 @@ export default class EchoRepository {
 			throw this.ravenHelper.error(error, 'echoRepository#getEthAddress');
 		}
 	}
+
+	async lookupCommitteeMemberAccounts(symbol = '', limit = 1000) {
+		try {
+			// fix when method will be added at echojs-lib typing
+			return await (this.echoConnection.echo.api as any).lookupCommitteeMemberAccounts(symbol, limit);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#lookupCommitteeMemberAccounts');
+		}
+	}
+
+	async getCommitteeMembers(ids: string[]) {
+		try {
+			// fix when method will be added at echojs-lib typing
+			return await (this.echoConnection.echo.api as any).getCommitteeMembers(ids);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getCommitteeMembers');
+		}
+	}
 }
