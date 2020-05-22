@@ -82,7 +82,11 @@ export default class AccountService {
 		offset: number,
 		status?: STATUS,
 	) {
-		const query: GetCommitteeQuery = { 'committee_options.status': status };
+		const query: GetCommitteeQuery = {};
+
+		if (status && status !== STATUS.NONE) {
+			query['committee_options.status'] = status;
+		}
 
 		const options: OptionsAccountsQuery = { limit: count, skip: offset };
 
