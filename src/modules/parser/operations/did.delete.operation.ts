@@ -1,10 +1,10 @@
 import AbstractOperation from './abstract.operation';
 import * as ECHO from '../../../constants/echo.constants';
 
-type OP_ID = ECHO.OPERATION_ID.DID_DELETE;
+type OP_ID = ECHO.OPERATION_ID.DID_DELETE_OPERATION;
 
 export default class DidDeleteOperation extends AbstractOperation<OP_ID> {
-	id = ECHO.OPERATION_ID.DID_DELETE;
+	id = ECHO.OPERATION_ID.DID_DELETE_OPERATION;
 
 	constructor() {
 		super();
