@@ -22,6 +22,7 @@ import { IAccount } from '../interfaces/IAccount';
 import { IBlock } from '../interfaces/IBlock';
 import ContractCallerRepository from '../repositories/contract.caller.repository';
 import { NAME as ModelName } from '../constants/model.constants';
+import { IAmount } from 'constants/echo.constants';
 
 type GetContractsQuery = { registrar?: object, type?: CONTRACT.TYPE };
 type GetTokensQuery = { _registrar?: any, type?: any, token_info?: SomeOfAny<ITokenInfo> };
@@ -141,6 +142,8 @@ export default class ContractService {
 		trxInBlock: number,
 		opInTrx: number,
 		virtual: boolean,
+		fee: IAmount,
+		operationId: number,
 	): Promise<Partial<IOperationRelation>> {
 		const { tr_receipt: { log: logs } } = contractResult;
 
@@ -166,7 +169,18 @@ export default class ContractService {
 					});
 					relations.from.push(from);
 					relations.to.push(to);
-					await this.handleTokenTransfer(contract, from, to, amount, dBlock, trxInBlock, opInTrx, virtual);
+					await this.handleTokenTransfer(
+						contract,
+						from,
+						to,
+						amount,
+						dBlock,
+						trxInBlock,
+						opInTrx,
+						virtual,
+						fee,
+						operationId,
+					);
 			}
 		}
 
@@ -189,6 +203,8 @@ export default class ContractService {
 		trxInBlock: number,
 		opInTrx: number,
 		virtual: boolean,
+		fee: IAmount,
+		operationId: number,
 	) {
 		const senderType = this.transferRepository.determineParticipantType(from);
 		const receiverType = this.transferRepository.determineParticipantType(to);
@@ -202,6 +218,8 @@ export default class ContractService {
 			this.transferRepository.createAndEmit(
 				{
 					virtual,
+					fee,
+					operationId,
 					relationType: this.transferRepository.determineRelationType(from, to),
 					amount: amount.toString(),
 					_contract: dContract,

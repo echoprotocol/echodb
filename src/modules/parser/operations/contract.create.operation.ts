@@ -75,7 +75,7 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 	}
 
 	async postInternalParse(
-		_body: ECHO.OPERATION_PROPS<OP_ID>,
+		body: ECHO.OPERATION_PROPS<OP_ID>,
 		result: ECHO.OPERATION_RESULT<OP_ID>,
 		dBlock: TDoc<IBlock>,
 		relations: IOperationRelation,
@@ -94,6 +94,8 @@ export default class ContractCreateOperation extends AbstractOperation<OP_ID> {
 			trxInBlock,
 			opInTrx,
 			virtual,
+			body.fee,
+			this.id,
 		);
 		return this.validateAndMergeRelations(relations, newRelations);
 	}
