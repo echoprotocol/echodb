@@ -60,7 +60,6 @@ export default class CommitteeMemberActivateOperation extends AbstractOperation<
 				committee_member_id: committeeMemberId,
 				status: COMMITTEE.STATUS.ACTIVE,
 				proposal_operation: '',
-				approves_count: 0,
 				last_atction_time: dBlock.timestamp,
 			};
 

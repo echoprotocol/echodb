@@ -42,5 +42,7 @@ export default AbstractModel<IAccount>(MODEL.NAME.ACCOUNT, {
 		proposal_operation: String,
 		approves_count: Number,
 		last_atction_time: String,
+		last_operation: String,
+		proposal_id: String,
 	},
 });

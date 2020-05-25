@@ -1,8 +1,11 @@
 import AbstractOperation from './abstract.operation';
-import * as ECHO from '../../../constants/echo.constants';
-import { IOperation } from 'interfaces/IOperation';
+import AccountRepository from '../../../repositories/account.repository';
 import OperationRepository from 'repositories/operation.repository';
 import BlockRepository from 'repositories/block.repository';
+import AccountService from '../../../services/account.service';
+import * as ECHO from '../../../constants/echo.constants';
+import { IOperation } from 'interfaces/IOperation';
+
 import { TDocument } from 'types/mongoose/tdocument';
 
 type OP_ID = ECHO.OPERATION_ID.PROPOSAL_UPDATE;
@@ -13,6 +16,8 @@ export default class ProposalUpdateOperation extends AbstractOperation<OP_ID> {
 	constructor(
 		private operationRepository: OperationRepository,
 		private blockRepository: BlockRepository,
+		private accountRepository: AccountRepository,
+		private accountService: AccountService,
 	) {
 		super();
 	}
@@ -47,6 +52,21 @@ export default class ProposalUpdateOperation extends AbstractOperation<OP_ID> {
 				approvals,
 			},
 		});
+
+		const account = await this.accountRepository.findOne({ 'committee_options.proposal_id': body.proposal });
+
+		const accountAuth = await this.accountService
+			.getAccountCondition(body.fee_paying_account, createOperation.body.expiration_time);
+
+		const authArray = [...accountAuth.key_auths, ...accountAuth.account_auths];
+		const approvesCount = approvals ? approvals.reduce((sum, key) => {
+			const keyData = authArray.find((el) => el.key === key);
+			return keyData ? +keyData.value + sum : sum;
+		}, 0) : 0;
+
+		account.committee_options.approves_count = approvesCount;
+		await account.save();
+
 		return this.validateRelation({
 			from: [body.fee_paying_account],
 			to: [body.proposal],
