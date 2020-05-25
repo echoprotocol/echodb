@@ -16,6 +16,8 @@ import BlockService from '../../services/block.service';
 import * as INFO from '../../constants/info.constants';
 import * as ECHO from '../../constants/echo.constants';
 import * as REDIS from '../../constants/redis.constants';
+import * as COMMITTEE  from '../../constants/committee.constants';
+
 import { getLogger } from 'log4js';
 import { TDoc } from 'types/mongoose';
 import { ITransactionExtended } from 'interfaces/ITransaction';
@@ -49,6 +51,7 @@ export default class ParserModule extends AbstractModule {
 		if (from === 1) {
 			await this.syncAllAccounts();
 			await this.syncCoreAsset();
+			await this.syncCommitteeMembers();
 		}
 		for await (const block of this.blockEngine.start(from)) {
 			try {
@@ -161,6 +164,32 @@ export default class ParserModule extends AbstractModule {
 			logger.error(error);
 			return;
 		}
+	}
+
+	async syncCommitteeMembers() {
+		logger.info('Parsing first block. Synchronizing committee members');
+		const currentCommitteeMembersObjects = await this.echoRepository.lookupCommitteeMemberAccounts();
+		const transformedCommitteeMembersIds = currentCommitteeMembersObjects.map((value: string[]) => value[1]);
+		const committeeMembers = await this.echoRepository.getCommitteeMembers(transformedCommitteeMembersIds);
+		const firstBlock = await this.echoRepository.getBlock(1);
+		const updatedAccounts = committeeMembers.map((committee: any) => {
+			const { id: committee_member_id, committee_member_account: id, eth_address, btc_public_key } = committee;
+
+			const committee_options = {
+				eth_address,
+				btc_public_key,
+				committee_member_id,
+				status: COMMITTEE.STATUS.ACTIVE,
+				proposal_operation: '',
+				approves_count: 0,
+				last_status_change_time: firstBlock.timestamp,
+				last_executed_operation: '',
+			};
+
+			return this.accountRepository.findOneAndUpdate({ id }, { committee_options });
+		});
+
+		await Promise.all(updatedAccounts);
 	}
 
 }
