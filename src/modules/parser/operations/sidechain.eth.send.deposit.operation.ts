@@ -1,7 +1,10 @@
 import AbstractOperation from './abstract.operation';
 import * as ECHO from '../../../constants/echo.constants';
+import { TDoc } from '../../../types/mongoose';
+import { IBlock } from '../../../interfaces/IBlock';
 import { IOperation } from 'interfaces/IOperation';
 import EchoRepository from '../../../repositories/echo.repository';
+import AccountService from '../../../services/account.service';
 
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT;
 
@@ -10,11 +13,26 @@ export default class SidechainEthSendDepositOperation extends AbstractOperation<
 
 	constructor(
 		private echoRepository: EchoRepository,
+		private accountService: AccountService,
 	) {
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
+	async parse(
+		body: ECHO.OPERATION_PROPS<OP_ID>,
+		_: ECHO.OPERATION_RESULT<OP_ID>,
+		dBlock: TDoc<IBlock>,
+		opIndex: Number,
+		txIndex: Number,
+		virtual: boolean,
+	) {
+		await this.accountService.updateCommitteeLastExecutedOperation(
+			body.committee_member_id,
+			dBlock.round,
+			txIndex,
+			opIndex,
+			virtual,
+		);
 		return this.validateRelation({
 			from: [body.committee_member_id],
 			assets: [body.fee.asset_id],

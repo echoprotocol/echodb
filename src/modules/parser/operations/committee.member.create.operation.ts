@@ -30,7 +30,7 @@ export default class CommitteeMemberCreateOperation extends AbstractOperation<OP
 			status: COMMITTEE.STATUS.CANDIDATE,
 			proposal_operation: '',
 			approves_count: 0,
-			last_atction_time: dBlock.timestamp,
+			last_status_change_time: dBlock.timestamp,
 		};
 
 		await this.accountRepository.findOneAndUpdate({ id }, { committee_options });

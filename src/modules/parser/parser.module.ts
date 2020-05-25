@@ -182,8 +182,8 @@ export default class ParserModule extends AbstractModule {
 				status: COMMITTEE.STATUS.ACTIVE,
 				proposal_operation: '',
 				approves_count: 0,
-				last_atction_time: firstBlock.timestamp,
-				last_operation: '',
+				last_status_change_time: firstBlock.timestamp,
+				last_executed_operation: '',
 			};
 
 			return this.accountRepository.findOneAndUpdate({ id }, { committee_options });

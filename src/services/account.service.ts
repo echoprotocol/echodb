@@ -217,4 +217,24 @@ export default class AccountService {
 		};
 		return authority;
 	}
+
+	async updateCommitteeLastExecutedOperation(
+		accountId: string,
+		blockRound: Number,
+		transactionIndex: Number,
+		operationIndex: Number,
+		virtual: boolean,
+	) {
+		const account =  await this.accountRepository.findOne({
+			id: accountId,
+			'committee_options.status': STATUS.ACTIVE,
+		});
+
+		if (!account) {
+			return;
+		}
+		const operation = `${blockRound}-${transactionIndex}-${operationIndex}${virtual ? '-virtual' : ''}`;
+		account.committee_options.last_executed_operation = operation;
+		await account.save();
+	}
 }

@@ -29,7 +29,7 @@ export default class CommitteeMemberActivateOperation extends AbstractOperation<
 			const newCommitteeOptions = {
 				...committeeOptions,
 				status: COMMITTEE.STATUS.ACTIVE,
-				last_atction_time: dBlock.timestamp,
+				last_status_change_time: dBlock.timestamp,
 			};
 
 			account.committee_options = newCommitteeOptions;
@@ -60,7 +60,7 @@ export default class CommitteeMemberActivateOperation extends AbstractOperation<
 				committee_member_id: committeeMemberId,
 				status: COMMITTEE.STATUS.ACTIVE,
 				proposal_operation: '',
-				last_atction_time: dBlock.timestamp,
+				last_status_change_time: dBlock.timestamp,
 			};
 
 			account.committee_options = committeeOptions;
