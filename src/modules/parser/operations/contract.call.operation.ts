@@ -104,6 +104,8 @@ export default class ContractCallOperation extends AbstractOperation<OP_ID> {
 			trxInBlock,
 			opInTrx,
 			virtual,
+			body.fee,
+			this.id,
 		);
 		return this.validateAndMergeRelations({
 			from: [body.registrar],
