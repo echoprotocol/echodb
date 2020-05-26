@@ -1,5 +1,4 @@
 import AbstractOperation from './abstract.operation';
-import AccountService from '../../../services/account.service';
 import * as ECHO from '../../../constants/echo.constants';
 
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS;

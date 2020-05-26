@@ -1,12 +1,10 @@
 version: '3'
 services:
-
-
   redis:
     image: redis:5.0.4-alpine
     restart: always
-
-
+    ports:
+      - 6379:6379
   mongo:
     image: mongo:4.0
     volumes:
@@ -16,34 +14,6 @@ services:
     command: mongod --smallfiles
     restart: always
     ports:
-      - $MONGODB_ADDR:27017
-
-
-  parser:
-    image: $CI_FULL_REGISTRY
-    command: ["./wait-for-it/wait-for-it.sh", "mongo:27017", "--", "node", "server.js"]
-    environment:
-      - MODULE=parser
-      - NODE_APP_INSTANCE=${NODE_APP_INSTANCE}
-    restart: always
-    depends_on:
-      - mongo
-      - redis
-
-
-  api:
-    image: $CI_FULL_REGISTRY
-    command: ["./wait-for-it/wait-for-it.sh", "mongo:27017", "--", "node", "server.js"]
-    environment:
-      - MODULE=api
-      - ENABLE_GRAPHIQL=1
-      - NODE_APP_INSTANCE=${NODE_APP_INSTANCE}
-    ports:
-      - 127.0.0.1:${PORT}:3000
-    restart: always
-    depends_on:
-      - mongo
-      - redis
-
+      - 27017:27017
 volumes:
   mongodb:
