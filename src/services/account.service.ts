@@ -220,6 +220,7 @@ export default class AccountService {
 
 	async updateCommitteeLastExecutedOperation(
 		accountId: string,
+		opId: Number,
 		blockRound: Number,
 		transactionIndex: Number,
 		operationIndex: Number,
@@ -235,6 +236,7 @@ export default class AccountService {
 		}
 		const operation = `${blockRound}-${transactionIndex}-${operationIndex}${virtual ? '-virtual' : ''}`;
 		account.committee_options.last_executed_operation = operation;
+		account.committee_options.last_executed_operation_id = opId;
 		await account.save();
 	}
 }

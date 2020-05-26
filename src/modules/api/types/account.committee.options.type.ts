@@ -10,5 +10,6 @@ export default class AccountCommitteeOptions {
 	@Field(() => Number, { nullable: true }) approves_count: number;
 	@Field(() => String, { nullable: true }) last_status_change_time: string;
 	@Field(() => String, { nullable: true }) last_executed_operation: string;
+	@Field(() => Number, { nullable: true }) last_executed_operation_id: number;
 	@Field(() => String, { nullable: true }) proposal_id: string;
 }

@@ -7,6 +7,7 @@ export interface ICommitteeOptions {
 	approves_count?: Number;
 	last_status_change_time?: String;
 	last_executed_operation?: String;
+	last_executed_operation_id?: Number;
 	proposal_id?: String;
 }
 
