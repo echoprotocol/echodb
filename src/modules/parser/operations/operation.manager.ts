@@ -483,7 +483,8 @@ export default class OperationManager {
 		}
 
 		const updateAccountPromises = accountIds
-			.map((id) => this.accountService.updateCommitteeLastExecutedOperation(
+			.map((accountId) => this.accountService.updateCommitteeLastExecutedOperation(
+				accountId,
 				id,
 				blockRound,
 				transactionIndex,
