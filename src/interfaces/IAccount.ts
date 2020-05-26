@@ -1,3 +1,16 @@
+export interface ICommitteeOptions {
+	status?: string;
+	eth_address?: String;
+	btc_public_key?: String;
+	committee_member_id?: String;
+	proposal_operation?: String;
+	approves_count?: Number;
+	last_status_change_time?: String;
+	last_executed_operation?: String;
+	last_executed_operation_id?: Number;
+	proposal_id?: String;
+}
+
 export interface IAccount {
 	id: string;
 	registrar: string;
@@ -29,4 +42,5 @@ export interface IAccount {
 	concentration_balance_rate?: number;
 	concentration_history_rate?: number;
 	evm_address?: string;
+	committee_options?: ICommitteeOptions;
 }

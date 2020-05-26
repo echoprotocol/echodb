@@ -34,4 +34,16 @@ export default AbstractModel<IAccount>(MODEL.NAME.ACCOUNT, {
 	addresses: [Schema.Types.Mixed],
 	concentration_balance_rate: { type: Number, default: 0 },
 	concentration_history_rate: { type: Number, default: 0 },
+	committee_options: {
+		status: String,
+		eth_address: String,
+		btc_public_key: String,
+		committee_member_id: String,
+		proposal_operation: String,
+		approves_count: Number,
+		last_status_change_time: String,
+		last_executed_operation: String,
+		last_executed_operation_id: Number,
+		proposal_id: String,
+	},
 });

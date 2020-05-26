@@ -1,5 +1,7 @@
 import AbstractOperation from './abstract.operation';
+import AccountRepository from '../../../repositories/account.repository';
 import * as ECHO from '../../../constants/echo.constants';
+import * as COMMITTEE from '../../../constants/committee.constants';
 import { IOperation } from 'interfaces/IOperation';
 import BlockRepository from 'repositories/block.repository';
 import OperationRepository from 'repositories/operation.repository';
@@ -13,6 +15,7 @@ export default class ProposalDeleteOperation extends AbstractOperation<OP_ID> {
 	constructor(
 		private operationRepository: OperationRepository,
 		private blockRepository: BlockRepository,
+		private accountRepository: AccountRepository,
 	) {
 		super();
 	}
@@ -30,6 +33,12 @@ export default class ProposalDeleteOperation extends AbstractOperation<OP_ID> {
 				have_delete_operation: true,
 			},
 		});
+
+		const account = await this.accountRepository.findOne({ 'committee_options.proposal_id': body.proposal });
+
+		account.committee_options.status = COMMITTEE.STATUS.CANDIDATE;
+		await account.save();
+
 		return this.validateRelation({
 			from: [body.fee_paying_account],
 			to: [body.proposal],

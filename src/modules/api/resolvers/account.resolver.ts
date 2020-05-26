@@ -11,6 +11,7 @@ import {
 	GetAccountsWithUnrequiredSortsForm,
 	AccountHistoryUpdatedSubscriptionForm,
 	GetAccountConditionForm,
+	GetCommetteeAccounts,
 } from '../forms/account.forms';
 import { Resolver, Query, Args, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
@@ -68,6 +69,17 @@ export default class AccountResolver extends AbstractResolver {
 		timestamp,
 	}: GetAccountConditionForm) {
 		return this.accountService.getAccountCondition(id, timestamp);
+	}
+
+	@validateArgs(GetCommetteeAccounts)
+	@Query(() => paginatedAccounts)
+	getCommitteeAccounts(@Args() {
+		count,
+		offset,
+		status,
+	}: GetCommetteeAccounts) {
+		return this.accountService
+			.getCommitteeAccounts(count, offset, status);
 	}
 
 	// FieldResolver

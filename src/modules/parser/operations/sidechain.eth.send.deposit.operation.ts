@@ -14,7 +14,9 @@ export default class SidechainEthSendDepositOperation extends AbstractOperation<
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
+	async parse(
+		body: ECHO.OPERATION_PROPS<OP_ID>,
+	) {
 		return this.validateRelation({
 			from: [body.committee_member_id],
 			assets: [body.fee.asset_id],
