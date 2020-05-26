@@ -2,6 +2,7 @@ import AbstractOperation from './abstract.operation';
 import * as ECHO from '../../../constants/echo.constants';
 import { IOperation } from 'interfaces/IOperation';
 import EchoRepository from '../../../repositories/echo.repository';
+
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT;
 
 export default class SidechainEthSendDepositOperation extends AbstractOperation<OP_ID> {
@@ -13,7 +14,9 @@ export default class SidechainEthSendDepositOperation extends AbstractOperation<
 		super();
 	}
 
-	async parse(body: ECHO.OPERATION_PROPS<OP_ID>) {
+	async parse(
+		body: ECHO.OPERATION_PROPS<OP_ID>,
+	) {
 		return this.validateRelation({
 			from: [body.committee_member_id],
 			assets: [body.fee.asset_id],
