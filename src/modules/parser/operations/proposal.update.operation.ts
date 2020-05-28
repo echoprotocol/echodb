@@ -2,7 +2,6 @@ import AbstractOperation from './abstract.operation';
 import AccountRepository from '../../../repositories/account.repository';
 import OperationRepository from 'repositories/operation.repository';
 import BlockRepository from 'repositories/block.repository';
-import AccountService from '../../../services/account.service';
 import * as ECHO from '../../../constants/echo.constants';
 import { IOperation } from 'interfaces/IOperation';
 
@@ -17,7 +16,6 @@ export default class ProposalUpdateOperation extends AbstractOperation<OP_ID> {
 		private operationRepository: OperationRepository,
 		private blockRepository: BlockRepository,
 		private accountRepository: AccountRepository,
-		private accountService: AccountService,
 	) {
 		super();
 	}
@@ -55,17 +53,12 @@ export default class ProposalUpdateOperation extends AbstractOperation<OP_ID> {
 
 		const account = await this.accountRepository.findOne({ 'committee_options.proposal_id': body.proposal });
 
-		const accountAuth = await this.accountService
-			.getAccountCondition(body.fee_paying_account, createOperation.body.expiration_time);
-
-		const authArray = [...accountAuth.key_auths, ...accountAuth.account_auths];
-		const approvesCount = approvals ? approvals.reduce((sum, key) => {
-			const keyData = authArray.find((el) => el.key === key);
-			return keyData ? +keyData.value + sum : sum;
-		}, 0) : 0;
-
-		account.committee_options.approves_count = approvesCount;
-		await account.save();
+		if (account) {
+			const approvesCount = account.committee_options.approves_count as number || 0;
+			const res = approvesCount + body.active_approvals_to_add.length - body.active_approvals_to_remove.length;
+			account.committee_options.approves_count = res < 0 ? 0 : res;
+			await account.save();
+		}
 
 		return this.validateRelation({
 			from: [body.fee_paying_account],
