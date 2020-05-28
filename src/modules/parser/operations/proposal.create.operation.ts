@@ -24,22 +24,23 @@ export default class ProposalCreateOperation extends AbstractOperation<OP_ID> {
 		txIndex: Number,
 	) {
 		const committeeActionOperations = body.proposed_ops
+			.map((value: any) => value.op)
 			.filter(([opId]: any[]) => [
 				ECHO.OPERATION_ID.COMMITTEE_MEMBER_ACTIVATE,
 				ECHO.OPERATION_ID.COMMITTEE_MEMBER_DEACTIVATE,
 			].includes(opId))
-			.reduce(async (res: unknown[], [, op]: any[]) => {
+			.map(async ([, op]: any[]) => {
 				const target = op.committee_to_activate || op.committee_to_deactivate;
 
 				if (!target) {
-					return res;
+					return null;
 				}
 
 				const account = await this.accountRepository
 					.findOne({ 'committee_options.committee_member_id': target });
 
 				if (!account) {
-					return res;
+					return null;
 				}
 
 				const committeeOptions = account.committee_options || {};
@@ -49,7 +50,7 @@ export default class ProposalCreateOperation extends AbstractOperation<OP_ID> {
 				committeeOptions.approves_count = 0;
 
 				account.committee_options = committeeOptions;
-				return [...res, account.save()];
+				return account.save();
 			}, []) as unknown[];
 
 		await Promise.all(committeeActionOperations);
