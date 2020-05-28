@@ -11,6 +11,7 @@ import { TDoc } from '../types/mongoose';
 import { CORE_ASSET, OPERATION_ID } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
 import { SORT_DESTINATION } from '../constants/api.constants';
+import { STATUS } from '../constants/committee.constants';
 import ProcessingError from '../errors/processing.error';
 import { escapeRegExp } from '../utils/format';
 
@@ -24,6 +25,7 @@ export const ERROR = {
 };
 
 type GetAccountsQuery = { name?: RegExp };
+type GetCommitteeQuery = { 'committee_options.status'?: string };
 type OptionsAccountsQuery = { limit?: number, skip?: number, sort?: Object };
 
 export default class AccountService {
@@ -63,6 +65,30 @@ export default class AccountService {
 		} else if (concentrationHistroyRateSort) {
 			options.sort = { concentration_history_rate: concentrationHistroyRateSort };
 		}
+
+		const [items, total] = await Promise.all([
+			this.accountRepository.find(
+				query,
+				null,
+				options,
+			),
+			this.accountRepository.count(query),
+		]);
+		return { items, total };
+	}
+
+	async getCommitteeAccounts(
+		count: number,
+		offset: number,
+		status?: STATUS,
+	) {
+		const query: GetCommitteeQuery = {};
+
+		if (status && status !== STATUS.NONE) {
+			query['committee_options.status'] = status;
+		}
+
+		const options: OptionsAccountsQuery = { limit: count, skip: offset };
 
 		const [items, total] = await Promise.all([
 			this.accountRepository.find(
@@ -190,5 +216,27 @@ export default class AccountService {
 				account.active.address_auths.map((el: any[]) => ({ key: el[0], value: el[1] })) : [],
 		};
 		return authority;
+	}
+
+	async updateCommitteeLastExecutedOperation(
+		accountId: string,
+		opId: Number,
+		blockRound: Number,
+		transactionIndex: Number,
+		operationIndex: Number,
+		virtual: boolean,
+	) {
+		const account =  await this.accountRepository.findOne({
+			id: accountId,
+			'committee_options.status': STATUS.ACTIVE,
+		});
+
+		if (!account) {
+			return;
+		}
+		const operation = `${blockRound}-${transactionIndex}-${operationIndex}${virtual ? '-virtual' : ''}`;
+		account.committee_options.last_executed_operation = operation;
+		account.committee_options.last_executed_operation_id = opId;
+		await account.save();
 	}
 }

@@ -1,6 +1,7 @@
 import { BlockVirtualOperation } from 'echojs-lib';
 import AbstractOperation from './abstract.operation';
 import BalanceService from '../../../services/balance.service';
+import AccountService from '../../../services/account.service';
 import AccountCreateOperation from './account.create.operation';
 import AccountUpdateOperation from './account.update.operation';
 import AccountWhitelistOperation from './account.whitelist.operation';
@@ -22,6 +23,7 @@ import BalanceClaimOperation from './balance.claim.operation';
 import OverrideTransferOperation from './override.transfer.operation';
 import CommitteeMemberUpdateGlobalParametersOperation from './committee.member.update.global.parameters.operation';
 import CommitteeMemberActivateOperation from './committee.member.activate.operation';
+import CommitteeMemberDeactivateOperation from './committee.member.deactivate.operation';
 import CommitteeFrozenBalanceOperation from './committee.frozen.balance.operation';
 import VestingBalanceWithdrawOperation from './vesting.balance.withdraw.operation';
 import VestingBalanceCreateOperation from './vesting.balance.create.operation';
@@ -63,6 +65,7 @@ import { TDoc } from '../../../types/mongoose';
 import { getLogger } from 'log4js';
 import { dateFromUtcIso, ethAddrToEchoId } from '../../../utils/format';
 import { IBlock } from '../../../interfaces/IBlock';
+import { removeDuplicates } from '../../../utils/common';
 import BlockRewardOperation from './block.reward.operation';
 import ContractInternalCreateOperaiton from './contract.internal.create.operation';
 import ContractInternalCallOperation from './contract.internal.call.operation';
@@ -94,6 +97,7 @@ export default class OperationManager {
 	constructor(
 		readonly operationRepository: OperationRepository,
 		readonly balanceService: BalanceService,
+		readonly accountService: AccountService,
 		readonly redisConnection: RedisConnection,
 		readonly contractRepository: ContractRepository,
 		readonly echoRepository: EchoRepository,
@@ -121,6 +125,7 @@ export default class OperationManager {
 		overrideTransferOperation: OverrideTransferOperation,
 		committeeMemberUpdateGlobalParametersOperation: CommitteeMemberUpdateGlobalParametersOperation,
 		committeeMemberActivateOperation: CommitteeMemberActivateOperation,
+		committeeMemberDeactivateOperation: CommitteeMemberDeactivateOperation,
 		committeeFrozenBalanceOperation: CommitteeFrozenBalanceOperation,
 		vestingBalanceCreateOperation: VestingBalanceCreateOperation,
 		vestingBalanceWithdrawOperation: VestingBalanceWithdrawOperation,
@@ -187,6 +192,7 @@ export default class OperationManager {
 			overrideTransferOperation,
 			committeeMemberUpdateGlobalParametersOperation,
 			committeeMemberActivateOperation,
+			committeeMemberDeactivateOperation,
 			committeeFrozenBalanceOperation,
 			vestingBalanceCreateOperation,
 			vestingBalanceWithdrawOperation,
@@ -335,6 +341,14 @@ export default class OperationManager {
 			operation.virtual,
 		);
 		await this.checkForTokenBalancesUpdating(id, body, result);
+		await this.updateLastExecutedCommitteeOperation(
+			id,
+			body,
+			dBlock.round,
+			operation.trx_in_block,
+			operation.op_in_trx,
+			operation.virtual,
+		);
 		return postInternalRelation;
 	}
 
@@ -401,5 +415,83 @@ export default class OperationManager {
 		const holdersAmount = await this.balanceService.balanceRepository.count(allBalanceQuery);
 		contract.token_info.holders_count = holdersAmount;
 		await contract.save();
+	}
+
+	async updateLastExecutedCommitteeOperation<T extends ECHO.KNOWN_OPERATION>(
+		id: T,
+		body: ECHO.OPERATION_PROPS<T>,
+		blockRound: Number,
+		transactionIndex: Number,
+		operationIndex: Number,
+		virtual: boolean,
+	): Promise<void> {
+		let accountIds: string[] = [];
+		switch (id) {
+			case ECHO.OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS:
+			case ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT:
+			case ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT:
+			case ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_WITHDRAW:
+			case ECHO.OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW:
+			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN:
+			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN:
+			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN:
+			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW:
+			case ECHO.OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT:
+			case ECHO.OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT:
+			case ECHO.OPERATION_ID.SIDECHAIN_BTC_DEPOSIT:
+			case ECHO.OPERATION_ID.SIDECHAIN_BTC_AGGREGATE:
+			case ECHO.OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE: {
+				const accountId = (body as
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_WITHDRAW> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_DEPOSIT> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_AGGREGATE> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE>
+				).committee_member_id;
+				accountIds = [accountId];
+				break;
+			}
+			case ECHO.OPERATION_ID.PROPOSAL_UPDATE: {
+				const { active_approvals_to_remove, active_approvals_to_add } = (body as
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.PROPOSAL_UPDATE>
+				);
+				accountIds = removeDuplicates([...active_approvals_to_remove, ...active_approvals_to_add]);
+			}
+			case ECHO.OPERATION_ID.COMMITTEE_MEMBER_UPDATE: {
+				const { committee_member_account } = (body as
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.COMMITTEE_MEMBER_UPDATE>
+				);
+				accountIds = [committee_member_account];
+			}
+			case ECHO.OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS: {
+				accountIds = [ECHO.COMMITTEE_GLOBAL_ACCOUNT];
+			}
+			default:
+				return;
+		}
+		if (!accountIds.length) {
+			return;
+		}
+
+		const updateAccountPromises = accountIds
+			.map((accountId) => this.accountService.updateCommitteeLastExecutedOperation(
+				accountId,
+				id,
+				blockRound,
+				transactionIndex,
+				operationIndex,
+				virtual,
+			));
+
+		await Promise.all(updateAccountPromises);
 	}
 }

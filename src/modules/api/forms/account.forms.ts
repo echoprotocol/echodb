@@ -2,6 +2,7 @@ import AbstractForm, { rule } from './abstract.form';
 import PaginationForm from './pagination.form';
 import AccountId from '../types/account.id.type';
 import * as API from '../../../constants/api.constants';
+import * as COMMITTEE from '../../../constants/committee.constants';
 import * as Joi from 'joi';
 import { ArgsType, Field } from 'type-graphql';
 
@@ -54,6 +55,16 @@ export class GetAccountsWithUnrequiredSortsForm extends GetAccountsForm {
 		description: 'history concentration rate sort has low priority between sorts',
 	})
 	concentrationHistroyRateSort: API.SORT_DESTINATION;
+}
+
+@ArgsType()
+export class GetCommetteeAccounts extends PaginationForm {
+	@rule(Joi.string().valid(Object.values(COMMITTEE.STATUS)))
+	@Field(() => String, {
+		nullable: true,
+		description: 'status of the member: active, deactivated, candidate or none',
+	})
+	status: COMMITTEE.STATUS;
 }
 
 @ArgsType()
