@@ -2,6 +2,8 @@ import AbstractOperation from './abstract.operation';
 import BlockRepository from '../../../repositories/block.repository';
 import OperationRepository from '../../../repositories/operation.repository';
 import EchoRepository from '../../../repositories/echo.repository';
+import ContractRepository from '../../../repositories/contract.repository';
+import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 import * as ECHO from '../../../constants/echo.constants';
 import { IOperation } from 'interfaces/IOperation';
 import { TDoc } from '../../../types/mongoose';
@@ -15,6 +17,8 @@ export default class SidechainErc20IssueOperation extends AbstractOperation<OP_I
 		private blockRepository: BlockRepository,
 		private operationRepository: OperationRepository,
 		private echoRepository: EchoRepository,
+		private contractRepository: ContractRepository,
+		private erc20TokenRepository: ERC20TokenRepository,
 	) {
 		super();
 	}
@@ -94,6 +98,25 @@ export default class SidechainErc20IssueOperation extends AbstractOperation<OP_I
 		});
 
 		body.list_of_approvals = listOfApprovals;
+
+		try {
+			const depositTokenId = body.token;
+			const depositToken = await this.echoRepository.getObject(depositTokenId);
+			const ethAddres = (<any>depositToken).eth_addr;
+
+			const erc20Token = await this.erc20TokenRepository.findOne({
+				eth_addr: ethAddres,
+			});
+			const contract = await this.contractRepository.findByMongoId(erc20Token.contract);
+			const tokenInfo = {
+				precision: erc20Token.decimals,
+				symbol: erc20Token.symbol,
+				contractId: contract.id,
+			};
+			body.erc20_token_info = tokenInfo;
+		} catch (e) {
+			body.erc20_token_info = {};
+		}
 
 		return <any>body;
 	}
