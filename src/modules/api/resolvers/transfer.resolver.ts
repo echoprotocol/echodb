@@ -79,12 +79,11 @@ export default class TransferResolver extends AbstractResolver {
 	})
 	getTransfersHistoryDataWithInterval(
 		@Args() {
-			target,
-			valueType,
+			targetSubject,
 			...historyOpts
 		}: GetTransfersHistoryDataWithInterval,
 	) {
-		return this.transferService.getTransfersHistoryDataWithInterval(target, valueType, historyOpts);
+		return this.transferService.getTransfersHistoryDataWithInterval(targetSubject, historyOpts);
 	}
 
 	// FieldResolver

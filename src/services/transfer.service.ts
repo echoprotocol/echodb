@@ -1,4 +1,5 @@
 import BN from 'bignumber.js';
+import { validators } from 'echojs-lib';
 import AccountRepository from '../repositories/account.repository';
 import ContractRepository from '../repositories/contract.repository';
 import TransferRepository from 'repositories/transfer.repository';
@@ -235,15 +236,16 @@ export default class TransferService {
 	}
 
 	async getTransfersHistoryDataWithInterval(
-		target: string,
-		valueType: BALANCE.TYPE,
+		targetSubject: string,
 		historyOpts?: HistoryOptionsWithInterval,
 	) {
 		if (!historyOpts) {
 			throw new Error(HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS);
 		}
 
-		const targetType = await this.getTargetByType(target, valueType);
+		const valueType = validators.isAssetId(targetSubject) ? BALANCE.TYPE.ASSET : BALANCE.TYPE.TOKEN;
+
+		const targetType = await this.getTargetByType(targetSubject, valueType);
 
 		if (!targetType) {
 			return {

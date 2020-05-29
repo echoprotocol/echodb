@@ -75,9 +75,5 @@ export class GetTransfersHistoryForm extends PaginationForm {
 export class GetTransfersHistoryDataWithInterval extends ExtendedHistoryForm {
 	@rule(Joi.string().required())
 	@Field(() => ContractOrAssetId, { nullable: false })
-	target: string;
-
-	@rule(Joi.string().valid(BALANCE.TYPE.ASSET, BALANCE.TYPE.TOKEN))
-	@Field(() => BALANCE.TYPE, { nullable: false })
-	valueType: BALANCE.TYPE;
+	targetSubject: string;
 }
