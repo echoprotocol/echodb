@@ -1,18 +1,25 @@
-import AbstractResolver, { validateSubscriptionArgs, validateArgs } from './abstract.resolver';
+import AbstractResolver, { handleError, validateSubscriptionArgs, validateArgs } from './abstract.resolver';
 import AccountRepository from '../../../repositories/account.repository';
 import ContractRepository from '../../../repositories/contract.repository';
 import AssetRepository from '../../../repositories/asset.repository';
 import Transfer from '../types/transfer.type';
+import HistoryTransferCountObject from '../types/history.objects.count.type';
 import PaginatedResponse from '../types/paginated.response.type';
 import TransferRepository from '../../../repositories/transfer.repository';
 import TransferService from '../../../services/transfer.service';
 import * as BALANCE from '../../../constants/balance.constants';
 import * as REDIS from '../../../constants/redis.constants';
 import * as TRANSFER from '../../../constants/transfer.constants';
-import { TransferSubscribeForm, GetTransfersHistoryForm } from '../forms/transfer.forms';
+import * as HTTP from '../../../constants/http.constants';
+import {
+	TransferSubscribeForm,
+	GetTransfersHistoryForm,
+	GetTransfersHistoryDataWithInterval,
+} from '../forms/transfer.forms';
 import { Resolver, Args, FieldResolver, Root, Subscription, Query } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
 import { Payload } from '../../../types/graphql';
+import HISTORY_INTERVAL_ERROR from '../../../errors/history.interval.error';
 
 const paginatedTransfers = PaginatedResponse(Transfer);
 
@@ -60,6 +67,23 @@ export default class TransferResolver extends AbstractResolver {
 			offset,
 			{ from, to, contracts, relationTypes, valueTypes, amounts, assets, sort },
 		);
+	}
+
+	// Query
+	@Query(() => HistoryTransferCountObject)
+	@validateArgs(GetTransfersHistoryDataWithInterval)
+	@handleError({
+		[HISTORY_INTERVAL_ERROR.INVALID_DATES]: [HTTP.CODE.BAD_REQUEST],
+		[HISTORY_INTERVAL_ERROR.INVALID_INTERVAL]: [HTTP.CODE.BAD_REQUEST],
+		[HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS]: [HTTP.CODE.BAD_REQUEST],
+	})
+	getTransfersHistoryDataWithInterval(
+		@Args() {
+			targetSubject,
+			...historyOpts
+		}: GetTransfersHistoryDataWithInterval,
+	) {
+		return this.transferService.getTransfersHistoryDataWithInterval(targetSubject, historyOpts);
 	}
 
 	// FieldResolver
