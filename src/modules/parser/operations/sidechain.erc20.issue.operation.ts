@@ -99,20 +99,25 @@ export default class SidechainErc20IssueOperation extends AbstractOperation<OP_I
 
 		body.list_of_approvals = listOfApprovals;
 
-		const depositTokenId = body.token;
-		const depositToken = await this.echoRepository.getObject(depositTokenId);
-		const ethAddres = (<any>depositToken).eth_addr;
+		try {
+			const depositTokenId = body.token;
+			const depositToken = await this.echoRepository.getObject(depositTokenId);
+			const ethAddres = (<any>depositToken).eth_addr;
 
-		const erc20Token = await this.erc20TokenRepository.findOne({
-			eth_addr: ethAddres,
-		});
-		const contract = await this.contractRepository.findByMongoId(erc20Token.contract);
-		const tokenInfo = {
-			precision: erc20Token.decimals,
-			symbol: erc20Token.symbol,
-			contractId: contract.id,
-		};
-		body.erc20_token_info = tokenInfo;
+			const erc20Token = await this.erc20TokenRepository.findOne({
+				eth_addr: ethAddres,
+			});
+			const contract = await this.contractRepository.findByMongoId(erc20Token.contract);
+			const tokenInfo = {
+				precision: erc20Token.decimals,
+				symbol: erc20Token.symbol,
+				contractId: contract.id,
+			};
+			body.erc20_token_info = tokenInfo;
+		} catch (e) {
+			body.erc20_token_info = {};
+		}
+
 		return <any>body;
 	}
 }

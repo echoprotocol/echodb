@@ -39,16 +39,20 @@ export default class SidechainErc20DepositTokenOperation extends AbstractOperati
 
 	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
 		const { body } = <IOperation<OP_ID>>operation;
-		const erc20Token = await this.erc20TokenRepository.findOne({
-			eth_addr: body.erc20_token_addr,
-		});
-		const contract = await this.contractRepository.findByMongoId(erc20Token.contract);
-		const tokenInfo = {
-			precision: erc20Token.decimals,
-			symbol: erc20Token.symbol,
-			contractId: contract.id,
-		};
-		body.erc20_token_info = tokenInfo;
+		try {
+			const erc20Token = await this.erc20TokenRepository.findOne({
+				eth_addr: body.erc20_token_addr,
+			});
+			const contract = await this.contractRepository.findByMongoId(erc20Token.contract);
+			const tokenInfo = {
+				precision: erc20Token.decimals,
+				symbol: erc20Token.symbol,
+				contractId: contract.id,
+			};
+			body.erc20_token_info = tokenInfo;
+		} catch (e) {
+			body.erc20_token_info = {};
+		}
 		return <any>body;
 	}
 }

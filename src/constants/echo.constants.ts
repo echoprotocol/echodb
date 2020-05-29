@@ -830,9 +830,9 @@ interface SidechainErc20RegisterTokenOperation {
 }
 
 interface ERC20TokenInfo {
-	contractId: string;
-	precision: number;
-	symbol: string;
+	contractId?: string;
+	precision?: number;
+	symbol?: string;
 }
 interface SidechainErc20DepositTokenOperation {
 	fee: IAmount;
