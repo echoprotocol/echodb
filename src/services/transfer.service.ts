@@ -10,7 +10,6 @@ import * as API from '../constants/api.constants';
 // import * as ECHO from '../constants/echo.constants';
 import * as BALANCE from '../constants/balance.constants';
 import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
-import ProcessingError from '../errors/processing.error';
 import { parseHistoryOptions } from '../utils/common';
 
 import { AccountId, ContractId, Amount, AssetId } from '../types/echo';
@@ -247,7 +246,10 @@ export default class TransferService {
 		const targetType = await this.getTargetByType(target, valueType);
 
 		if (!targetType) {
-			throw new ProcessingError(`Target ${target} not exist`);
+			return {
+				ratesMap: [],
+				total: 0,
+			};
 		}
 
 		const ratesMap: Object[] = [];
