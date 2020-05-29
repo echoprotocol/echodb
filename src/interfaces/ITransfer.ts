@@ -4,6 +4,7 @@ import { MongoId, TDoc } from '../types/mongoose';
 import { IAccount } from './IAccount';
 import { IContract } from './IContract';
 import { IAsset } from './IAsset';
+import { IAmount } from 'constants/echo.constants';
 
 interface IBasic {
 	_fromAccount?: MongoId;
@@ -18,6 +19,8 @@ interface IBasic {
 	trx_in_block: number;
 	op_in_trx: number;
 	virtual: boolean;
+	operationId: number;
+	fee: IAmount;
 }
 
 // asset

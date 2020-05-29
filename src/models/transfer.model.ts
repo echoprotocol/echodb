@@ -1,9 +1,14 @@
-import AbstractModel from './abstract.model';
+import AbstractModel, { createSchema } from './abstract.model';
 import { Schema } from 'mongoose';
 import { ITransfer } from '../interfaces/ITransfer';
 import * as MODEL from '../constants/model.constants';
 import * as BALANCE from '../constants/balance.constants';
 import * as TRANSFER from '../constants/transfer.constants';
+
+const feeSchema = createSchema({
+	amount: String,
+	asset_id: String,
+});
 
 export default AbstractModel<ITransfer>(MODEL.NAME.TANSFER, {
 	_fromAccount: { ref: MODEL.NAME.ACCOUNT, $type: Schema.Types.ObjectId },
@@ -20,6 +25,8 @@ export default AbstractModel<ITransfer>(MODEL.NAME.TANSFER, {
 	trx_in_block: Number,
 	op_in_trx: Number,
 	virtual: Boolean,
+	fee: feeSchema,
+	operationId: Number,
 }, {
 	typeKey: '$type',
 });

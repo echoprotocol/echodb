@@ -53,6 +53,8 @@ export default class TransferOperation extends AbstractOperation<OP_ID> {
 				block: dBlock.round,
 				trx_in_block: trxInBlock,
 				op_in_trx: opInTrx,
+				fee: body.fee,
+				operationId: this.id,
 			}),
 		]);
 		return this.validateRelation({
