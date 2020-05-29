@@ -1,18 +1,25 @@
+import BN from 'bignumber.js';
+import { validators } from 'echojs-lib';
 import AccountRepository from '../repositories/account.repository';
 import ContractRepository from '../repositories/contract.repository';
 import TransferRepository from 'repositories/transfer.repository';
 import BalanceRepository from 'repositories/balance.repository';
 import ContractBalanceRepository from 'repositories/contract.balance.repository';
+import AssetRepository from 'repositories/asset.repository';
 import * as TRANSFER from '../constants/transfer.constants';
 import * as API from '../constants/api.constants';
 // import * as ECHO from '../constants/echo.constants';
 import * as BALANCE from '../constants/balance.constants';
+import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
+import { parseHistoryOptions } from '../utils/common';
 
 import { AccountId, ContractId, Amount, AssetId } from '../types/echo';
 import { IAccount } from '../interfaces/IAccount';
 import { IContract } from '../interfaces/IContract';
 import { TDoc, MongoId } from '../types/mongoose';
 import { IAsset } from 'interfaces/IAsset';
+import { HistoryOptionsWithInterval } from '../interfaces/IHistoryOptions';
+import { ITransfer } from 'interfaces/ITransfer';
 
 type ParticipantDocTypeMap = {
 	[TRANSFER.PARTICIPANT_TYPE.ACCOUNT]: TDoc<IAccount>;
@@ -51,6 +58,7 @@ export default class TransferService {
 		private transferRepository: TransferRepository,
 		private balanceRepository: BalanceRepository,
 		private contractBalanceRepository: ContractBalanceRepository,
+		private assetRepository: AssetRepository,
 	) { }
 
 	fetchParticipant<T extends TRANSFER.PARTICIPANT_TYPE>(
@@ -197,6 +205,77 @@ export default class TransferService {
 		const items = await this.transferRepository.aggregate(query);
 
 		return { items, total };
+	}
+
+	async getTransfersByDate(target: string, valueType: BALANCE.TYPE, from: string, to?: string) {
+		const targetType = valueType === BALANCE.TYPE.ASSET ? '_asset' : '_contract';
+		const query = { [targetType]: target };
+		return this.transferRepository.find({ ...query, timestamp: { $gte: from, $lte: new Date(to || Date.now()) } });
+	}
+
+	divideOperationByDate(
+		array: ITransfer[],
+		startDate: number,
+		interval: number,
+	): Map<number, ITransfer[]> {
+		const blocksMap: Map<number, ITransfer[]> = new Map();
+		return array.reduce((acc: Map<number, ITransfer[]>, val: ITransfer) => {
+			const timestamp = val.timestamp.getTime() / 1000;
+			const segmentNumber = Math.ceil((timestamp - startDate) / interval);
+			return acc.set(segmentNumber, acc.get(segmentNumber) ? [...acc.get(segmentNumber), val] : [val]);
+		}, blocksMap);
+	}
+
+	async getTargetByType (target: string, valueType: BALANCE.TYPE) {
+		switch (valueType) {
+			case BALANCE.TYPE.ASSET:
+				return this.assetRepository.findById(target);
+			case BALANCE.TYPE.TOKEN:
+				return this.contractRepository.findById(target);
+		}
+	}
+
+	async getTransfersHistoryDataWithInterval(
+		targetSubject: string,
+		historyOpts?: HistoryOptionsWithInterval,
+	) {
+		if (!historyOpts) {
+			throw new Error(HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS);
+		}
+
+		const valueType = validators.isAssetId(targetSubject) ? BALANCE.TYPE.ASSET : BALANCE.TYPE.TOKEN;
+
+		const targetType = await this.getTargetByType(targetSubject, valueType);
+
+		if (!targetType) {
+			return {
+				ratesMap: [],
+				total: 0,
+			};
+		}
+
+		const ratesMap: Object[] = [];
+
+		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
+		const startDateInISO = new Date(startDate * 1000).toISOString();
+		const endDateInISO = new Date(endDate * 1000).toISOString();
+		const transfers = await this.getTransfersByDate(targetType._id, valueType, startDateInISO, endDateInISO);
+
+		const orderedTransfers = this.divideOperationByDate(transfers, startDate, interval);
+
+		for (const [time, transfers] of orderedTransfers) {
+			const rate = transfers.
+				reduce((res: BN, transfer: ITransfer) => res.plus(transfer.amount), new BN(0))
+				.integerValue(BN.ROUND_CEIL).toNumber();
+			const startIntervalDate = startDate + (interval * (time - 1));
+			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
+			ratesMap.push({ startIntervalDateString, rate });
+		}
+
+		return {
+			ratesMap,
+			total: transfers.length,
+		};
 	}
 
 }

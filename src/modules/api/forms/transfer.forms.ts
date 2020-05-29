@@ -1,8 +1,11 @@
 import AbstractForm, { rule } from './abstract.form';
 import AssetId from '../types/asset.id.type';
 import PaginationForm from './pagination.form';
+import { ExtendedHistoryForm } from './history.forms';
 import AccountId from '../types/account.id.type';
 import ContractId from '../types/contract.id.type';
+import ContractOrAssetId from '../types/contract.or.asset.id.type';
+
 import AccountOrContractId from '../types/account.or.contract.id.type';
 import StringNumber from '../types/string.number.type';
 import * as API from '../../../constants/api.constants';
@@ -66,4 +69,11 @@ export class GetTransfersHistoryForm extends PaginationForm {
 	@rule(Joi.string().valid(API.SORT_DESTINATION.ASC, API.SORT_DESTINATION.DESC))
 	@Field(() => API.SORT_DESTINATION, { defaultValue: API.SORT_DESTINATION.DESC })
 	sort: API.SORT_DESTINATION;
+}
+
+@ArgsType()
+export class GetTransfersHistoryDataWithInterval extends ExtendedHistoryForm {
+	@rule(Joi.string().required())
+	@Field(() => ContractOrAssetId, { nullable: false })
+	targetSubject: string;
 }
