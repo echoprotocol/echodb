@@ -829,6 +829,11 @@ interface SidechainErc20RegisterTokenOperation {
 	extensions: ExtensionsArr;
 }
 
+interface ERC20TokenInfo {
+	contractId?: string;
+	precision?: number;
+	symbol?: string;
+}
 interface SidechainErc20DepositTokenOperation {
 	fee: IAmount;
 	committee_member_id: AccountId;
@@ -839,6 +844,7 @@ interface SidechainErc20DepositTokenOperation {
 	transaction_hash: string;
 	deposit_id?: string;
 	extensions: ExtensionsArr;
+	erc20_token_info?: ERC20TokenInfo;
 }
 
 interface SidechainErc20SendDepositTokenOperation {
@@ -893,6 +899,7 @@ interface SidechainErc20Issue {
 	sidchain_erc_20_deposit_token?: string;
 	list_of_approvals?: string[];
 	extensions: ExtensionsArr;
+	erc20_token_info?: ERC20TokenInfo;
 }
 
 interface SidechainErc20Burn {
@@ -904,6 +911,7 @@ interface SidechainErc20Burn {
 	sidchain_erc_20_withdraw_token?: string;
 	list_of_approvals?: string[];
 	extensions: ExtensionsArr;
+	erc20_token_info?: ERC20TokenInfo;
 }
 
 interface SidechainBtcCreateAddress {
