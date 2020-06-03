@@ -31,7 +31,7 @@
 		"test": "echo \"we need tests!\""
 	},
 	"dependencies": {
-		"apollo-server-express": "^2.4.8",
+		"apollo-server-express": "^2.14.1",
 		"awilix": "^4.2.0",
 		"bignumber.js": "^8.1.1",
 		"body-parser": "^1.18.3",
