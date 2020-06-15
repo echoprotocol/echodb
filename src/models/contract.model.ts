@@ -5,7 +5,7 @@ import { IContract, ITokenInfo } from '../interfaces/IContract';
 import { Schema } from 'mongoose';
 
 const erc20infoSchema = createSchema<ITokenInfo>({
-	total_supply: String,
+	total_supply: { type: String, default: 0 },
 	name: String,
 	symbol: String,
 	decimals: String,

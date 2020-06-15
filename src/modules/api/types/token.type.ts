@@ -8,7 +8,7 @@ export default class Token {
 	@Field() type: string;
 	@Field() symbol: string;
 	@Field() name: string;
-	@Field(() => StringifiedNumber) total_supply: string;
+	@Field(() => StringifiedNumber, { nullable: true }) total_supply: string;
 	@Field() decimals: string;
 	@Field() registrar: Account;
 

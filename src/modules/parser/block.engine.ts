@@ -66,7 +66,7 @@ export default class BlockEngine extends EventEmitter {
 		this.last = await this.echoRepository.getLastBlockNum(); // Not needed
 		await this.subscribeToNewBlock();
 		while (true) {
-			if ((this.last - this.current) >= 1) {
+			if ((this.last - this.current) >= 0) {
 				this.stage = STAGE.HISTORY;
 				this.enableSpeedo();
 				while (this.current < this.last) {
