@@ -48,7 +48,7 @@ export default class ParserModule extends AbstractModule {
 	async init() {
 		const from = await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
 		logger.trace(`Inited from block #${from}`);
-		if (from === 1) {
+		if (from === 0) {
 			await this.syncAllAccounts();
 			await this.syncCoreAsset();
 			await this.syncCommitteeMembers();

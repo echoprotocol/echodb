@@ -124,7 +124,7 @@ export default class BlockService {
 	}
 
 	async getFrozenAmounts(block: BlockWithInjectedVirtualOperations) {
-		const targetRound = block.round === 1 ? 1 : block.round - 1;
+		const targetRound = block.round === 0 ? 0 : block.round - 1;
 		const latestBlock = await this.blockRepository.findByRound(targetRound);
 
 		const { totalFreezeOps, totalUnfreezeOps } = this.getFreezeOperations(block);
