@@ -3,7 +3,7 @@ export enum KEY {
 }
 
 export const DEFAULT_VALUE: { [x in KEY]: unknown} = {
-	[KEY.BLOCK_TO_PARSE_NUMBER]: 1,
+	[KEY.BLOCK_TO_PARSE_NUMBER]: 0,
 };
 
 export type KEY_TYPE =  {

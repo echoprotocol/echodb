@@ -17,6 +17,7 @@ import AssetPublishFeedOperation from './asset.publish.feed.operation';
 import AssetUpdateFeedProducersOperation from './asset.update.feed.producers.operation';
 import BalanceFreezeOperation from './balance.freeze.operation';
 import BalanceUnfreezeOperation from './balance.unfreeze.operation';
+import RequestBalanceUnfreezeOperation from './request.balance.unfreeze.operation';
 import ContractCreateOperation from './contract.create.operation';
 import ContractCallOperation from './contract.call.operation';
 import BalanceClaimOperation from './balance.claim.operation';
@@ -117,6 +118,7 @@ export default class OperationManager {
 		assetUpdateFeedProducersOperation: AssetUpdateFeedProducersOperation,
 		balanceFreezeOperation: BalanceFreezeOperation,
 		balanceUnfreezeOperation: BalanceUnfreezeOperation,
+		requestBalanceUnfreezeOperation: RequestBalanceUnfreezeOperation,
 		contractCreateOperation: ContractCreateOperation,
 		contractCallOperation: ContractCallOperation,
 		contractSelfdestructOperation: ContractSelfdestructOperation,
@@ -179,6 +181,7 @@ export default class OperationManager {
 			assetBitassetUpdateOperation,
 			balanceFreezeOperation,
 			balanceUnfreezeOperation,
+			requestBalanceUnfreezeOperation,
 			contractCreateOperation,
 			contractCallOperation,
 			assetIssueOperation,
