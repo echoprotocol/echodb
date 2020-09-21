@@ -1018,7 +1018,12 @@ interface ContractUpdateOperation {
 interface BlockRewardOperation {
 	fee: undefined;
 	receiver: AccountId;
-	assets: [{ amount: number, asset_id: AssetId }];
+	assets: [{
+		amount: number,
+		asset_id: AssetId,
+		priceInEcho?: string,
+		symbol?: string,
+	}];
 	extensions: ExtensionsArr;
 }
 

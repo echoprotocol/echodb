@@ -4,6 +4,7 @@ import AssetRepository from 'repositories/asset.repository';
 import AccountRepository from 'repositories/account.repository';
 import BalanceRepository from 'repositories/balance.repository';
 import * as ECHO from '../../../constants/echo.constants';
+import { IOperation } from 'interfaces/IOperation';
 
 type OP_ID = ECHO.OPERATION_ID.BLOCK_REWARD;
 
@@ -46,4 +47,15 @@ export default class BlockRewardOperation extends AbstractOperation<OP_ID> {
 		});
 	}
 
+	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
+		const { body } = <IOperation<OP_ID>>operation;
+		const findAssetPromises = body.assets.map(async(asset) => {
+			const dAsset = (await this.assetRepository.findById(asset.asset_id));
+			const { options: { core_exchange_rate: assetCoreRate } } = dAsset;
+			asset.priceInEcho = new BN(assetCoreRate.base.amount).div(assetCoreRate.quote.amount).toString(10);
+			asset.symbol = dAsset.symbol;
+		});
+		await Promise.all(findAssetPromises);
+		return <any>body;
+	}
 }

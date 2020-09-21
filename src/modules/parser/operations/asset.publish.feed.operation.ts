@@ -29,7 +29,7 @@ export default class AssetPublishFeedOperation extends AbstractOperation<OP_ID> 
 	async modifyBody<Y extends ECHO.KNOWN_OPERATION>(operation: IOperation<Y>) {
 		const { body } = <IOperation<OP_ID>>operation;
 		const asset = (await this.assetRepository.findById(body.asset_id)).options.core_exchange_rate;
-		const assetPrice = new BN(asset.quote.amount).div(asset.base.amount).toString(10);
+		const assetPrice = new BN(asset.base.amount).div(asset.quote.amount).toString(10);
 		body.feeded_asset_price = assetPrice;
 		return <any>body;
 	}
