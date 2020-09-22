@@ -202,7 +202,7 @@ export default class EchoRepository {
 	// FIXME: refactor
 	async subscribeToNewBlock(cb: (num: number) => void) {
 		this.echoConnection.echo.subscriber.setGlobalSubscribe((data: any) => {
-			if (!data || !data[0] || data[0].id !== '2.1.0') return;
+			if (!data || !data[0] || !data.find((el: any) => el.id === '2.1.0')) return;
 			cb(data[0].head_block_number);
 		});
 		this.echoConnection.echo.subscriber.setStatusSubscribe(ECHO.CONNECT_STATUS, async () => {
