@@ -52,7 +52,8 @@ export default class BlockRewardOperation extends AbstractOperation<OP_ID> {
 		const findAssetPromises = body.assets.map(async(asset) => {
 			const dAsset = (await this.assetRepository.findById(asset.asset_id));
 			const { options: { core_exchange_rate: assetCoreRate } } = dAsset;
-			asset.priceInEcho = new BN(assetCoreRate.base.amount).div(assetCoreRate.quote.amount).toString(10);
+			const priceInEcho = new BN(assetCoreRate.base.amount).div(assetCoreRate.quote.amount);
+			asset.priceInEcho = priceInEcho.multipliedBy(asset.amount).toString(10);
 			asset.symbol = dAsset.symbol;
 		});
 		await Promise.all(findAssetPromises);
