@@ -31,6 +31,7 @@ export default class Block {
 	@Field() frozen_balances_data: BlockFrozenData;
 	@Field() cert: BlockCert;
 	@Field() decentralization_rate: number;
+	@Field() block_reward: string;
 
 	@Field(() => [Transaction])
 	transactions: Transaction[];
