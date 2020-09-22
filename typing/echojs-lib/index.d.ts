@@ -66,6 +66,10 @@ declare module 'echojs-lib' {
 		extensions: unknown[];
 		signatures: string[];
 		operation_results: OperationResult[];
+		fees_collected: {
+			amount: number;
+			asset_id: string
+		}[];
 	}
 	export interface Signature { // virtual export
 		_step: number;

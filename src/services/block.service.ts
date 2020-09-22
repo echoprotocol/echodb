@@ -15,6 +15,8 @@ import { TYPE } from '../constants/balance.constants';
 import { removeDuplicates, calculateAverage, parseHistoryOptions } from '../utils/common';
 import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
 import { constants, validators } from 'echojs-lib';
+import EchoRepository from 'repositories/echo.repository';
+import { IAsset } from 'interfaces/IAsset';
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'block not found',
@@ -26,6 +28,7 @@ export default class BlockService {
 		readonly blockRepository: BlockRepository,
 		readonly balanceRepository: BalanceRepository,
 		readonly assetRepository: AssetRepository,
+		readonly echoRepository: EchoRepository,
 	) {}
 
 	async getBlock(round: number) {
@@ -168,15 +171,18 @@ export default class BlockService {
 			decentralizationRate,
 			averageBlockTime,
 			freezeAmounts,
+			blockReward,
 		] = await Promise.all([
 			this.getDecentralizationRateFromBlock(block),
 			this.getAverageBlockTime(block),
 			this.getFrozenAmounts(block),
+			this.getBlockReward(block),
 		]);
 
 		dBlock.decentralization_rate = decentralizationRate;
 		dBlock.average_block_time = averageBlockTime;
 		dBlock.frozen_balances_data = freezeAmounts;
+		dBlock.block_reward = blockReward;
 
 		await dBlock.save();
 
@@ -314,5 +320,27 @@ export default class BlockService {
 			frozenData.push({ startIntervalDateString, frozenSums });
 		}
 		return { currentFrozenData, frozenData };
+	}
+
+	async getBlockReward(block: BlockWithInjectedVirtualOperations): Promise<string> {
+		const { transactions } = block;
+
+		const rewardPromises = transactions.map(async (trx) => {
+			let totalFeesToEcho = new BN(0);
+			if (trx.fees_collected) {
+				const feePromises = trx.fees_collected.map(async (fee) => {
+					const dAsset = await this.assetRepository.findById(fee.asset_id);
+					const { options: { core_exchange_rate: assetCoreRate } } = dAsset;
+					const assetPrice = new BN(assetCoreRate.base.amount).div(assetCoreRate.quote.amount);
+					const assetConvertToEcho = assetPrice.multipliedBy(fee.amount);
+					return assetConvertToEcho.toString(10);
+				});
+				totalFeesToEcho = (await Promise.all(feePromises)).reduce((acc, val) => acc.plus(val), new BN(0));
+			}
+			return totalFeesToEcho;
+		});
+		const blockReward = (await Promise.all(rewardPromises)).reduce((acc, val) => acc.plus(val), new BN(0));
+		const coreAsset = await this.echoRepository.getObject(CORE_ASSET);
+		return blockReward.div(10 ** (<IAsset>coreAsset).precision).toString(10);
 	}
 }

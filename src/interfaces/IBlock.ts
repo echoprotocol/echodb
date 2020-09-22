@@ -20,6 +20,7 @@ export interface IBlock {
 	};
 	average_block_time?: number;
 	decentralization_rate?: number;
+	block_reward?: string;
 	cert: {
 		_rand: string;
 		_block_hash: string;
