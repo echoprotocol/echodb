@@ -165,7 +165,8 @@ declare module 'echojs-lib' {
 		current_aslot: number;
 		dynamic_flags: number;
 		last_irreversible_block_num: number;
-		last_rand_quantity: number;
+		last_block_of_previous_interval: number;
+		last_processed_btc_block: number;
 	}
 
 	export interface GlobalProperties {
