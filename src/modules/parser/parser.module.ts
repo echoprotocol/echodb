@@ -136,9 +136,9 @@ export default class ParserModule extends AbstractModule {
 	async syncCoreAsset() {
 		logger.info('Parsing first block. Synchronizing core asset');
 		const coreAssets = await this.echoRepository.getAssets([ECHO.CORE_ASSET, ECHO.EETH_ASSET, ECHO.EBTC_ASSET]);
-		const dAccount = await this.accountRepository.findById(coreAssets[0].issuer);
 		const coreAssetsPromises = coreAssets.map(async(coreAsset) => {
-			this.assetRepository.create([{
+			const dAccount = await this.accountRepository.findById(coreAsset.issuer);
+			await this.assetRepository.create([{
 				bitasset: !coreAsset.bitasset ? null : {
 					...coreAsset.bitasset,
 					current_feed_publication_time: new Date(coreAsset.bitasset.current_feed_publication_time),
