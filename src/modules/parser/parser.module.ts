@@ -135,20 +135,23 @@ export default class ParserModule extends AbstractModule {
 
 	async syncCoreAsset() {
 		logger.info('Parsing first block. Synchronizing core asset');
-		const [coreAsset] = await this.echoRepository.getAssets([ECHO.CORE_ASSET]);
-		const dAccount = await this.accountRepository.findById(coreAsset.issuer);
-		await this.assetRepository.create([{
-			bitasset: !coreAsset.bitasset ? null : {
-				...coreAsset.bitasset,
-				current_feed_publication_time: new Date(coreAsset.bitasset.current_feed_publication_time),
-			},
-			id: coreAsset.id,
-			_account: dAccount,
-			symbol: coreAsset.symbol,
-			precision: coreAsset.precision,
-			options: coreAsset.options,
-			dynamic: coreAsset.dynamic,
-		}]);
+		const coreAssets = await this.echoRepository.getAssets([ECHO.CORE_ASSET, ECHO.EETH_ASSET, ECHO.EBTC_ASSET]);
+		const coreAssetsPromises = coreAssets.map(async(coreAsset) => {
+			const dAccount = await this.accountRepository.findById(coreAsset.issuer);
+			await this.assetRepository.create([{
+				bitasset: !coreAsset.bitasset ? null : {
+					...coreAsset.bitasset,
+					current_feed_publication_time: new Date(coreAsset.bitasset.current_feed_publication_time),
+				},
+				id: coreAsset.id,
+				_account: dAccount,
+				symbol: coreAsset.symbol,
+				precision: coreAsset.precision,
+				options: coreAsset.options,
+				dynamic: coreAsset.dynamic,
+			}]);
+		});
+		await Promise.all(coreAssetsPromises);
 	}
 
 	async fetchAccounts(from: number, batchSize: number) { // TODO: what to do on erorr?
