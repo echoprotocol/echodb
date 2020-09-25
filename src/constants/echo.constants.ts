@@ -4,6 +4,8 @@ import Committee from 'echojs-lib/types/interfaces/Committee';
 
 export const ZERO_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.0`;
 export const CORE_ASSET = '1.3.0';
+export const EETH_ASSET = '1.3.1';
+export const EBTC_ASSET = '1.3.2';
 export const COMMITTEE_GLOBAL_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.1`;
 export const CONNECT_STATUS = 'connect';
 
