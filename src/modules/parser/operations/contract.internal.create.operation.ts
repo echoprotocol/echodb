@@ -1,4 +1,5 @@
 import * as ECHO from '../../../constants/echo.constants';
+import * as REDIS from '../../../constants/redis.constants';
 import { TDoc } from 'types/mongoose';
 import { IBlock } from 'interfaces/IBlock';
 import * as CONTRACT from '../../../constants/contract.constants';
@@ -10,6 +11,7 @@ import ContractRepository from 'repositories/contract.repository';
 import ContractService from 'services/contract.service';
 import AssetRepository from '../../../repositories/asset.repository';
 import ContractBalanceRepository from '../../../repositories/contract.balance.repository';
+import RedisConnection from 'connections/redis.connection';
 
 type OP_ID = ECHO.OPERATION_ID.CONTRACT_INTERNAL_CREATE;
 
@@ -22,6 +24,7 @@ export default class ContractInternalCreateOperaiton extends AbstractOperation<O
 		readonly contractService: ContractService,
 		readonly assetRepository: AssetRepository,
 		readonly contractBalanceRepository: ContractBalanceRepository,
+		private redisConnection: RedisConnection,
 	) { super(); }
 
 	public async parse(
@@ -50,9 +53,10 @@ export default class ContractInternalCreateOperaiton extends AbstractOperation<O
 
 	private async createContractAndContractBalance(contract: IContract, value: ECHO.IAmount) {
 		const [dContract, dAsset] = await Promise.all([
-			this.contractRepository.createAndEmit(contract),
+			this.contractRepository.create(contract),
 			this.assetRepository.findById(value.asset_id),
 		]);
+		this.redisConnection.emit(REDIS.EVENT.NEW_CONTRACT, dContract);
 		const amount = value.amount.toString();
 		if (amount !== '0') {
 			await this.contractBalanceRepository.createByOwnerAndAsset(

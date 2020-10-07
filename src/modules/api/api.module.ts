@@ -10,6 +10,7 @@ import OperationResolver from './resolvers/operation.resolver';
 import RavenHelper from '../../helpers/raven.helper';
 import RestError from '../../errors/rest.error';
 import FormError from '../../errors/form.error';
+// import RedisConnection from '../../connections/redis.connection';
 import PubSubEngine from './pub.sub.engine';
 import TransactionResolver from './resolvers/transaction.resolver';
 import TokenResolver from './resolvers/token.resolver';
@@ -42,6 +43,7 @@ export default class ApiModule extends AbstractModule {
 
 	constructor(
 		private ravenHelper: RavenHelper,
+		// private redisConnection: RedisConnection,
 		private pubSubEngine: PubSubEngine,
 		private accountResolver: AccountResolver,
 		private balanceResolver: BalanceResolver,
@@ -89,6 +91,7 @@ export default class ApiModule extends AbstractModule {
 		const schema = await buildSchema({
 			resolvers,
 			validate: false,
+			// pubSub: this.redisConnection.engine,
 			pubSub: this.pubSubEngine.engine,
 		});
 		this.gqlServer = new ApolloServer({
