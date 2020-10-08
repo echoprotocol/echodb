@@ -5,7 +5,7 @@ import AssetRepository from '../../repositories/asset.repository';
 import RedisConnection from '../../connections/redis.connection';
 import * as REDIS from '../../constants/redis.constants';
 import * as BALANCE from '../../constants/balance.constants';
-import { inline } from '../../utils/format';
+// import { inline } from '../../utils/format';
 import { getLogger } from 'log4js';
 import { PubSub } from 'apollo-server-express';
 import { EventEmitter } from 'events';
@@ -19,12 +19,12 @@ import { IContractBalance, IContractBalanceExtended } from '../../interfaces/ICo
 import { IAsset, IAssetExtended } from '../../interfaces/IAsset';
 
 const logger = getLogger('pub.sub');
-type callback = (...args: any[]) => void;
+// type callback = (...args: any[]) => void;
 // FIXME: improve
 export default class PubSubEngine extends EventEmitter {
 	private pubSub = new PubSub({ eventEmitter: this });
 	private registeredRedisEvents: Set<REDIS.EVENT> = new Set<REDIS.EVENT>();
-	private addedRedisEventsMap: Map<REDIS.EVENT, Set<callback>> = new Map<REDIS.EVENT, Set<callback>>();
+	// private addedRedisEventsMap: Map<REDIS.EVENT, Set<callback>> = new Map<REDIS.EVENT, Set<callback>>();
 
 	get engine() { return this.pubSub; }
 
@@ -37,40 +37,40 @@ export default class PubSubEngine extends EventEmitter {
 		super();
 	}
 
-	addListener(event: string, listener: callback): this {
-		logger.info(inline(`subscribing to "${event}" with cb "${listener}"`));
-		if (REDIS.EVENT_LIST.includes(event)) this.registerRedisEvent(<REDIS.EVENT>event);
+	addListener(/*event: string, listener: callback*/): this {
+		// logger.info(inline(`subscribing to "${event}" with cb "${listener}"`));
+		// if (REDIS.EVENT_LIST.includes(event)) this.registerRedisEvent(<REDIS.EVENT>event);
 
-		if (!this.addedRedisEventsMap.has(<REDIS.EVENT>event)) {
-			this.addedRedisEventsMap.set(<REDIS.EVENT>event, new Set<callback>());
-		}
+		// if (!this.addedRedisEventsMap.has(<REDIS.EVENT>event)) {
+		// 	this.addedRedisEventsMap.set(<REDIS.EVENT>event, new Set<callback>());
+		// }
 
-		const callbackSet = this.addedRedisEventsMap.get(<REDIS.EVENT>event);
+		// const callbackSet = this.addedRedisEventsMap.get(<REDIS.EVENT>event);
 
-		if (callbackSet.has(listener)) return;
+		// if (callbackSet.has(listener)) return;
 
-		callbackSet.add(listener);
+		// callbackSet.add(listener);
 
-		this.addedRedisEventsMap.set(<REDIS.EVENT>event, callbackSet);
+		// this.addedRedisEventsMap.set(<REDIS.EVENT>event, callbackSet);
 	
-		super.addListener(event, listener);
+		// super.addListener(event, listener);
 		return this;
 	}
 
-	removeListener(event: string, listener: callback) {
-		if (!this.addedRedisEventsMap.has(<REDIS.EVENT>event)) {
-			this.addedRedisEventsMap.set(<REDIS.EVENT>event, new Set<callback>());
-		}
+	removeListener(/*event: string, listener: callback*/) {
+		// if (!this.addedRedisEventsMap.has(<REDIS.EVENT>event)) {
+		// 	this.addedRedisEventsMap.set(<REDIS.EVENT>event, new Set<callback>());
+		// }
 
-		const callbackSet = this.addedRedisEventsMap.get(<REDIS.EVENT>event);
+		// const callbackSet = this.addedRedisEventsMap.get(<REDIS.EVENT>event);
 
-		if (!callbackSet.has(listener)) return;
+		// if (!callbackSet.has(listener)) return;
 
-		callbackSet.delete(listener);
+		// callbackSet.delete(listener);
 
-		this.addedRedisEventsMap.set(<REDIS.EVENT>event, callbackSet);
+		// this.addedRedisEventsMap.set(<REDIS.EVENT>event, callbackSet);
 
-		super.removeListener(event, listener);
+		// super.removeListener(event, listener);
 		return this;
 	}
 
