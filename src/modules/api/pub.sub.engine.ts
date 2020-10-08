@@ -19,11 +19,12 @@ import { IContractBalance, IContractBalanceExtended } from '../../interfaces/ICo
 import { IAsset, IAssetExtended } from '../../interfaces/IAsset';
 
 const logger = getLogger('pub.sub');
-
+type callback = (...args: any[]) => void;
 // FIXME: improve
 export default class PubSubEngine extends EventEmitter {
 	private pubSub = new PubSub({ eventEmitter: this });
-	private registredRedisEvents: Set<REDIS.EVENT> = new Set<REDIS.EVENT>();
+	private registeredRedisEvents: Set<REDIS.EVENT> = new Set<REDIS.EVENT>();
+	private addedRedisEventsMap: Map<REDIS.EVENT, Set<callback>> = new Map<REDIS.EVENT, Set<callback>>();
 
 	get engine() { return this.pubSub; }
 
@@ -36,17 +37,47 @@ export default class PubSubEngine extends EventEmitter {
 		super();
 	}
 
-	addListener(event: string, listener: (...args: any[]) => void): this {
+	addListener(event: string, listener: callback): this {
 		logger.info(inline(`subscribing to "${event}" with cb "${listener}"`));
 		if (REDIS.EVENT_LIST.includes(event)) this.registerRedisEvent(<REDIS.EVENT>event);
+
+		if (!this.addedRedisEventsMap.has(<REDIS.EVENT>event)) {
+			this.addedRedisEventsMap.set(<REDIS.EVENT>event, new Set<callback>());
+		}
+
+		const callbackSet = this.addedRedisEventsMap.get(<REDIS.EVENT>event);
+
+		if (callbackSet.has(listener)) return;
+
+		callbackSet.add(listener);
+
+		this.addedRedisEventsMap.set(<REDIS.EVENT>event, callbackSet);
+	
 		super.addListener(event, listener);
 		return this;
 	}
 
+	removeListener(event: string, listener: callback) {
+		if (!this.addedRedisEventsMap.has(<REDIS.EVENT>event)) {
+			this.addedRedisEventsMap.set(<REDIS.EVENT>event, new Set<callback>());
+		}
+
+		const callbackSet = this.addedRedisEventsMap.get(<REDIS.EVENT>event);
+
+		if (!callbackSet.has(listener)) return;
+
+		callbackSet.delete(listener);
+
+		this.addedRedisEventsMap.set(<REDIS.EVENT>event, callbackSet);
+
+		super.removeListener(event, listener);
+		return this;
+	}
+
 	private registerRedisEvent(event: REDIS.EVENT) {
-		if (this.registredRedisEvents.has(event)) return;
+		if (this.registeredRedisEvents.has(event)) return;
 		logger.info(`register redis event "${event}"`);
-		this.registredRedisEvents.add(event);
+		this.registeredRedisEvents.add(event);
 		this.redisConnection.on(event, async (payload: RedisPayload) => {
 			logger.trace(`emitting "${event}"`);
 			const gqlPayload = await this.transformPayload(event, payload);
