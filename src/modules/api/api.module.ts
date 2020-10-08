@@ -29,15 +29,14 @@ import {
 import { getLogger } from 'log4js';
 import { buildSchema } from 'type-graphql';
 import { initMiddleware } from './express.middleware';
-import { GraphQLError, GraphQLFormattedError, print } from 'graphql';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import ERC20TokenResolver from './resolvers/erc20Token.resolver';
 
 const logger = getLogger('api.module');
 
 class BasicLogging {
-	requestDidStart({ request, parsedQuery, queryString }: any) {
-		const query = queryString || print(parsedQuery);
-		console.log(`request on ${request.url || request} whit ${query}`);
+	requestDidStart({ request, operationName }: any) {
+		console.log(`request on ${request.url || request} whit ${operationName}`);
 	}
 }
 // FIXME: return to express with apollo-server
