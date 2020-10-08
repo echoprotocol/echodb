@@ -29,11 +29,17 @@ import {
 import { getLogger } from 'log4js';
 import { buildSchema } from 'type-graphql';
 import { initMiddleware } from './express.middleware';
-import { GraphQLError, GraphQLFormattedError } from 'graphql';
+import { GraphQLError, GraphQLFormattedError, print } from 'graphql';
 import ERC20TokenResolver from './resolvers/erc20Token.resolver';
 
 const logger = getLogger('api.module');
 
+class BasicLogging {
+	requestDidStart({ request, parsedQuery, queryString }: any) {
+		const query = queryString || print(parsedQuery);
+		console.log(`request on ${request.url || request} whit ${query}`);
+	}
+}
 // FIXME: return to express with apollo-server
 export default class ApiModule extends AbstractModule {
 	private expressApp: express.Express;
@@ -96,6 +102,7 @@ export default class ApiModule extends AbstractModule {
 			formatError: this.formatError.bind(this),
 			introspection: config.api.introspection,
 			playground: config.api.playground,
+			extensions: [() => new BasicLogging()]
 		});
 		this.gqlServer.applyMiddleware({ app: this.expressApp });
 	}
