@@ -1,4 +1,4 @@
-FROM node:10.15.3-alpine as builder
+FROM node:12.18.4-alpine3.9 as builder
 
 LABEL maintainer="Pixelplex inc. <dev@pixelplex.io>"
 
