@@ -39,7 +39,7 @@ export default class PubSubEngine extends EventEmitter {
 
 	addListener(event: string, listener: callback): this {
 		console.log(`subscribing to "${event}" with cb "${listener}"`);
-		return this;
+		// return this;
 		logger.info(inline(`subscribing to "${event}" with cb "${listener}"`));
 		if (REDIS.EVENT_LIST.includes(event)) this.registerRedisEvent(<REDIS.EVENT>event);
 
@@ -62,7 +62,7 @@ export default class PubSubEngine extends EventEmitter {
 	removeListener(event: string, listener: callback) {
 		console.log(`remove subscribing to "${event}" with cb "${listener}"`);
 
-		return this;
+		// return this;
 		
 		if (!this.addedRedisEventsMap.has(<REDIS.EVENT>event)) {
 			this.addedRedisEventsMap.set(<REDIS.EVENT>event, new Set<callback>());
