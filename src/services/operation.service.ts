@@ -1,12 +1,12 @@
-import BN from 'bignumber.js';
+// import BN from 'bignumber.js';
 import OperationRepository from '../repositories/operation.repository';
 import * as ECHO from '../constants/echo.constants';
 import * as API from '../constants/api.constants';
 import { AccountId, ContractId, AssetId } from 'types/echo';
 import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
 import { IOperation } from '../interfaces/IOperation';
-import { parseHistoryOptions } from '../utils/common';
-import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
+// import { parseHistoryOptions } from '../utils/common';
+// import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
 import BlockRepository from 'repositories/block.repository';
 import ProcessingError from '../errors/processing.error';
 
@@ -142,30 +142,34 @@ export default class OperationService {
 		}, blocksMap);
 	}
 
-	async getOperationCountHistory(historyOpts?: HistoryOptionsWithInterval) {
-		if (!historyOpts) {
-			throw new Error(HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS);
-		}
+	async getOperationCountHistory(_historyOpts?: HistoryOptionsWithInterval) {
+		// if (!historyOpts) {
+		// 	throw new Error(HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS);
+		// }
 
-		const ratesMap: Object[] = [];
+		// const ratesMap: Object[] = [];
 
-		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
-		const startDateInISO = new Date(startDate * 1000).toISOString();
-		const endDateInISO = new Date(endDate * 1000).toISOString();
-		const operrations = await this.getOperationsByDate(startDateInISO, endDateInISO);
+		// const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
+		// const startDateInISO = new Date(startDate * 1000).toISOString();
+		// const endDateInISO = new Date(endDate * 1000).toISOString();
+		// const operrations = await this.getOperationsByDate(startDateInISO, endDateInISO);
 
-		const orderedOperations = this.divideOperationByDate(operrations, startDate, interval);
+		// const orderedOperations = this.divideOperationByDate(operrations, startDate, interval);
 
-		for (const [time, operations] of orderedOperations) {
-			const rate = new BN(operations.length).integerValue(BN.ROUND_CEIL).toNumber();
-			const startIntervalDate = startDate + (interval * (time - 1));
-			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
-			ratesMap.push({ startIntervalDateString, rate });
-		}
+		// for (const [time, operations] of orderedOperations) {
+		// 	const rate = new BN(operations.length).integerValue(BN.ROUND_CEIL).toNumber();
+		// 	const startIntervalDate = startDate + (interval * (time - 1));
+		// 	const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
+		// 	ratesMap.push({ startIntervalDateString, rate });
+		// }
 
+		// return {
+		// 	ratesMap,
+		// 	total: operrations.length,
+		// };
 		return {
-			ratesMap,
-			total: operrations.length,
+			ratesMap: <any>[],
+			total: 0,
 		};
 	}
 
