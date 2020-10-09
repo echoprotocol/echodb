@@ -1,4 +1,3 @@
-// import BN from 'bignumber.js';
 import OperationRepository from '../repositories/operation.repository';
 import * as ECHO from '../constants/echo.constants';
 import * as API from '../constants/api.constants';

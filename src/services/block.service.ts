@@ -13,7 +13,6 @@ import { DECENTRALIZATION_RATE_BLOCK_COUNT } from '../constants/block.constants'
 import { CORE_ASSET, ZERO_ACCOUNT } from '../constants/echo.constants';
 import { TYPE } from '../constants/balance.constants';
 import { removeDuplicates, calculateAverage, parseHistoryOptions } from '../utils/common';
-// import { removeDuplicates, parseHistoryOptions } from '../utils/common';
 import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
 import { constants, validators } from 'echojs-lib';
 import EchoRepository from 'repositories/echo.repository';
@@ -272,6 +271,7 @@ export default class BlockService {
 			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
 			ratesMap.push({ startIntervalDateString, rate });
 		}
+
 		return {
 			delegatePercent,
 			ratesMap,
