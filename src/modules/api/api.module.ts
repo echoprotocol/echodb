@@ -34,11 +34,11 @@ import ERC20TokenResolver from './resolvers/erc20Token.resolver';
 
 const logger = getLogger('api.module');
 
-class BasicLogging {
-	requestDidStart({ request, operationName }: any) {
-		console.log(`request on ${request.url || request} whit ${operationName}`);
-	}
-}
+// class BasicLogging {
+// 	requestDidStart({ request, operationName }: any) {
+// 		console.log(`request on ${request.url || request} whit ${operationName}`);
+// 	}
+// }
 // FIXME: return to express with apollo-server
 export default class ApiModule extends AbstractModule {
 	private expressApp: express.Express;
@@ -101,7 +101,7 @@ export default class ApiModule extends AbstractModule {
 			formatError: this.formatError.bind(this),
 			introspection: config.api.introspection,
 			playground: config.api.playground,
-			extensions: [() => new BasicLogging()]
+			// extensions: [() => new BasicLogging()]
 		});
 		this.gqlServer.applyMiddleware({ app: this.expressApp });
 	}
