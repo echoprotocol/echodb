@@ -1,12 +1,11 @@
-// import BN from 'bignumber.js';
 import OperationRepository from '../repositories/operation.repository';
 import * as ECHO from '../constants/echo.constants';
 import * as API from '../constants/api.constants';
 import { AccountId, ContractId, AssetId } from 'types/echo';
 import { HistoryOptionsWithInterval, HistoryOptions } from '../interfaces/IHistoryOptions';
 import { IOperation } from '../interfaces/IOperation';
-// import { parseHistoryOptions } from '../utils/common';
-// import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
+import { parseHistoryOptions } from '../utils/common';
+import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
 import BlockRepository from 'repositories/block.repository';
 import ProcessingError from '../errors/processing.error';
 
@@ -125,8 +124,8 @@ export default class OperationService {
 		return operationsCount;
 	}
 
-	async getOperationsByDate(from: string, to?: string) {
-		return this.operationRepository.find({ timestamp: { $gte: from, $lte: new Date(to || Date.now()) } });
+	async getOperationsCountByDate(from: string, to?: string) {
+		return this.operationRepository.count({ timestamp: { $gte: from, $lte: new Date(to || Date.now()) } });
 	}
 
 	divideOperationByDate(
@@ -142,34 +141,53 @@ export default class OperationService {
 		}, blocksMap);
 	}
 
-	async getOperationCountHistory(_historyOpts?: HistoryOptionsWithInterval) {
-		// if (!historyOpts) {
-		// 	throw new Error(HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS);
-		// }
+	async getOperationCountHistory(historyOpts?: HistoryOptionsWithInterval) {
+		if (!historyOpts) {
+			throw new Error(HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS);
+		}
 
-		// const ratesMap: Object[] = [];
+		let ratesMap: Object[] = [];
 
-		// const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
-		// const startDateInISO = new Date(startDate * 1000).toISOString();
-		// const endDateInISO = new Date(endDate * 1000).toISOString();
-		// const operrations = await this.getOperationsByDate(startDateInISO, endDateInISO);
+		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
 
-		// const orderedOperations = this.divideOperationByDate(operrations, startDate, interval);
+		const startDateInISO = new Date(startDate * 1000).toISOString();
+		const endDateInISO = new Date(endDate * 1000).toISOString();
 
-		// for (const [time, operations] of orderedOperations) {
-		// 	const rate = new BN(operations.length).integerValue(BN.ROUND_CEIL).toNumber();
-		// 	const startIntervalDate = startDate + (interval * (time - 1));
-		// 	const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
-		// 	ratesMap.push({ startIntervalDateString, rate });
-		// }
+		const operationsCount = await this.getOperationsCountByDate(startDateInISO, endDateInISO);
 
-		// return {
-		// 	ratesMap,
-		// 	total: operrations.length,
-		// };
+		const match = { timestamp: { $gte: startDateInISO, $lte: new Date(endDateInISO || Date.now()) } };
+		const projectPrepare = { timestamp: { $toLong: '$timestamp' }};
+		const intervalMS = interval * 1000;
+		const group = {
+            '_id' : {
+                timestamp: {
+					$subtract: [
+						{$divide: ['$timestamp', intervalMS ] },
+						{ $mod: [{$divide: ['$timestamp', intervalMS ]},1] }
+					] 
+				}
+            },
+            count : { $sum : 1},
+            value : { $avg : '$timestamp'}
+		}
+		const projectResult = {
+			_id: 0,
+			startIntervalDateString: { $toDate: '$value' },
+			rate: { $toLong: '$count' }
+		};
+
+		const pipeline = [
+			{ $match: match },
+			{ $project: projectPrepare },
+			{ $group: group },
+			{ $project: projectResult },
+		];
+
+		ratesMap = await this.operationRepository.aggregate(pipeline);
+
 		return {
-			ratesMap: <any>[],
-			total: 0,
+			ratesMap,
+			total: operationsCount,
 		};
 	}
 
