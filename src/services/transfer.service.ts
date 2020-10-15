@@ -1,4 +1,3 @@
-import BN from 'bignumber.js';
 import { validators } from 'echojs-lib';
 import AccountRepository from '../repositories/account.repository';
 import ContractRepository from '../repositories/contract.repository';
@@ -207,12 +206,6 @@ export default class TransferService {
 		return { items, total };
 	}
 
-	async getTransfersByDate(target: string, valueType: BALANCE.TYPE, from: string, to?: string) {
-		const targetType = valueType === BALANCE.TYPE.ASSET ? '_asset' : '_contract';
-		const query = { [targetType]: target };
-		return this.transferRepository.find({ ...query, timestamp: { $gte: from, $lte: new Date(to || Date.now()) } });
-	}
-
 	divideOperationByDate(
 		array: ITransfer[],
 		startDate: number,
@@ -243,39 +236,64 @@ export default class TransferService {
 			throw new Error(HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS);
 		}
 
+		let ratesMap: Object[] = [];
+
 		const valueType = validators.isAssetId(targetSubject) ? BALANCE.TYPE.ASSET : BALANCE.TYPE.TOKEN;
 
 		const targetType = await this.getTargetByType(targetSubject, valueType);
 
 		if (!targetType) {
 			return {
-				ratesMap: [],
+				ratesMap,
 				total: 0,
 			};
 		}
 
-		const ratesMap: Object[] = [];
-
 		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
-		const startDateInISO = new Date(startDate * 1000).toISOString();
-		const endDateInISO = new Date(endDate * 1000).toISOString();
-		const transfers = await this.getTransfersByDate(targetType._id, valueType, startDateInISO, endDateInISO);
+		const startDateInISO = new Date(startDate);
+		const endDateInISO = new Date(endDate);
 
-		const orderedTransfers = this.divideOperationByDate(transfers, startDate, interval);
+		const targetTypeName = valueType === BALANCE.TYPE.ASSET ? '_asset' : '_contract';
+		const query = { [targetTypeName]: targetType._id };
+		const match = { ...query, timestamp: { $gte: startDateInISO, $lte: new Date(endDateInISO || Date.now()) } };
 
-		for (const [time, transfers] of orderedTransfers) {
-			const rate = transfers.
-				reduce((res: BN, transfer: ITransfer) => res.plus(transfer.amount), new BN(0))
-				.integerValue(BN.ROUND_CEIL).toNumber();
-			const startIntervalDate = startDate + (interval * (time - 1));
-			const startIntervalDateString = new Date(startIntervalDate * 1000).toISOString();
-			ratesMap.push({ startIntervalDateString, rate });
-		}
+		const total = await this.transferRepository.count(match);
 
-		return {
-			ratesMap,
-			total: transfers.length,
+		const intervalMS = interval * 1000;
+
+		const projectPrepare = { timestamp: { $toLong: '$timestamp' }, amount: { $toLong: '$amount' } };
+		const group = {
+            '_id' : {
+                timestamp: {
+					$subtract: [
+						{$divide: ['$timestamp', intervalMS ] },
+						{ $mod: [{$divide: ['$timestamp', intervalMS ]},1] }
+					] 
+				}
+            },
+            count : { $sum : '$amount' },
+            value : { $avg : '$timestamp' }
 		};
+
+		const sortByDate = { value: 1 };
+
+		const projectResult = {
+			_id: 0,
+			startIntervalDateString: { $toString: { $toDate: '$value' } },
+			rate: { $toLong: '$count' }
+		};
+
+		const pipeline = [
+			{ $match: match },
+			{ $project: projectPrepare },
+			{ $group: group },
+			{ $sort: sortByDate },
+			{ $project: projectResult },
+		];
+
+		ratesMap = await this.transferRepository.aggregate(pipeline);
+
+		return { ratesMap, total };
 	}
 
 }

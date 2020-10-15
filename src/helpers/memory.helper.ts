@@ -15,7 +15,7 @@ export default class MemoryHelper extends AbstractInitableHelper{
 
 	start() {
 		this.logMemoryUsage();
-		this.interval = setInterval(() => this.logMemoryUsage(), config.memoryLogger.delay);
+		this.interval = setInterval(() => this.logMemoryUsage(), 1000);
 	}
 
 	stop() {
