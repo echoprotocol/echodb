@@ -124,10 +124,6 @@ export default class OperationService {
 		return operationsCount;
 	}
 
-	async getOperationsCountByDate(from: string, to?: string) {
-		return this.operationRepository.count({ timestamp: { $gte: from, $lte: new Date(to || Date.now()) } });
-	}
-
 	divideOperationByDate(
 		array: IOperation[],
 		startDate: number,
@@ -150,12 +146,13 @@ export default class OperationService {
 
 		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
 
-		const startDateInISO = new Date(startDate * 1000).toISOString();
-		const endDateInISO = new Date(endDate * 1000).toISOString();
-
-		const operationsCount = await this.getOperationsCountByDate(startDateInISO, endDateInISO);
+		const startDateInISO = new Date(startDate);
+		const endDateInISO = new Date(endDate);
 
 		const match = { timestamp: { $gte: startDateInISO, $lte: new Date(endDateInISO || Date.now()) } };
+
+		const operationsCount = await this.operationRepository.count(match);
+
 		const projectPrepare = { timestamp: { $toLong: '$timestamp' }};
 		const intervalMS = interval * 1000;
 		const group = {
@@ -169,10 +166,13 @@ export default class OperationService {
             },
             count : { $sum : 1},
             value : { $avg : '$timestamp'}
-		}
+		};
+
+		const sortByDate = { value: 1 };
+
 		const projectResult = {
 			_id: 0,
-			startIntervalDateString: { $toDate: '$value' },
+			startIntervalDateString: { $toString: { $toDate: '$value' } },
 			rate: { $toLong: '$count' }
 		};
 
@@ -180,6 +180,7 @@ export default class OperationService {
 			{ $match: match },
 			{ $project: projectPrepare },
 			{ $group: group },
+			{ $sort: sortByDate },
 			{ $project: projectResult },
 		];
 
