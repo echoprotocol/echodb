@@ -179,18 +179,23 @@ export default class BlockService {
 		return dBlock;
 	}
 
-	async getDecentralizationRate(historyOpts?: HistoryOptionsWithInterval) {
-
+	async getCurrentDecentralizationPercent() {
 		const dBlocks = await this.blockRepository.find({}, {}, { sort: { round: -1 }, limit: 1 });
+
 		if (!dBlocks[0]) {
 			throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
 		}
-		const decentralizationRatePercent = dBlocks[0].decentralization_rate;
 
+		const decentralizationPercent = dBlocks[0].decentralization_rate;
+
+		return { decentralizationPercent };
+	}
+
+	async getDecentralizationRate(historyOpts?: HistoryOptionsWithInterval) {
 		let ratesMap: Object[] = [];
 
 		if (Object.keys(historyOpts).length === 0) {
-			return { decentralizationRatePercent, ratesMap };
+			return { ratesMap };
 		}
 
 		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
@@ -240,10 +245,7 @@ export default class BlockService {
 
 		ratesMap = await this.blockRepository.aggregate(pipeline);
 
-		return {
-			decentralizationRatePercent,
-			ratesMap,
-		};
+		return { ratesMap };
 	}
 
 	async getBlocksByDate(from: string, to?: string) {
@@ -255,23 +257,31 @@ export default class BlockService {
 		return (blocksWithDelegateProducer / blocksCount) * 100;
 	}
 
-	async getDelegationRate(historyOpts?: HistoryOptionsWithInterval) {
+	async getCurrentDelegationPercent() {
 		const blocksCount = await this.blockRepository.count({});
-		let ratesMap: Object[] = [];
+
 		if (blocksCount === 0) {
-			return {
-				ratesMap,
-				delegatePercent: 0,
-			};
+			return { delegatePercent: 0 };
 		}
 
 		const delegatePercent = await this.calculateDelegationRate(blocksCount);
 
+		return { delegatePercent };
+	}
+
+	async getDelegationRateInterval(historyOpts?: HistoryOptionsWithInterval) {
+		let ratesMap: Object[] = [];
+
 		if (Object.keys(historyOpts).length === 0) {
 			return {
 				ratesMap,
-				delegatePercent,
 			};
+		}
+
+		const blocksCount = await this.blockRepository.count({});
+
+		if (blocksCount === 0 ) {
+			return { ratesMap };
 		}
 
 		const { startDate, endDate, interval } = parseHistoryOptions(historyOpts);
@@ -323,25 +333,31 @@ export default class BlockService {
 
 		ratesMap = await this.blockRepository.aggregate(pipeline);
 
-		return {
-			delegatePercent,
-			ratesMap,
-		};
+		return { ratesMap };
 	}
 
-	async getFrozenData(historyOpts?: HistoryOptionsWithInterval) {
-		let frozenData: Object[] = [];
+	async getCurrentFrozenData() {
 		const latestBlock = await this.blockRepository.find({}, null, { sort: { round: -1 }, limit: 1 });
+
 		if (!latestBlock[0]) {
 			throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
 		}
+
 		const currentFrozenData = {
 			accounts_freeze_sum: latestBlock[0].frozen_balances_data.accounts_freeze_sum,
 			committee_freeze_sum: latestBlock[0].frozen_balances_data.committee_freeze_sum,
 		};
+
+		return {
+			currentFrozenData,
+		};
+	}
+
+	async getFrozenRateInterval(historyOpts?: HistoryOptionsWithInterval) {
+		let frozenData: Object[] = [];
+
 		if (Object.keys(historyOpts).length === 0) {
 			return {
-				currentFrozenData,
 				frozenData,
 			};
 		}
@@ -397,7 +413,7 @@ export default class BlockService {
 
 		frozenData = await this.blockRepository.aggregate(pipeline);
 
-		return { currentFrozenData, frozenData };
+		return { frozenData };
 	}
 
 	async getBlockReward(block: BlockWithInjectedVirtualOperations): Promise<string> {

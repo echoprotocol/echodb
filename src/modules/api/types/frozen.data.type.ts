@@ -8,7 +8,11 @@ class FrozenBalancesMap {
 }
 
 @ObjectType()
-export default class FrozenBalancesData {
-	@Field(() => BlockFrozenData) currentFrozenData: BlockFrozenData;
+export class FrozenBalancesData {
 	@Field(() => [FrozenBalancesMap]) frozenData: FrozenBalancesMap[];
+}
+
+@ObjectType()
+export class CurrentFrozenBalancesData {
+	@Field(() => BlockFrozenData) currentFrozenData: BlockFrozenData;
 }

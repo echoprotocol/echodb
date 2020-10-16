@@ -14,11 +14,11 @@ import { inject } from '../../../utils/graphql';
 import { isMongoObjectId } from '../../../utils/validators';
 import { MongoId } from '../../../types/mongoose';
 import { Payload } from '../../../types/graphql';
-import FrozenBalancesData from '../types/frozen.data.type';
+import { FrozenBalancesData, CurrentFrozenBalancesData } from '../types/frozen.data.type';
 import HistoryBlockObject from '../types/history.block.type';
 import OperationService from '../../../services/operation.service';
-import DelegateRateObject from '../types/delegate.rate.type';
-import DecentralizationRateObject from '../types/decentralization.rate.type';
+import { DelegateRateObject, DelegatePercentObject } from '../types/delegate.rate.type';
+import { DecentralizationRateObject, CurrentDecentralizationPercentObject } from '../types/decentralization.rate.type';
 import HISTORY_INTERVAL_ERROR from '../../../errors/history.interval.error';
 
 const paginatedBlocks = PaginatedResponse(Block);
@@ -63,11 +63,20 @@ export default class BlockResolver extends AbstractResolver {
 		[HISTORY_INTERVAL_ERROR.INVALID_INTERVAL]: [HTTP.CODE.BAD_REQUEST],
 		[HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS]: [HTTP.CODE.BAD_REQUEST],
 	})
-	getDelegationPercent(@Args() historyOpts?: ExtendedHistoryForm) {
-		return this.blockService.getDelegationRate(historyOpts);
+	getDelegationRate(@Args() historyOpts?: ExtendedHistoryForm) {
+		return this.blockService.getDelegationRateInterval(historyOpts);
 	}
 
-	// Query
+	@Query(() => DelegatePercentObject)
+	getCurrentDelegationPercent() {
+		return this.blockService.getCurrentDelegationPercent();
+	}
+
+	@Query(() => CurrentDecentralizationPercentObject)
+	getCurrentDecentralizationPercent() {
+		return this.blockService.getCurrentDecentralizationPercent();
+	}
+
 	@Query(() => DecentralizationRateObject)
 	@validateArgs(ExtendedHistoryForm)
 	@handleError({
@@ -116,6 +125,11 @@ export default class BlockResolver extends AbstractResolver {
 		[HISTORY_INTERVAL_ERROR.INVALID_HISTORY_PARAMS]: [HTTP.CODE.BAD_REQUEST],
 	})
 	getFrozenBalancesData(@Args() historyOpts?: ExtendedHistoryForm) {
-		return this.blockService.getFrozenData(historyOpts);
+		return this.blockService.getFrozenRateInterval(historyOpts);
+	}
+
+	@Query(() => CurrentFrozenBalancesData)
+	getCurrentFrozenData() {
+		return this.blockService.getCurrentFrozenData();
 	}
 }
