@@ -75,12 +75,11 @@ export enum OPERATION_ID {
 	SIDECHAIN_BTC_WITHDRAW = 62,
 	SIDECHAIN_BTC_AGGREGATE = 63,
 	SIDECHAIN_BTC_APPROVE_AGGREGATE = 64,
-	SIDECHAIN_BTC_BLOCK_PROCESS = 65,
-	BLOCK_REWARD = 66, // VIRTUAL
-	EVM_ADDRESS_REGISTER = 67,
-	DID_CREATE_OPERATION = 68,
-	DID_UPDATE_OPERATION = 69,
-	DID_DELETE_OPERATION = 70,
+	BLOCK_REWARD = 65, // VIRTUAL
+	EVM_ADDRESS_REGISTER = 66,
+	DID_CREATE_OPERATION = 67,
+	DID_UPDATE_OPERATION = 68,
+	DID_DELETE_OPERATION = 69,
 }
 
 export type Operations = {
@@ -148,7 +147,6 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: SidechainBtcAggregate;
 	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: SidechainBtcApproveAggregate;
 	[OPERATION_ID.CONTRACT_UPDATE]: ContractUpdateOperation;
-	[OPERATION_ID.SIDECHAIN_BTC_BLOCK_PROCESS]: SidechainBtcBlockProcess;
 	[OPERATION_ID.BLOCK_REWARD]: BlockRewardOperation;
 	[OPERATION_ID.EVM_ADDRESS_REGISTER]: EVMAddressRegister;
 	[OPERATION_ID.DID_CREATE_OPERATION]: DidCreate;
@@ -221,7 +219,6 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: string;
-	[OPERATION_ID.SIDECHAIN_BTC_BLOCK_PROCESS]: unknown;
 	[OPERATION_ID.BLOCK_REWARD]: unknown;
 	[OPERATION_ID.EVM_ADDRESS_REGISTER]: unknown;
 	[OPERATION_ID.DID_CREATE_OPERATION]: unknown;
@@ -1007,17 +1004,10 @@ interface SidechainBtcApproveAggregate {
 	fee: IAmount;
 	committee_member_id: string;
 	transaction_id: string;
+	block_number: number;
 	extensions: ExtensionsArr;
 	committee_member?: Committee;
 	aggregate_request_operation?: string;
-}
-
-interface SidechainBtcBlockProcess {
-	fee: IAmount;
-	committee_member_id: string;
-	committee_member?: Committee;
-	block_number: number;
-	extensions: ExtensionsArr;
 }
 
 interface ContractUpdateOperation {
