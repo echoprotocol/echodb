@@ -135,7 +135,9 @@ export default class ParserModule extends AbstractModule {
 
 	async syncCoreAsset() {
 		logger.info('Parsing first block. Synchronizing core asset');
-		const coreAssets = await this.echoRepository.getAssets([ECHO.CORE_ASSET, ECHO.EETH_ASSET, ECHO.EBTC_ASSET]);
+		const coreAssets = await this.echoRepository.getAssets(
+			[ECHO.CORE_ASSET, ECHO.EETH_ASSET, ECHO.EBTC_ASSET, ECHO.SETH_ASSET, ECHO.SBTC_ASSET],
+		);
 		const coreAssetsPromises = coreAssets.map(async(coreAsset) => {
 			const dAccount = await this.accountRepository.findById(coreAsset.issuer);
 			await this.assetRepository.create([{

@@ -84,6 +84,9 @@ import SidechainBtcCreateAddressOperation from './sidechain.btc.create.address.o
 import SidechainBtcWithdrawOperation from './sidechain.btc.withdraw.operation';
 import ContractSelfdestructOperation from './contract.selfdestruct.operation';
 import SidechainEthSendDepositOperation from './sidechain.eth.send.deposit.operation';
+import SidechainStakeEthUpdateOperation from './sidechain.stake.eth.update.operation';
+import SidechainBtcCreateStakeScriptOperation from './sidechain.btc.create.stake.script.operation';
+import SidechainStakeBtcUpdateOperation from './sidechain.stake.btc.update.operation';
 import DidCreateOperation from './did.create.operation';
 import DidUpdateOperation from './did.update.operation';
 import DidDeleteOperation from './did.delete.operation';
@@ -167,6 +170,9 @@ export default class OperationManager {
 		contractUpdateOperation: ContractUpdateOperation,
 		contractInternalCreateOperation: ContractInternalCreateOperaiton,
 		contractInternalCallOperation: ContractInternalCallOperation,
+		sidechainStakeEthUpdateOperation: SidechainStakeEthUpdateOperation,
+		sidechainBtcCreateStakeScriptOperation: SidechainBtcCreateStakeScriptOperation,
+		sidechainStakeBtcUpdateOperation: SidechainStakeBtcUpdateOperation,
 		evmAddressRegisterOperation: EVMAddressRegister,
 		didCreateOperation: DidCreateOperation,
 		didUpdateOperation: DidUpdateOperation,
@@ -237,6 +243,9 @@ export default class OperationManager {
 			contractUpdateOperation,
 			contractInternalCreateOperation,
 			contractInternalCallOperation,
+			sidechainStakeEthUpdateOperation,
+			sidechainBtcCreateStakeScriptOperation,
+			sidechainStakeBtcUpdateOperation,
 			evmAddressRegisterOperation,
 			didCreateOperation,
 			didUpdateOperation,
