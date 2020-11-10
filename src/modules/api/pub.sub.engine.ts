@@ -52,7 +52,7 @@ export default class PubSubEngine extends EventEmitter {
 		callbackSet.add(listener);
 
 		this.addedRedisEventsMap.set(<REDIS.EVENT>event, callbackSet);
-	
+
 		super.addListener(event, listener);
 		return this;
 	}

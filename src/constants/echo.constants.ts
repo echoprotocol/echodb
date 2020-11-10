@@ -1050,7 +1050,7 @@ interface SidechainStakeBtcUpdateOperation {
 	fee: IAmount;
 	committee_member_id: string;
 	owner: string;
-	btc_tx_info: BtcTransactionDetails,
+	btc_tx_info: BtcTransactionDetails;
 	is_vin: boolean;
 }
 

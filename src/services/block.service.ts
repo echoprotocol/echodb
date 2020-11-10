@@ -214,16 +214,16 @@ export default class BlockService {
 		const intervalMS = interval * 1000;
 
 		const group = {
-            '_id' : {
-                timestamp: {
+			_id : {
+				timestamp: {
 					$subtract: [
-						{$divide: ['$timestamp', intervalMS ] },
-						{ $mod: [{$divide: ['$timestamp', intervalMS ]},1] }
-					] 
-				}
-            },
-            value : { $avg : '$timestamp' },
-            rate : { $avg : '$decentralization_rate' }
+						{ $divide: ['$timestamp', intervalMS] },
+						{ $mod: [{ $divide: ['$timestamp', intervalMS] }, 1] },
+					],
+				},
+			},
+			value : { $avg : '$timestamp' },
+			rate : { $avg : '$decentralization_rate' },
 		};
 
 		const sortByDate = { value: 1 };
@@ -231,7 +231,7 @@ export default class BlockService {
 		const projectResult = {
 			_id: 0,
 			startIntervalDateString: { $toString: { $toDate: '$value' } },
-			rate: { $toLong: '$rate' }
+			rate: { $toLong: '$rate' },
 		};
 
 		const pipeline = [
@@ -280,7 +280,7 @@ export default class BlockService {
 
 		const blocksCount = await this.blockRepository.count({});
 
-		if (blocksCount === 0 ) {
+		if (blocksCount === 0) {
 			return { ratesMap };
 		}
 
@@ -301,17 +301,17 @@ export default class BlockService {
 		const intervalMS = interval * 1000;
 
 		const group = {
-            '_id' : {
-                timestamp: {
+			_id : {
+				timestamp: {
 					$subtract: [
-						{$divide: ['$timestamp', intervalMS ] },
-						{ $mod: [{$divide: ['$timestamp', intervalMS ]},1] }
-					] 
-				}
-            },
-            count : { $sum : 1 },
+						{ $divide: ['$timestamp', intervalMS] },
+						{ $mod: [{ $divide: ['$timestamp', intervalMS] }, 1] },
+					],
+				},
+			},
+			count : { $sum : 1 },
 			value : { $avg : '$timestamp' },
-			nonZeroDelegateCount: { $sum: '$nonZeroDelegate' }
+			nonZeroDelegateCount: { $sum: '$nonZeroDelegate' },
 		};
 
 		const sortByDate = { value: 1 };
@@ -319,7 +319,7 @@ export default class BlockService {
 		const projectResult = {
 			_id: 0,
 			startIntervalDateString: { $toString: { $toDate: '$value' } },
-			rate: { $multiply: [{ $divide: ['$nonZeroDelegateCount', '$count'] }, 100] }
+			rate: { $multiply: [{ $divide: ['$nonZeroDelegateCount', '$count'] }, 100] },
 		};
 
 		const pipeline = [
@@ -370,28 +370,28 @@ export default class BlockService {
 		const projectPrepareTimestampToDate = {
 			timestamp: { $toDate: '$timestamp' },
 			accounts_freeze_sum: '$frozen_balances_data.accounts_freeze_sum',
-			committee_freeze_sum: '$frozen_balances_data.committee_freeze_sum'
+			committee_freeze_sum: '$frozen_balances_data.committee_freeze_sum',
 		};
 		const projectPrepareTimestampToLong = {
 			timestamp: { $toLong: '$timestamp' },
 			accounts_freeze_sum: '$accounts_freeze_sum',
-			committee_freeze_sum: '$committee_freeze_sum'
+			committee_freeze_sum: '$committee_freeze_sum',
 		};
 		const intervalMS = interval * 1000;
 
 		const group = {
-            '_id' : {
-                timestamp: {
+			_id : {
+				timestamp: {
 					$subtract: [
-						{$divide: ['$timestamp', intervalMS ] },
-						{ $mod: [{$divide: ['$timestamp', intervalMS ]},1] }
-					] 
-				}
-            },
-            value : { $avg : '$timestamp'},
-            accounts_freeze_sum : { $avg : '$accounts_freeze_sum'},
-            committee_freeze_sum : { $avg : '$committee_freeze_sum'}
-		}
+						{ $divide: ['$timestamp', intervalMS] },
+						{ $mod: [{ $divide: ['$timestamp', intervalMS] }, 1] },
+					],
+				},
+			},
+			value : { $avg : '$timestamp' },
+			accounts_freeze_sum : { $avg : '$accounts_freeze_sum' },
+			committee_freeze_sum : { $avg : '$committee_freeze_sum' },
+		};
 
 		const sortByDate = { value: 1 };
 
@@ -399,7 +399,7 @@ export default class BlockService {
 			_id: 0,
 			startIntervalDateString: { $toString: { $toDate: '$value' } },
 			'frozenSums.accounts_freeze_sum': { $toLong: '$accounts_freeze_sum' },
-			'frozenSums.committee_freeze_sum': { $toLong: '$committee_freeze_sum' }
+			'frozenSums.committee_freeze_sum': { $toLong: '$committee_freeze_sum' },
 		};
 
 		const pipeline = [
