@@ -1052,6 +1052,7 @@ interface SidechainStakeBtcUpdateOperation {
 	owner: string;
 	btc_tx_info: BtcTransactionDetails;
 	is_vin: boolean;
+	transaction_hash?: string;
 }
 
 interface BlockRewardOperation {
