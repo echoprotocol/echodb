@@ -9,6 +9,7 @@ export interface ITransaction {
 	extensions: unknown;
 	signatures: string[];
 	trx_hex?: string;
+	trx_index?: number;
 }
 
 export interface ITransactionExtended {
@@ -19,4 +20,5 @@ export interface ITransactionExtended {
 	extensions: unknown;
 	signatures: string[];
 	trx_hex?: string;
+	trx_index?: number;
 }

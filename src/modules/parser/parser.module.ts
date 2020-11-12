@@ -92,6 +92,7 @@ export default class ParserModule extends AbstractModule {
 				const transactionHex = await this.echoRepository.getTransactionHex(tx);
 				const dTx = <TDoc<ITransactionExtended>>await this.transactionRepository.create({
 					...tx,
+					trx_index: txIndex,
 					trx_hex: transactionHex,
 					_block: dBlock,
 				});
