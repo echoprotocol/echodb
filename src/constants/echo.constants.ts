@@ -3,9 +3,11 @@ import { BlockVirtualOperation, constants } from 'echojs-lib';
 import Committee from 'echojs-lib/types/interfaces/Committee';
 
 export const ZERO_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.0`;
-export const CORE_ASSET = '1.3.0';
-export const EETH_ASSET = '1.3.1';
-export const EBTC_ASSET = '1.3.2';
+export const CORE_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.0`;
+export const EETH_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.1`;
+export const EBTC_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.2`;
+export const SETH_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.3`;
+export const SBTC_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.4`;
 export const COMMITTEE_GLOBAL_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.1`;
 export const CONNECT_STATUS = 'connect';
 
@@ -75,11 +77,14 @@ export enum OPERATION_ID {
 	SIDECHAIN_BTC_WITHDRAW = 62,
 	SIDECHAIN_BTC_AGGREGATE = 63,
 	SIDECHAIN_BTC_APPROVE_AGGREGATE = 64,
-	BLOCK_REWARD = 65, // VIRTUAL
-	EVM_ADDRESS_REGISTER = 66,
-	DID_CREATE_OPERATION = 67,
-	DID_UPDATE_OPERATION = 68,
-	DID_DELETE_OPERATION = 69,
+	SIDECHAIN_STAKE_ETH_UPDATE = 65,
+	SIDECHAIN_BTC_CREATE_STAKE_SCRIPT = 66,
+	SIDECHAIN_STAKE_BTC_UPDATE = 67,
+	BLOCK_REWARD = 68, // VIRTUAL
+	EVM_ADDRESS_REGISTER = 69,
+	DID_CREATE_OPERATION = 70,
+	DID_UPDATE_OPERATION = 71,
+	DID_DELETE_OPERATION = 72,
 }
 
 export type Operations = {
@@ -146,6 +151,9 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: SidechainBtcWithdraw;
 	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: SidechainBtcAggregate;
 	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: SidechainBtcApproveAggregate;
+	[OPERATION_ID.SIDECHAIN_STAKE_ETH_UPDATE]: SidechainStakeEthUpdateOperation;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_STAKE_SCRIPT]: SidechainBtcCreateStakeScriptOperation;
+	[OPERATION_ID.SIDECHAIN_STAKE_BTC_UPDATE]: SidechainStakeBtcUpdateOperation;
 	[OPERATION_ID.CONTRACT_UPDATE]: ContractUpdateOperation;
 	[OPERATION_ID.BLOCK_REWARD]: BlockRewardOperation;
 	[OPERATION_ID.EVM_ADDRESS_REGISTER]: EVMAddressRegister;
@@ -219,6 +227,9 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: string;
+	[OPERATION_ID.SIDECHAIN_STAKE_ETH_UPDATE]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_CREATE_STAKE_SCRIPT]: unknown;
+	[OPERATION_ID.SIDECHAIN_STAKE_BTC_UPDATE]: unknown;
 	[OPERATION_ID.BLOCK_REWARD]: unknown;
 	[OPERATION_ID.EVM_ADDRESS_REGISTER]: unknown;
 	[OPERATION_ID.DID_CREATE_OPERATION]: unknown;
@@ -1015,6 +1026,33 @@ interface ContractUpdateOperation {
 	sender: AccountId;
 	contract: string;
 	new_owner: AccountId;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainStakeEthUpdateOperation {
+	fee: IAmount;
+	committee_member_id: string;
+	asset_id: string;
+	current_balance: number;
+	account: string;
+	transaction_hash: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcCreateStakeScriptOperation {
+	fee: IAmount;
+	account: string;
+	pubkey_hash: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainStakeBtcUpdateOperation {
+	fee: IAmount;
+	committee_member_id: string;
+	owner: string;
+	btc_tx_info: BtcTransactionDetails;
+	is_vin: boolean;
+	transaction_hash?: string;
 	extensions: ExtensionsArr;
 }
 

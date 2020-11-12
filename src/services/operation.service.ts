@@ -153,19 +153,19 @@ export default class OperationService {
 
 		const operationsCount = await this.operationRepository.count(match);
 
-		const projectPrepare = { timestamp: { $toLong: '$timestamp' }};
+		const projectPrepare = { timestamp: { $toLong: '$timestamp' } };
 		const intervalMS = interval * 1000;
 		const group = {
-            '_id' : {
-                timestamp: {
+			_id : {
+				timestamp: {
 					$subtract: [
-						{$divide: ['$timestamp', intervalMS ] },
-						{ $mod: [{$divide: ['$timestamp', intervalMS ]},1] }
-					] 
-				}
-            },
-            count : { $sum : 1},
-            value : { $avg : '$timestamp'}
+						{ $divide: ['$timestamp', intervalMS] },
+						{ $mod: [{ $divide: ['$timestamp', intervalMS] }, 1] },
+					],
+				},
+			},
+			count : { $sum : 1 },
+			value : { $avg : '$timestamp' },
 		};
 
 		const sortByDate = { value: 1 };
@@ -173,7 +173,7 @@ export default class OperationService {
 		const projectResult = {
 			_id: 0,
 			startIntervalDateString: { $toString: { $toDate: '$value' } },
-			rate: { $toLong: '$count' }
+			rate: { $toLong: '$count' },
 		};
 
 		const pipeline = [

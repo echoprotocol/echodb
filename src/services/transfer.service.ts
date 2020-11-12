@@ -263,16 +263,16 @@ export default class TransferService {
 
 		const projectPrepare = { timestamp: { $toLong: '$timestamp' }, amount: { $toLong: '$amount' } };
 		const group = {
-            '_id' : {
-                timestamp: {
+			_id : {
+				timestamp: {
 					$subtract: [
-						{$divide: ['$timestamp', intervalMS ] },
-						{ $mod: [{$divide: ['$timestamp', intervalMS ]},1] }
-					] 
-				}
-            },
-            count : { $sum : '$amount' },
-            value : { $avg : '$timestamp' }
+						{ $divide: ['$timestamp', intervalMS] },
+						{ $mod: [{ $divide: ['$timestamp', intervalMS] }, 1] },
+					],
+				},
+			},
+			count : { $sum : '$amount' },
+			value : { $avg : '$timestamp' },
 		};
 
 		const sortByDate = { value: 1 };
@@ -280,7 +280,7 @@ export default class TransferService {
 		const projectResult = {
 			_id: 0,
 			startIntervalDateString: { $toString: { $toDate: '$value' } },
-			rate: { $toLong: '$count' }
+			rate: { $toLong: '$count' },
 		};
 
 		const pipeline = [
