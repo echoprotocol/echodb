@@ -1042,7 +1042,7 @@ interface SidechainStakeEthUpdateOperation {
 interface SidechainBtcCreateStakeScriptOperation {
 	fee: IAmount;
 	account: string;
-	user_pubkey_hash: string;
+	pubkey_hash: string;
 	extensions: ExtensionsArr;
 }
 
@@ -1053,6 +1053,7 @@ interface SidechainStakeBtcUpdateOperation {
 	btc_tx_info: BtcTransactionDetails;
 	is_vin: boolean;
 	transaction_hash?: string;
+	extensions: ExtensionsArr;
 }
 
 interface BlockRewardOperation {
