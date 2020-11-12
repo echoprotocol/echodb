@@ -9,6 +9,8 @@ export default class Transaction {
 	@Field() ref_block_num: number;
 	@Field() ref_block_prefix: number;
 	@Field() expiration: string;
+	@Field() trx_hex: string;
+	@Field() trx_index: number;
 	// FIXME: unknown type
 	// @Field() extensions: unknown;
 	@Field(() => [String]) signatures: string[];
