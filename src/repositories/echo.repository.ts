@@ -1,7 +1,7 @@
 import EchoConnection from '../connections/echo.connection';
 import * as ECHO from '../constants/echo.constants';
 import * as ERC20 from '../constants/erc20.constants';
-import { Block, Asset, BlockVirtualOperation, decode, encode, crypto } from 'echojs-lib';
+import { Block, Asset, BlockVirtualOperation, decode, encode, hash } from 'echojs-lib';
 import { AccountId, ContractId, AssetId } from '../types/echo';
 import RavenHelper from 'helpers/raven.helper';
 import ProcessingError from '../errors/processing.error';
@@ -301,7 +301,7 @@ export default class EchoRepository {
 	async getTransactionHex(transaction: object): Promise<string> {
 		try {
 			const transactionBytes = await this.echoConnection.echo.api.getTransactionHex(transaction);
-			const transactionDigest = crypto.hash.sha256(transactionBytes, 'hex');
+			const transactionDigest = hash.sha256(transactionBytes, 'hex');
 			return transactionDigest.substring(0, 20);
 		} catch (error) {
 			throw this.ravenHelper.error(error, 'echoRepository#getTransactionHex');

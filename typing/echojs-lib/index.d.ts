@@ -274,6 +274,7 @@ declare module 'echojs-lib' {
 
 	export type PrivateKey = import('echojs-lib/types').PrivateKey;
 	export const validators: typeof import('echojs-lib/types').validators;
+	export const hash: typeof import('echojs-lib/types').hash;
 	export const constants: typeof import('echojs-lib/types').constants;
 
 	export default new Echo();
