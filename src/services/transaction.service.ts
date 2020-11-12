@@ -20,6 +20,6 @@ export default class TransactionService {
 	}
 
 	async getTransactionByHex(hex: string) {
-		return this.transactionRepository.findByHex(hex)
+		return this.transactionRepository.findByHex(hex);
 	}
 }
