@@ -101,3 +101,18 @@ export class GetSingleOperation extends AbstractForm {
 	@Field(() => Boolean, { nullable: true })
 	isVirtual?: boolean;
 }
+
+@ArgsType()
+export class GetSingleOperationByTrxHex extends AbstractForm {
+	@rule(Joi.string())
+	@Field(() => String)
+	trx_hex: string;
+
+	@rule(Joi.number().integer().min(0))
+	@Field(() => Int)
+	opInTrx: number;
+
+	@rule(Joi.bool())
+	@Field(() => Boolean, { nullable: true })
+	isVirtual?: boolean;
+}

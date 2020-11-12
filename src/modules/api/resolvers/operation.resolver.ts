@@ -12,6 +12,7 @@ import {
 	NewOperationSubscribe,
 	GetSubjectOperation,
 	GetSingleOperation,
+	GetSingleOperationByTrxHex,
 } from '../forms/operation.forms';
 import { Args, Resolver, Query, Subscription, Root, FieldResolver } from 'type-graphql';
 import { inject } from '../../../utils/graphql';
@@ -121,6 +122,21 @@ export default class OperationResolver extends AbstractResolver {
 		}: GetSingleOperation,
 	) {
 		return this.operationService.getOperationByBlockAndPosition(block, trxInBlock, opInTrx, isVirtual);
+	}
+
+	@Query(() => Operation, { nullable: true })
+	@validateArgs(GetSingleOperationByTrxHex)
+	@handleError({
+		[ERROR.TRANSACTION_NOT_FOUND]: [HTTP.CODE.BAD_REQUEST],
+	})
+	getOperationByTrxHexAndPosition(
+		@Args() {
+			trx_hex,
+			opInTrx,
+			isVirtual,
+		}: GetSingleOperationByTrxHex,
+	) {
+		return this.operationService.getOperationByTrxHexAndPosition(trx_hex, opInTrx, isVirtual);
 	}
 
 	// FieldResolver

@@ -8,6 +8,7 @@ import { parseHistoryOptions } from '../utils/common';
 import HISTORY_INTERVAL_ERROR from '../errors/history.interval.error';
 import BlockRepository from 'repositories/block.repository';
 import ProcessingError from '../errors/processing.error';
+import TransactionRepository from 'repositories/transaction.repository';
 
 export enum KEY {
 	FROM = 'from',
@@ -22,6 +23,7 @@ export enum KEY {
 
 export const ERROR = {
 	BLOCK_NOT_FOUND: 'invalid block round',
+	TRANSACTION_NOT_FOUND: 'invalid transaction hex',
 };
 
 interface GetHistoryParameters {
@@ -51,6 +53,7 @@ export default class OperationService {
 	constructor(
 		readonly operationRepository: OperationRepository,
 		readonly blockRepository: BlockRepository,
+		readonly transactionRepository: TransactionRepository,
 	) { }
 
 	async getOperationByBlockAndPosition(block: number, trxInBlock: number, opInTrx: number, isVirtual: boolean) {
@@ -71,6 +74,27 @@ export default class OperationService {
 			operation = await this.operationRepository.findOne({
 				block: dBlock._id,
 				trx_in_block: trxInBlock,
+				op_in_trx: opInTrx,
+			});
+		}
+		return operation;
+	}
+
+	async getOperationByTrxHexAndPosition(trx_hex: string, opInTrx: number, isVirtual: boolean) {
+		const dTrx = await this.transactionRepository.findByHex(trx_hex);
+		if (dTrx === null) {
+			throw new ProcessingError(ERROR.TRANSACTION_NOT_FOUND);
+		}
+		let operation;
+		if (isVirtual !== null && isVirtual !== undefined) {
+			operation = await this.operationRepository.findOne({
+				trx_hex,
+				op_in_trx: opInTrx,
+				virtual: isVirtual,
+			});
+		} else {
+			operation = await this.operationRepository.findOne({
+				trx_hex,
 				op_in_trx: opInTrx,
 			});
 		}

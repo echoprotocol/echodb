@@ -8,6 +8,7 @@ export interface ITransaction {
 	expiration: string;
 	extensions: unknown;
 	signatures: string[];
+	trx_hex?: string;
 }
 
 export interface ITransactionExtended {
@@ -17,4 +18,5 @@ export interface ITransactionExtended {
 	expiration: string;
 	extensions: unknown;
 	signatures: string[];
+	trx_hex?: string;
 }

@@ -8,3 +8,10 @@ export class GetTransactionsByBlockForm extends AbstractForm {
 	@rule(Joi.number())
 	block: number;
 }
+
+@ArgsType()
+export class GetTransactionsByHexForm extends AbstractForm {
+	@Field(() => String, { nullable: false })
+	@rule(Joi.string())
+	trx_hex: string;
+}

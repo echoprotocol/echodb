@@ -89,8 +89,10 @@ export default class ParserModule extends AbstractModule {
 			let txIndex = 0;
 			for (const tx of block.transactions) {
 				logger.trace(`Parsing block #${block.round} tx #${tx.ref_block_prefix}`);
+				const transactionHex = await this.echoRepository.getTransactionHex(tx);
 				const dTx = <TDoc<ITransactionExtended>>await this.transactionRepository.create({
 					...tx,
+					trx_hex: transactionHex,
 					_block: dBlock,
 				});
 
@@ -104,6 +106,7 @@ export default class ParserModule extends AbstractModule {
 						txIndex,
 						null,
 						false,
+						transactionHex,
 					);
 					txIndex += 1;
 				}

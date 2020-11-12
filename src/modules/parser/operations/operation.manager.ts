@@ -267,6 +267,7 @@ export default class OperationManager {
 		txIndex: number = 0,
 		vopIndex: number | null = null,
 		virtual?: boolean,
+		transactionHex?: string,
 	) {
 		const operation: IOperation<T> = {
 			id,
@@ -300,6 +301,9 @@ export default class OperationManager {
 			} else {
 				logger.warn(`Fee of operation ${id} wasn't taken into account`);
 			}
+		}
+		if (transactionHex) {
+			operation.trx_hex = transactionHex;
 		}
 		const dOperation = await this.operationRepository.create(operation);
 		this.redisConnection.emit(REDIS.EVENT.NEW_OPERATION, dOperation);

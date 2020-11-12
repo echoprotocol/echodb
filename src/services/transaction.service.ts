@@ -19,4 +19,7 @@ export default class TransactionService {
 		return this.transactionRepository.findByBlockMongoId(dBlock);
 	}
 
+	async getTransactionByHex(trx_hex: string) {
+		return this.transactionRepository.findByHex(trx_hex);
+	}
 }

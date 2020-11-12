@@ -15,6 +15,7 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 		trxInBlock?: number,
 		opInTrx?: number,
 		virtual?: boolean,
+		transactionHex?: string,
 	): IOperationRelation | Promise<IOperationRelation>;
 
 	public async modifyBody<Y extends ECHO.KNOWN_OPERATION>(

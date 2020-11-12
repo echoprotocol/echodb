@@ -10,6 +10,7 @@ export default AbstractModel<ITransaction>(MODEL.NAME.TRANSACTION, {
 	ref_block_num: Number,
 	ref_block_prefix: Number,
 	expiration: String,
+	trx_hex: String,
 	extensions: [extensionsSchema],
 	signatures: [String],
 });
