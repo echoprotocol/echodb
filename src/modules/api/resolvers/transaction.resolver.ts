@@ -32,8 +32,8 @@ export default class TransactionResolver extends AbstractResolver {
 
 	@Query(() => Transaction, { nullable: true })
 	@validateArgs(GetTransactionsByHexForm)
-	getTransactionByHex(@Args() { hex }: GetTransactionsByHexForm) {
-		return this.transactionService.getTransactionByHex(hex);
+	getTransactionByHex(@Args() { trx_hex }: GetTransactionsByHexForm) {
+		return this.transactionService.getTransactionByHex(trx_hex);
 	}
 	// FiedlResolver
 	@FieldResolver(() => Block)

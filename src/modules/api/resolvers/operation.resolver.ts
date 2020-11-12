@@ -131,12 +131,12 @@ export default class OperationResolver extends AbstractResolver {
 	})
 	getOperationByTrxHexAndPosition(
 		@Args() {
-			hex,
+			trx_hex,
 			opInTrx,
 			isVirtual,
 		}: GetSingleOperationByTrxHex,
 	) {
-		return this.operationService.getOperationByTrxHexAndPosition(hex, opInTrx, isVirtual);
+		return this.operationService.getOperationByTrxHexAndPosition(trx_hex, opInTrx, isVirtual);
 	}
 
 	// FieldResolver

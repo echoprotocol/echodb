@@ -80,21 +80,21 @@ export default class OperationService {
 		return operation;
 	}
 
-	async getOperationByTrxHexAndPosition(hex: string, opInTrx: number, isVirtual: boolean) {
-		const dTrx = await this.transactionRepository.findByHex(hex);
+	async getOperationByTrxHexAndPosition(trx_hex: string, opInTrx: number, isVirtual: boolean) {
+		const dTrx = await this.transactionRepository.findByHex(trx_hex);
 		if (dTrx === null) {
 			throw new ProcessingError(ERROR.TRANSACTION_NOT_FOUND);
 		}
 		let operation;
 		if (isVirtual !== null && isVirtual !== undefined) {
 			operation = await this.operationRepository.findOne({
-				trx_hex: hex,
+				trx_hex,
 				op_in_trx: opInTrx,
 				virtual: isVirtual,
 			});
 		} else {
 			operation = await this.operationRepository.findOne({
-				trx_hex: hex,
+				trx_hex,
 				op_in_trx: opInTrx,
 			});
 		}

@@ -13,5 +13,5 @@ export class GetTransactionsByBlockForm extends AbstractForm {
 export class GetTransactionsByHexForm extends AbstractForm {
 	@Field(() => String, { nullable: false })
 	@rule(Joi.string())
-	hex: string;
+	trx_hex: string;
 }

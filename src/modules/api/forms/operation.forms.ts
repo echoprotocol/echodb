@@ -106,7 +106,7 @@ export class GetSingleOperation extends AbstractForm {
 export class GetSingleOperationByTrxHex extends AbstractForm {
 	@rule(Joi.string())
 	@Field(() => String)
-	hex: string;
+	trx_hex: string;
 
 	@rule(Joi.number().integer().min(0))
 	@Field(() => Int)
