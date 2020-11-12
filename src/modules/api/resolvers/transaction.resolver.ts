@@ -30,7 +30,7 @@ export default class TransactionResolver extends AbstractResolver {
 		return this.transactionService.getTransactionsByBlock(block);
 	}
 
-	@Query(() => Transaction)
+	@Query(() => Transaction, { nullable: true })
 	@validateArgs(GetTransactionsByHexForm)
 	getTransactionByHex(@Args() { hex }: GetTransactionsByHexForm) {
 		return this.transactionService.getTransactionByHex(hex);
