@@ -1,6 +1,6 @@
 import AbstractResolver, { validateArgs, handleError } from './abstract.resolver';
 import Transaction from '../types/transaction.type';
-import { GetTransactionsByBlockForm } from '../forms/transaction.forms';
+import { GetTransactionsByBlockForm, GetTransactionsByHexForm } from '../forms/transaction.forms';
 import TransactionService, { ERROR as TRANSACTION_SERVICE_ERROR } from '../../../services/transaction.service';
 import BlockRepository from '../../../repositories/block.repository';
 import Block from '../types/block.type';
@@ -30,6 +30,11 @@ export default class TransactionResolver extends AbstractResolver {
 		return this.transactionService.getTransactionsByBlock(block);
 	}
 
+	@Query(() => Transaction)
+	@validateArgs(GetTransactionsByHexForm)
+	getTransactionByHex(@Args() { hex }: GetTransactionsByHexForm) {
+		return this.transactionService.getTransactionByHex(hex);
+	}
 	// FiedlResolver
 	@FieldResolver(() => Block)
 	block(@Root('_block') id: Transaction['_block']) {

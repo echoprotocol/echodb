@@ -13,6 +13,7 @@ export type IOperation<T extends ECHO.OPERATION_ID = ECHO.OPERATION_ID> = {
 	_relation: IOperationRelation | null;
 	op_in_trx: number;
 	trx_in_block: number;
+	trx_hex?: string;
 	vop_index: number | null;
 	internal_operations_count: number;
 };

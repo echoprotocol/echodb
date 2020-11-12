@@ -252,6 +252,7 @@ declare module 'echojs-lib' {
 			asset: { asset_id: string, amount: number | string | BigNumber },
 			bytecode: string,
 		): Promise<string>;
+		getTransactionHex(tr: object): Promise<any>;
 	}
 
 	export class Subscriber {

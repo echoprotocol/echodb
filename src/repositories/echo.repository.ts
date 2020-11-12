@@ -297,4 +297,12 @@ export default class EchoRepository {
 			throw this.ravenHelper.error(error, 'echoRepository#getCommitteeMembers');
 		}
 	}
+
+	async getTransactionHex(transaction: object): Promise<string> {
+		try {
+			return await this.echoConnection.echo.api.getTransactionHex(transaction);
+		} catch (error) {
+			throw this.ravenHelper.error(error, 'echoRepository#getTransactionHex');
+		}
+	}
 }
