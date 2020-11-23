@@ -10,6 +10,17 @@ export class GetTransactionsByBlockForm extends AbstractForm {
 }
 
 @ArgsType()
+export class GetTransactionsByBlockAndPositionForm extends AbstractForm {
+	@Field(() => Int, { nullable: false })
+	@rule(Joi.number())
+	block: number;
+
+	@Field(() => Int, { nullable: false })
+	@rule(Joi.number().integer().min(0))
+	trxInBlock: number;
+}
+
+@ArgsType()
 export class GetTransactionsByHexForm extends AbstractForm {
 	@Field(() => String, { nullable: false })
 	@rule(Joi.string())
