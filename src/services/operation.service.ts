@@ -81,7 +81,7 @@ export default class OperationService {
 	}
 
 	async getOperationByTrxHexAndPosition(trx_hex: string, opInTrx: number, isVirtual: boolean) {
-		const dTrx = await this.transactionRepository.findByHex(trx_hex);
+		const dTrx = await this.transactionRepository.findByTrxDigest(trx_hex);
 		if (dTrx === null) {
 			throw new ProcessingError(ERROR.TRANSACTION_NOT_FOUND);
 		}

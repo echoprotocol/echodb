@@ -23,6 +23,6 @@ export class GetTransactionsByBlockAndPositionForm extends AbstractForm {
 @ArgsType()
 export class GetTransactionsByHexForm extends AbstractForm {
 	@Field(() => String, { nullable: false })
-	@rule(Joi.string())
+	@rule(Joi.string().length(20))
 	trx_hex: string;
 }

@@ -301,8 +301,7 @@ export default class EchoRepository {
 	async getTransactionHex(transaction: object): Promise<string> {
 		try {
 			const transactionBytes = await this.echoConnection.echo.api.getTransactionHex(transaction);
-			const transactionDigest = hash.sha256(transactionBytes, 'hex');
-			return transactionDigest.substring(0, 20);
+			return hash.sha256(transactionBytes, 'hex');
 		} catch (error) {
 			throw this.ravenHelper.error(error, 'echoRepository#getTransactionHex');
 		}
