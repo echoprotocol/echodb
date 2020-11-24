@@ -19,6 +19,7 @@ export enum KEY {
 	TOKENS = 'tokens',
 	OPERATIONS = 'operations',
 	SORT = 'sort',
+	BLOCK = 'block',
 }
 
 export const ERROR = {
@@ -35,6 +36,7 @@ interface GetHistoryParameters {
 	[KEY.TOKENS]?: ContractId[];
 	[KEY.OPERATIONS]?: ECHO.OPERATION_ID[];
 	[KEY.SORT]?: API.SORT_DESTINATION;
+	[KEY.BLOCK]?: number;
 }
 
 interface GetSubjectHistoryParameters {
@@ -121,6 +123,10 @@ export default class OperationService {
 		if (params.contracts) otherQuery.push({ '_relation.contracts': { $in: params.contracts } });
 		if (params.assets) otherQuery.push({ '_relation.assets': { $in: params.assets } });
 		if (params.tokens) otherQuery.push({ '_relation.tokens': { $in: params.tokens } });
+		if (params.block) {
+			const block = await this.blockRepository.findByRound(params.block);
+			otherQuery.push({ block: block._id });
+		}
 
 		if (accountsQuery.length && otherQuery.length) {
 			query.$and = [{ $or: accountsQuery }, { $or: otherQuery }];

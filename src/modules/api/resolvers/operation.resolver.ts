@@ -60,12 +60,13 @@ export default class OperationResolver extends AbstractResolver {
 			tokens,
 			operations,
 			sort,
+			block,
 		}: GetOperationsHistoryForm,
 	) {
 		return this.operationService.getHistory(
 			count,
 			offset,
-			{ from, to, accounts, contracts, assets, tokens, operations, sort },
+			{ from, to, accounts, contracts, assets, tokens, operations, sort, block },
 		);
 	}
 
