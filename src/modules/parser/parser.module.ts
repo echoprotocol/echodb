@@ -22,6 +22,8 @@ import { getLogger } from 'log4js';
 import { TDoc } from 'types/mongoose';
 import { ITransactionExtended } from 'interfaces/ITransaction';
 import { BlockWithInjectedVirtualOperations } from 'interfaces/IBlock';
+import { TDocument } from 'types/mongoose/tdocument';
+import { IOperation } from 'interfaces/IOperation';
 
 const logger = getLogger('parser.module');
 
@@ -72,9 +74,10 @@ export default class ParserModule extends AbstractModule {
 				logger.trace(`Skipping no-transactions block #${block.round}`);
 			}
 
+			const dOperations: TDocument<IOperation<ECHO.OPERATION_ID>>[] = [];
 			let virtualOpIndex = 0;
 			for (const virtualOperation of block.unlinked_virtual_operations) {
-				await this.operationManager.parse(
+				const dOperation = await this.operationManager.parse(
 					virtualOperation.op,
 					virtualOperation.result,
 					null,
@@ -84,6 +87,7 @@ export default class ParserModule extends AbstractModule {
 					null,
 					true,
 				);
+				dOperations.push(dOperation);
 				virtualOpIndex += 1;
 			}
 			let txIndex = 0;
@@ -98,7 +102,7 @@ export default class ParserModule extends AbstractModule {
 				});
 
 				for (const [opIndex, operation] of tx.operations.entries()) {
-					await this.operationManager.parse(
+					const dOperation = await this.operationManager.parse(
 						operation,
 						tx.operation_results[opIndex],
 						dTx,
@@ -109,6 +113,7 @@ export default class ParserModule extends AbstractModule {
 						false,
 						transactionHex,
 					);
+					dOperations.push(dOperation);
 					txIndex += 1;
 				}
 				this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
@@ -116,6 +121,7 @@ export default class ParserModule extends AbstractModule {
 
 			await this.accountService.updateAccountsConcentrationRate();
 			const updatedBlock = await this.blockService.updateBlockAfterParsing(block);
+			await this.operationManager.updateOperationsAfterBlockSaving(dOperations);
 			this.redisConnection.emit(REDIS.EVENT.NEW_BLOCK, updatedBlock);
 		} catch (error) {
 			logger.error(`Block ${this.blockEngine.getCurrentBlockNum()}`, error);

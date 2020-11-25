@@ -90,6 +90,7 @@ import SidechainStakeBtcUpdateOperation from './sidechain.stake.btc.update.opera
 import DidCreateOperation from './did.create.operation';
 import DidUpdateOperation from './did.update.operation';
 import DidDeleteOperation from './did.delete.operation';
+import { TDocument } from 'types/mongoose/tdocument';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -307,6 +308,8 @@ export default class OperationManager {
 		}
 		const dOperation = await this.operationRepository.create(operation);
 		this.redisConnection.emit(REDIS.EVENT.NEW_OPERATION, dOperation);
+
+		return dOperation;
 	}
 
 	async parseKnownOperation<T extends ECHO.KNOWN_OPERATION>(
@@ -510,4 +513,12 @@ export default class OperationManager {
 
 		await Promise.all(updateAccountPromises);
 	}
+
+	async updateOperationsAfterBlockSaving<T extends ECHO.KNOWN_OPERATION>(
+		dOperations: TDocument<IOperation<ECHO.OPERATION_ID>>[],
+	) {
+		await Promise.all(dOperations.map(async(dOperation) =>
+			this.map[<T>dOperation.id].postParseUpdate(dOperation)));
+	}
+
 }

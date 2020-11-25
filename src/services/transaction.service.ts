@@ -19,7 +19,16 @@ export default class TransactionService {
 		return this.transactionRepository.findByBlockMongoId(dBlock);
 	}
 
+	async getTransactionsByBlockAndPosition(block: number, trxInBlock: number) {
+		const dBlock = await this.blockRepository.findByRound(block);
+		if (!dBlock) throw new ProcessingError(ERROR.BLOCK_NOT_FOUND);
+		return this.transactionRepository.findOne({
+			_block: dBlock._id,
+			trx_index: trxInBlock,
+		});
+	}
+
 	async getTransactionByHex(trx_hex: string) {
-		return this.transactionRepository.findByHex(trx_hex);
+		return this.transactionRepository.findByTrxDigest(trx_hex);
 	}
 }

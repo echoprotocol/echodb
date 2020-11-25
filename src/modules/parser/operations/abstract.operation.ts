@@ -3,6 +3,7 @@ import { relationResponse, RelationParameters  } from '../../../utils/validators
 import { IOperationRelation, IOperation } from '../../../interfaces/IOperation';
 import { TDoc } from '../../../types/mongoose';
 import { IBlock } from '../../../interfaces/IBlock';
+import { TDocument } from 'types/mongoose/tdocument';
 // FIXME: fix types
 // @ts-ignore
 export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
@@ -20,7 +21,7 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 
 	public async modifyBody<Y extends ECHO.KNOWN_OPERATION>(
 		operation: IOperation<Y>,
-		_result: Y extends ECHO.KNOWN_OPERATION ? ECHO.OPERATION_RESULT<Y> : unknown,
+		_result: ECHO.OPERATION_RESULT<Y>,
 		_dBlock: TDoc<IBlock>,
 	): Promise<Y extends ECHO.KNOWN_OPERATION ?
 	ECHO.OPERATION_PROPS<Y> : unknown> { return operation.body; }
@@ -34,6 +35,10 @@ export default abstract class AbstractOperation<T extends ECHO.OPERATION_ID>{
 		_opInTrx?: number,
 		_virtual?: boolean,
 	): IOperationRelation | Promise<IOperationRelation> { return relation; }
+
+	public async postParseUpdate(
+		_dOperation: TDocument<IOperation<ECHO.OPERATION_ID>>,
+	): Promise<void> {}
 
 	validateRelation(params: RelationParameters) {
 		return relationResponse(params);

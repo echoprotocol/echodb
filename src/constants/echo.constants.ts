@@ -11,6 +11,9 @@ export const SBTC_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.4`;
 export const COMMITTEE_GLOBAL_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.1`;
 export const CONNECT_STATUS = 'connect';
 
+export const DEPOSIT_ID_OBJECT = '27';
+export const WITHDRAW_ID_OBJECT = '28';
+
 export enum OPERATION_ID {
 	TRANSFER = 0,
 	TRANSFER_TO_ADDRESS = 1,
@@ -210,8 +213,8 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: string;
 	[OPERATION_ID.SIDECHAIN_ETH_SEND_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
-	[OPERATION_ID.SIDECHAIN_ISSUE]: unknown;
-	[OPERATION_ID.SIDECHAIN_BURN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ISSUE]: string;
+	[OPERATION_ID.SIDECHAIN_BURN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN]: unknown;
@@ -227,9 +230,9 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: string;
-	[OPERATION_ID.SIDECHAIN_STAKE_ETH_UPDATE]: unknown;
+	[OPERATION_ID.SIDECHAIN_STAKE_ETH_UPDATE]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_CREATE_STAKE_SCRIPT]: unknown;
-	[OPERATION_ID.SIDECHAIN_STAKE_BTC_UPDATE]: unknown;
+	[OPERATION_ID.SIDECHAIN_STAKE_BTC_UPDATE]: string;
 	[OPERATION_ID.BLOCK_REWARD]: unknown;
 	[OPERATION_ID.EVM_ADDRESS_REGISTER]: unknown;
 	[OPERATION_ID.DID_CREATE_OPERATION]: unknown;
@@ -827,6 +830,8 @@ interface SidechainEthIssueOperation {
 	account: AccountId;
 	deposit_id: string;
 	sidchain_eth_deposit?: string;
+	transaction_hash?: string;
+	sidechain_type?: string;
 	list_of_approvals?: string[];
 	extensions: ExtensionsArr;
 }
@@ -837,6 +842,8 @@ interface SidechainEthBurnOperation {
 	account: AccountId;
 	withdraw_id: string;
 	sidchain_eth_withdraw?: string;
+	transaction_hash?: string;
+	sidechain_type?: string;
 	list_of_approvals?: string[];
 	extensions: ExtensionsArr;
 }
@@ -1036,6 +1043,8 @@ interface SidechainStakeEthUpdateOperation {
 	current_balance: number;
 	account: string;
 	transaction_hash: string;
+	type?: string;
+	amount?: IAmount;
 	extensions: ExtensionsArr;
 }
 
@@ -1053,6 +1062,8 @@ interface SidechainStakeBtcUpdateOperation {
 	btc_tx_info: BtcTransactionDetails;
 	is_vin: boolean;
 	transaction_hash?: string;
+	type?: string;
+	amount?: IAmount;
 	extensions: ExtensionsArr;
 }
 

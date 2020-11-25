@@ -1,6 +1,10 @@
 import AbstractResolver, { validateArgs, handleError } from './abstract.resolver';
 import Transaction from '../types/transaction.type';
-import { GetTransactionsByBlockForm, GetTransactionsByHexForm } from '../forms/transaction.forms';
+import {
+	GetTransactionsByBlockForm,
+	GetTransactionsByHexForm,
+	GetTransactionsByBlockAndPositionForm,
+} from '../forms/transaction.forms';
 import TransactionService, { ERROR as TRANSACTION_SERVICE_ERROR } from '../../../services/transaction.service';
 import BlockRepository from '../../../repositories/block.repository';
 import Block from '../types/block.type';
@@ -28,6 +32,15 @@ export default class TransactionResolver extends AbstractResolver {
 	@validateArgs(GetTransactionsByBlockForm)
 	getTransactionsByBlock(@Args() { block }: GetTransactionsByBlockForm) {
 		return this.transactionService.getTransactionsByBlock(block);
+	}
+
+	@Query(() => Transaction, { nullable: true })
+	@handleError({
+		[TRANSACTION_SERVICE_ERROR.BLOCK_NOT_FOUND]: [HTTP.CODE.NOT_FOUND],
+	})
+	@validateArgs(GetTransactionsByBlockAndPositionForm)
+	getTransactionByBlockAndPosition(@Args() { block, trxInBlock }: GetTransactionsByBlockAndPositionForm) {
+		return this.transactionService.getTransactionsByBlockAndPosition(block, trxInBlock);
 	}
 
 	@Query(() => Transaction, { nullable: true })

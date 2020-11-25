@@ -15,7 +15,9 @@ export default class TransactionRepository extends AbstractRepository<ITransacti
 		return super.find({ _block: id });
 	}
 
-	findByHex(trx_hex: string) {
-		return super.findOne({ trx_hex });
+	findByTrxDigest(trxDigest: string) {
+		return super.findOne({
+			trx_hex: { $regex: `^${trxDigest}` },
+		});
 	}
 }
