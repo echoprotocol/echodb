@@ -4,7 +4,6 @@ import { IOperation } from 'interfaces/IOperation';
 import OperationRepository from 'repositories/operation.repository';
 import { TDocument } from 'types/mongoose/tdocument';
 type OP_ID = ECHO.OPERATION_ID.SIDECHAIN_STAKE_BTC_UPDATE;
-type RELATED_OP_TYPE = TDocument<IOperation<ECHO.OPERATION_ID.SIDECHAIN_ISSUE | ECHO.OPERATION_ID.SIDECHAIN_BURN>>;
 
 export default class SidechainStakeBtcUpdateOperation extends AbstractOperation<OP_ID> {
 	id = ECHO.OPERATION_ID.SIDECHAIN_STAKE_BTC_UPDATE;
@@ -15,50 +14,13 @@ export default class SidechainStakeBtcUpdateOperation extends AbstractOperation<
 		super();
 	}
 
-	private async updateRelatedSidachainOpHash(relatedOperation: RELATED_OP_TYPE, hash: string): Promise<void> {
-		if (!relatedOperation) {
-			return;
-		}
-		const { body } = <RELATED_OP_TYPE>relatedOperation;
-		if (!relatedOperation.body.transaction_hash) {
-			body.transaction_hash = hash;
-		}
-		if (!relatedOperation.body.sidechain_type) {
-			body.sidechain_type = 'btc';
-		}
-		await this.operationRepository.findByIdAndUpdate(relatedOperation._id, {
-			$set: { body },
-		});
-	}
-
-	private getOpType(resultObjectType: string): [number, string] {
-		let type = '';
-		let relatedOpId = 0;
-		switch (resultObjectType) {
-			case ECHO.DEPOSIT_ID_OBJECT: {
-				relatedOpId = ECHO.OPERATION_ID.SIDECHAIN_ISSUE;
-				type = 'Deposit';
-				break;
-			}
-			case ECHO.WITHDRAW_ID_OBJECT: {
-				relatedOpId = ECHO.OPERATION_ID.SIDECHAIN_BURN;
-				type = 'Withdraw';
-				break;
-			}
-			default: {
-				type = '';
-			}
-		}
-		return [relatedOpId, type];
-	}
-
 	async postParseUpdate<Y extends ECHO.KNOWN_OPERATION>(dOperation: TDocument<IOperation<Y>>): Promise<void> {
 		const { body, result } = <IOperation<OP_ID>>dOperation;
 
 		const resultObjectType = result.split('.')[1];
-		const [relatedOpId, type] = this.getOpType(resultObjectType);
+		const [relatedOpId, type] = this.operationRepository.getOpType(resultObjectType);
 		const relatedOperation = await this.operationRepository.getRelatedSidechainOp(result, relatedOpId);
-		await this.updateRelatedSidachainOpHash(relatedOperation, body.transaction_hash);
+		await this.operationRepository.updateRelatedSidachainOpHash(relatedOperation, body.transaction_hash, 'btc');
 		if (!body.type) {
 			body.type = type;
 			await this.operationRepository.findByIdAndUpdate(dOperation._id, {
