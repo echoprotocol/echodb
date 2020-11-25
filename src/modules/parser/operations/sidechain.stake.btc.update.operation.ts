@@ -15,12 +15,6 @@ export default class SidechainStakeBtcUpdateOperation extends AbstractOperation<
 		super();
 	}
 
-	private async getRelatedSidechainOp(objId: string, relatedOpId: number): Promise<RELATED_OP_TYPE> {
-		const relatedOperation = <RELATED_OP_TYPE>
-			(await this.operationRepository.findOne({ id: relatedOpId, result: objId }));
-		return relatedOperation;
-	}
-
 	private async updateRelatedSidachainOpHash(relatedOperation: RELATED_OP_TYPE, hash: string): Promise<void> {
 		if (!relatedOperation) {
 			return;
@@ -63,7 +57,7 @@ export default class SidechainStakeBtcUpdateOperation extends AbstractOperation<
 
 		const resultObjectType = result.split('.')[1];
 		const [relatedOpId, type] = this.getOpType(resultObjectType);
-		const relatedOperation = await this.getRelatedSidechainOp(result, relatedOpId);
+		const relatedOperation = await this.operationRepository.getRelatedSidechainOp(result, relatedOpId);
 		await this.updateRelatedSidachainOpHash(relatedOperation, body.transaction_hash);
 		if (!body.type) {
 			body.type = type;

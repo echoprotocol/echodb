@@ -31,12 +31,6 @@ export default class SidechainStakeEthUpdateOperation extends AbstractOperation<
 		});
 	}
 
-	private async getRelatedSidechainOp(objId: string, relatedOpId: number): Promise<RELATED_OP_TYPE> {
-		const relatedOperation = <RELATED_OP_TYPE>
-			(await this.operationRepository.findOne({ id: relatedOpId, result: objId }));
-		return relatedOperation;
-	}
-
 	private getOpType(resultObjectType: string): [number, string] {
 		let type = '';
 		let relatedOpId = 0;
@@ -61,7 +55,7 @@ export default class SidechainStakeEthUpdateOperation extends AbstractOperation<
 		if (result.split) {
 			const resultObjectType = result.split('.')[1];
 			const [relatedOpId, type] = this.getOpType(resultObjectType);
-			const relatedOperation = await this.getRelatedSidechainOp(result, relatedOpId);
+			const relatedOperation = await this.operationRepository.getRelatedSidechainOp(result, relatedOpId);
 			await this.updateRelatedSidachainOpHash(relatedOperation, body.transaction_hash);
 
 			if (!body.type) {
