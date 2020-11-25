@@ -37,15 +37,19 @@ export class QueryOptions extends PaginationForm {
 	@rule(Joi.string().valid(API.SORT_DESTINATION.ASC, API.SORT_DESTINATION.DESC))
 	@Field(() => API.SORT_DESTINATION, { defaultValue: API.SORT_DESTINATION.DESC })
 	sort: API.SORT_DESTINATION;
+
+	@rule(Joi.number().positive())
+	@Field(() => Int, { nullable: true })
+	block: number;
 }
 @ArgsType()
 export class GetOperationsHistoryForm extends QueryOptions {
 	@rule(stringsArraySchema)
-	@Field(() => [AccountId], { nullable: true })
+	@Field(() => [AccountOrContractOrAssetIdTypeOrProposal], { nullable: true })
 	from: string[];
 
 	@rule(stringsArraySchema)
-	@Field(() => [AccountId], { nullable: true })
+	@Field(() => [AccountOrContractOrAssetIdTypeOrProposal], { nullable: true })
 	to: string[];
 }
 
