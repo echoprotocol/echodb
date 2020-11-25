@@ -51,7 +51,7 @@
 		"raven": "^2.6.4",
 		"redis": "^2.8.0",
 		"reflect-metadata": "^0.1.13",
-		"type-graphql": "^0.17.0"
+		"type-graphql": "^0.17.6"
 	},
 	"devDependencies": {
 		"@babel/runtime": "^7.3.1",
