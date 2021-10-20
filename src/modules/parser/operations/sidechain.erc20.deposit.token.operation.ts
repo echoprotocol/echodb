@@ -31,7 +31,7 @@ export default class SidechainErc20DepositTokenOperation extends AbstractOperati
 
 		await this.balanceRepository.updateOrCreateByAccountAndContract(account._id, contract._id, body.value);
 		return this.validateRelation({
-			from: [body.committee_member_id],
+			from: [],
 			to: [body.account],
 			assets: [body.fee.asset_id],
 		});

@@ -75,7 +75,7 @@ export default class ContractInternalCallOperation extends AbstractOperation<OP_
 			from: [body.caller],
 			to: body.method === '' ? [body.callee] : [],
 			assets: [body.value.asset_id],
-			contracts: body.method === '' ? [] : [body.callee],
+			contracts: body.method === '' ? [] : [body.caller],
 		});
 	}
 }

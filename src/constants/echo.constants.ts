@@ -55,39 +55,44 @@ export enum OPERATION_ID {
 	CONTRACT_UPDATE = 37,
 	CONTRACT_FUND_POOL = 38,
 	CONTRACT_WHITELIST = 39,
-	SIDECHAIN_ETH_CREATE_ADDRESS = 40,
-	SIDECHAIN_ETH_APPROVE_ADDRESS = 41,
-	SIDECHAIN_ETH_DEPOSIT = 42,
-	SIDECHAIN_ETH_SEND_DEPOSIT = 43,
-	SIDECHAIN_ETH_WITHDRAW = 44,
-	SIDECHAIN_ETH_SEND_WITHDRAW = 45,
-	SIDECHAIN_ETH_APPROVE_WITHDRAW = 46,
-	SIDECHAIN_ETH_UPDATE_CONTRACT_ADDRESS = 47,
-	SIDECHAIN_ISSUE = 48, // VIRTUAL
-	SIDECHAIN_BURN = 49, // VIRTUAL
-	SIDECHAIN_ERC20_REGISTER_TOKEN = 50,
-	SIDECHAIN_ERC20_DEPOSIT_TOKEN = 51,
-	SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN = 52,
-	SIDECHAIN_ERC20_WITHDRAW_TOKEN = 53,
-	SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN = 54,
-	SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW = 55,
-	SIDECHAIN_ERC20_ISSUE = 56, // VIRTUAL
-	SIDECHAIN_ERC20_BURN = 57, // VIRTUAL
-	SIDECHAIN_BTC_CREATE_ADDRESS = 58,
-	SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT = 59,
-	SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT = 60,
-	SIDECHAIN_BTC_DEPOSIT = 61,
-	SIDECHAIN_BTC_WITHDRAW = 62,
-	SIDECHAIN_BTC_AGGREGATE = 63,
-	SIDECHAIN_BTC_APPROVE_AGGREGATE = 64,
-	SIDECHAIN_STAKE_ETH_UPDATE = 65,
-	SIDECHAIN_BTC_CREATE_STAKE_SCRIPT = 66,
-	SIDECHAIN_STAKE_BTC_UPDATE = 67,
-	BLOCK_REWARD = 68, // VIRTUAL
-	EVM_ADDRESS_REGISTER = 69,
-	DID_CREATE_OPERATION = 70,
-	DID_UPDATE_OPERATION = 71,
-	DID_DELETE_OPERATION = 72,
+	SIDECHAIN_ISSUE = 40, // VIRTUAL
+	SIDECHAIN_BURN = 41, // VIRTUAL
+	SIDECHAIN_ETH_SPV_CREATE = 42,
+	SIDECHAIN_ETH_SPV_ADD_MISSED_TX_RECEIPT = 43,
+	SIDECHAIN_ETH_CREATE_ADDRESS = 44,
+	SIDECHAIN_ETH_APPROVE_ADDRESS = 45,
+	SIDECHAIN_ETH_DEPOSIT = 46,
+	SIDECHAIN_ETH_SEND_DEPOSIT = 47,
+	SIDECHAIN_ETH_WITHDRAW = 48,
+	SIDECHAIN_ETH_SEND_WITHDRAW = 49,
+	SIDECHAIN_ETH_APPROVE_WITHDRAW = 50,
+	SIDECHAIN_ETH_UPDATE_CONTRACT_ADDRESS = 51,
+	SIDECHAIN_ERC20_REGISTER_CONTRACT_OPERATION = 52,
+	SIDECHAIN_ERC20_REGISTER_TOKEN = 53,
+	SIDECHAIN_ERC20_DEPOSIT_TOKEN = 54,
+	SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN = 55,
+	SIDECHAIN_ERC20_WITHDRAW_TOKEN = 56,
+	SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN = 57,
+	SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW = 58,
+	SIDECHAIN_ERC20_ISSUE = 59, // VIRTUAL
+	SIDECHAIN_ERC20_BURN = 60, // VIRTUAL
+	SIDECHAIN_ERC20_TRANSFER_ASSET = 61,
+	SIDECHAIN_BTC_CREATE_ADDRESS = 62,
+	SIDECHAIN_BTC_DEPOSIT = 63,
+	SIDECHAIN_BTC_WITHDRAW = 64,
+	SIDECHAIN_BTC_AGGREGATE = 65,
+	SIDECHAIN_BTC_APPROVE_AGGREGATE = 66,
+	SIDECHAIN_BTC_SPV_CREATE = 67,
+	SIDECHAIN_BTC_SPV_ADD_MISSED_TX_RECEIPT = 68,
+	SIDECHAIN_SPV_EXCHANGE_EXCESS_FUNDS = 69,
+	SIDECHAIN_STAKE_ETH_UPDATE = 70,
+	SIDECHAIN_BTC_CREATE_STAKE_SCRIPT = 71,
+	SIDECHAIN_STAKE_BTC_UPDATE = 72,
+	BLOCK_REWARD = 73, // VIRTUAL
+	EVM_ADDRESS_REGISTER = 74,
+	DID_CREATE_OPERATION = 75,
+	DID_UPDATE_OPERATION = 76,
+	DID_DELETE_OPERATION = 77,
 }
 
 export type Operations = {
@@ -108,6 +113,18 @@ export type Operations = {
 	[OPERATION_ID.ASSET_PUBLISH_FEED]: AssetPublishFeed;
 	[OPERATION_ID.ASSET_CLAIM_FEES]: AssetClaimFeesOperation;
 	[OPERATION_ID.PROPOSAL_CREATE]: ProposalCreateOperation;
+	[OPERATION_ID.PROPOSAL_UPDATE]: ProposalUpdateOperation;
+	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
+	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
+	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: CommitteeMemberUpdateGlobalParametersProps
+	[OPERATION_ID.COMMITTEE_MEMBER_ACTIVATE]: CommitteeMemberActivate;
+	[OPERATION_ID.COMMITTEE_MEMBER_DEACTIVATE]: CommitteeMemberDeactivate;
+	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_DEPOSIT]: CommitteeFrozenBalanceDeposit;
+	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_WITHDRAW]: CommitteeFrozenBalanceWithdraw;
+	[OPERATION_ID.VESTING_BALANCE_CREATE]: VestingBalanceCreate;
+	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: VestingBalanceWithdraw;
+	[OPERATION_ID.BALANCE_CLAIM]: BalanceClaimOperation;
 	[OPERATION_ID.BALANCE_FREEZE]: BalanceFreezeOperation;
 	[OPERATION_ID.BALANCE_UNFREEZE]: BalanceUnfreezeOperation;
 	[OPERATION_ID.REQUEST_BALANCE_UNFREEZE]: RequestBalanceUnfreezeOperation;
@@ -116,18 +133,13 @@ export type Operations = {
 	[OPERATION_ID.CONTRACT_INTERNAL_CREATE]: ContractInternalCreate;
 	[OPERATION_ID.CONTRACT_INTERNAL_CALL]: ContractInternalCall;
 	[OPERATION_ID.CONTRACT_SELFDESTRUCT]: ContractSelfdestruct;
-	[OPERATION_ID.VESTING_BALANCE_CREATE]: VestingBalanceCreate;
-	[OPERATION_ID.VESTING_BALANCE_WITHDRAW]: VestingBalanceWithdraw;
-	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE_GLOBAL_PARAMETERS]: CommitteeMemberUpdateGlobalParametersProps
-	[OPERATION_ID.COMMITTEE_MEMBER_ACTIVATE]: CommitteeMemberActivate;
-	[OPERATION_ID.COMMITTEE_MEMBER_DEACTIVATE]: CommitteeMemberDeactivate;
-	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_DEPOSIT]: CommitteeFrozenBalanceDeposit;
-	[OPERATION_ID.COMMITTEE_FROZEN_BALANCE_WITHDRAW]: CommitteeFrozenBalanceWithdraw;
-	[OPERATION_ID.BALANCE_CLAIM]: BalanceClaimOperation;
-	[OPERATION_ID.PROPOSAL_UPDATE]: ProposalUpdateOperation;
-	[OPERATION_ID.PROPOSAL_DELETE]: ProposalDeleteOperation;
-	[OPERATION_ID.COMMITTEE_MEMBER_CREATE]: CommitteeMemberCreateOperation;
-	[OPERATION_ID.COMMITTEE_MEMBER_UPDATE]: CommitteMemberUpdateOperation;
+	[OPERATION_ID.CONTRACT_UPDATE]: ContractUpdateOperation;
+	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
+	[OPERATION_ID.CONTRACT_WHITELIST]: ContractWhitelistOperation;
+	[OPERATION_ID.SIDECHAIN_ISSUE]: SidechainEthIssueOperation;
+	[OPERATION_ID.SIDECHAIN_BURN]: SidechainEthBurnOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_SPV_CREATE]: SidechainEthSpvCreate;
+	[OPERATION_ID.SIDECHAIN_ETH_SPV_ADD_MISSED_TX_RECEIPT]: SidechainEthSpvAddMissedTxReceipt;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: SidechainEthCreateAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: SidechainEthApproveAddressOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: SidechainEthDepositOperation;
@@ -135,10 +147,8 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: SidechainEthWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ETH_SEND_WITHDRAW]: SidechainEthSendWithdraw;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: SidechainEthApproveWithdraw;
-	[OPERATION_ID.CONTRACT_FUND_POOL]: ContractFundPoolOperation;
-	[OPERATION_ID.CONTRACT_WHITELIST]: ContractWhitelistOperation;
-	[OPERATION_ID.SIDECHAIN_ISSUE]: SidechainEthIssueOperation;
-	[OPERATION_ID.SIDECHAIN_BURN]: SidechainEthBurnOperation;
+	[OPERATION_ID.SIDECHAIN_ETH_UPDATE_CONTRACT_ADDRESS]: SidechainEthUpdateContractAddress;
+	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_CONTRACT_OPERATION]: SidechainErc20RegisterContractOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: SidechainErc20RegisterTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: SidechainErc20DepositTokenOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN]: SidechainErc20SendDepositTokenOperation;
@@ -147,17 +157,18 @@ export type Operations = {
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: SidechainErc20ApproveTokenWithdrawOperation;
 	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: SidechainErc20Issue;
 	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: SidechainErc20Burn;
+	[OPERATION_ID.SIDECHAIN_ERC20_TRANSFER_ASSET]: SidechainErc20TransferAsset;
 	[OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS]: SidechainBtcCreateAddress;
-	[OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT]: SidechainBtcCreateIntermediateDeposit;
-	[OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT]: SidechainBtcIntermediateDeposit;
 	[OPERATION_ID.SIDECHAIN_BTC_DEPOSIT]: SidechainBtcDeposit;
 	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: SidechainBtcWithdraw;
 	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: SidechainBtcAggregate;
 	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: SidechainBtcApproveAggregate;
+	[OPERATION_ID.SIDECHAIN_BTC_SPV_CREATE]: SidechainBtcSpvCreate;
+	[OPERATION_ID.SIDECHAIN_BTC_SPV_ADD_MISSED_TX_RECEIPT]: SidechainBtcSpvAddMissedTxReceipt;
+	[OPERATION_ID.SIDECHAIN_SPV_EXCHANGE_EXCESS_FUNDS]: SidechainSpvExchangeExcessFunds;
 	[OPERATION_ID.SIDECHAIN_STAKE_ETH_UPDATE]: SidechainStakeEthUpdateOperation;
 	[OPERATION_ID.SIDECHAIN_BTC_CREATE_STAKE_SCRIPT]: SidechainBtcCreateStakeScriptOperation;
 	[OPERATION_ID.SIDECHAIN_STAKE_BTC_UPDATE]: SidechainStakeBtcUpdateOperation;
-	[OPERATION_ID.CONTRACT_UPDATE]: ContractUpdateOperation;
 	[OPERATION_ID.BLOCK_REWARD]: BlockRewardOperation;
 	[OPERATION_ID.EVM_ADDRESS_REGISTER]: EVMAddressRegister;
 	[OPERATION_ID.DID_CREATE_OPERATION]: DidCreate;
@@ -206,6 +217,10 @@ export type OperationResult = {
 	[OPERATION_ID.CONTRACT_UPDATE]: unknown;
 	[OPERATION_ID.CONTRACT_FUND_POOL]: unknown;
 	[OPERATION_ID.CONTRACT_WHITELIST]: unknown;
+	[OPERATION_ID.SIDECHAIN_ISSUE]: string;
+	[OPERATION_ID.SIDECHAIN_BURN]: string;
+	[OPERATION_ID.SIDECHAIN_ETH_SPV_CREATE]: unknown;
+	[OPERATION_ID.SIDECHAIN_ETH_SPV_ADD_MISSED_TX_RECEIPT]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_CREATE_ADDRESS]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS]: string;
 	[OPERATION_ID.SIDECHAIN_ETH_DEPOSIT]: unknown;
@@ -213,8 +228,8 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ETH_WITHDRAW]: string;
 	[OPERATION_ID.SIDECHAIN_ETH_SEND_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW]: unknown;
-	[OPERATION_ID.SIDECHAIN_ISSUE]: string;
-	[OPERATION_ID.SIDECHAIN_BURN]: string;
+	[OPERATION_ID.SIDECHAIN_ETH_UPDATE_CONTRACT_ADDRESS]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_CONTRACT_OPERATION]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_REGISTER_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN]: string;
 	[OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN]: unknown;
@@ -223,13 +238,15 @@ export type OperationResult = {
 	[OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_ISSUE]: unknown;
 	[OPERATION_ID.SIDECHAIN_ERC20_BURN]: unknown;
+	[OPERATION_ID.SIDECHAIN_ERC20_TRANSFER_ASSET]: unknown;
 	[OPERATION_ID.SIDECHAIN_BTC_CREATE_ADDRESS]: string;
-	[OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT]: string;
-	[OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_BTC_DEPOSIT]: unknown;
 	[OPERATION_ID.SIDECHAIN_BTC_WITHDRAW]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_AGGREGATE]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE]: string;
+	[OPERATION_ID.SIDECHAIN_BTC_SPV_CREATE]: unknown;
+	[OPERATION_ID.SIDECHAIN_BTC_SPV_ADD_MISSED_TX_RECEIPT]: unknown;
+	[OPERATION_ID.SIDECHAIN_SPV_EXCHANGE_EXCESS_FUNDS]: unknown;
 	[OPERATION_ID.SIDECHAIN_STAKE_ETH_UPDATE]: string;
 	[OPERATION_ID.SIDECHAIN_BTC_CREATE_STAKE_SCRIPT]: unknown;
 	[OPERATION_ID.SIDECHAIN_STAKE_BTC_UPDATE]: string;
@@ -755,8 +772,6 @@ interface SidechainEthCreateAddressOperation {
 
 interface SidechainEthApproveAddressOperation {
 	fee: IAmount;
-	committee_member_id: AccountId;
-	malicious_committeemen: AccountId[];
 	account: AccountId;
 	eth_addr: string;
 	transaction_hash: string;
@@ -765,7 +780,6 @@ interface SidechainEthApproveAddressOperation {
 
 interface SidechainEthDepositOperation {
 	fee: IAmount;
-	committee_member_id: AccountId;
 	deposit_id: number;
 	account: AccountId;
 	value: number;
@@ -792,7 +806,6 @@ interface SidechainEthWithdrawOperation {
 
 interface SidechainEthApproveWithdraw {
 	fee: IAmount;
-	committee_member_id: AccountId;
 	withdraw_id: number;
 	extensions: ExtensionsArr;
 	transaction_hash: string;
@@ -866,8 +879,6 @@ interface ERC20TokenInfo {
 }
 interface SidechainErc20DepositTokenOperation {
 	fee: IAmount;
-	committee_member_id: AccountId;
-	malicious_committeemen: AccountId[];
 	account: AccountId;
 	erc20_token_addr: string;
 	value: string;
@@ -903,17 +914,8 @@ interface SidechainErc20SendWithdrawTokenOperation {
 	extensions: ExtensionsArr;
 }
 
-interface SidechainErc20SendWithdrawTokenOperation {
-	fee: IAmount;
-	committee_member_id: AccountId;
-	withdraw_id: string;
-	sidchain_erc_20_withdraw_token?: string;
-	extensions: ExtensionsArr;
-}
-
 interface SidechainErc20ApproveTokenWithdrawOperation {
 	fee: IAmount;
-	committee_member_id: AccountId;
 	withdraw_id: number;
 	sidchain_erc_20_withdraw_token?: string;
 	extensions: ExtensionsArr;
@@ -947,7 +949,6 @@ interface SidechainErc20Burn {
 interface SidechainBtcCreateAddress {
 	fee: IAmount;
 	account: string;
-	backup_address: string;
 	received_deposit_address?: string;
 }
 
@@ -960,38 +961,14 @@ interface BtcTransactionDetails {
 	};
 }
 
-interface SidechainBtcCreateIntermediateDeposit {
+interface SidechainBtcDeposit {
 	fee: IAmount;
-	committee_member_id: string;
 	account: string;
 	btc_address_id: string;
 	tx_info: BtcTransactionDetails;
 	extensions: ExtensionsArr;
-	committee_member?: Committee;
-	deposit_address?: string;
 	transaction_hash?: string;
-}
-
-interface SidechainBtcIntermediateDeposit {
-	fee: IAmount;
-	committee_member_id: string;
-	intermediate_address_id: string;
-	signature: string;
-	extensions: ExtensionsArr;
-	committee_member?: Committee;
-	intermediate_address?: string;
-}
-
-interface SidechainBtcDeposit {
-	fee: IAmount;
-	committee_member_id: string;
-	account: string;
-	intermediate_deposit_id: string;
-	tx_info: BtcTransactionDetails;
-	extensions: ExtensionsArr;
 	amount?: number;
-	committee_member?: Committee;
-	transaction_hash?: string;
 }
 
 interface SidechainBtcWithdraw {
@@ -1038,7 +1015,6 @@ interface ContractUpdateOperation {
 
 interface SidechainStakeEthUpdateOperation {
 	fee: IAmount;
-	committee_member_id: string;
 	asset_id: string;
 	current_balance: number;
 	account: string;
@@ -1105,4 +1081,142 @@ interface DidDelete {
 	fee: IAmount;
 	registrar: string;
 	did_identifier: string;
+}
+
+interface IEthSpvProof {
+	receipt: {
+		type: number;
+		transaction_hash: string;
+		transaction_index: number;
+		cumulative_gas_used: number;
+		logs: {
+			log_index: string;
+			address: string;
+			data: string;
+			topics: string[];
+		}[];
+		logs_bloom: string;
+		status?: number;
+		root?: string;
+	};
+	path_data: [(string | undefined)[], string | undefined][];
+}
+interface SidechainEthSpvCreate {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	header: {
+		parent_hash: string;
+		sha3_uncles: string;
+		miner: string;
+		state_root: string;
+		transactions_root: string;
+		receipts_root: string;
+		logs_bloom: string;
+		difficulty: number;
+		number: number;
+		gas_limit: number;
+		gas_used: number;
+		timestamp: number;
+		extra_data: string;
+		mix_hash: string;
+		nonce: number;
+		baseFeePerGas?: number;
+	};
+	proofs: IEthSpvProof[];
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthSpvAddMissedTxReceipt {
+	fee: IAmount;
+	reporter: AccountId;
+	block_hash: string;
+	proofs: IEthSpvProof[];
+	extensions: ExtensionsArr;
+}
+
+interface SidechainEthUpdateContractAddress {
+	fee: IAmount;
+	new_addr: string;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20RegisterContractOperation {
+	fee: IAmount;
+	code: string;
+	args: string;
+	address: string;
+	name: string;
+	symbol: string;
+	decimals: number;
+	extensions: ExtensionsArr;
+}
+
+interface SidechainErc20TransferAsset {
+	fee: IAmount;
+	account: AccountId;
+	to: string;
+	value: IAmount;
+	extensions: ExtensionsArr;
+}
+
+interface IBtcSpvProof {
+	tx: {
+		version: number;
+		marker: number;
+		flag: number;
+		inputs: {
+			outpoint: {
+				tx_id: string;
+				index: number;
+				amount: number;
+			};
+			unlock_script: number[];
+			witness: number[][];
+			sequence: number;
+		}[];
+		outputs: {
+			amount: number;
+			index: number;
+			lock_script: number[];
+			p2sh_p2wsh: string
+		}[];
+		nlocktime: number;
+	};
+	merkle_path: {
+		leafs: {
+			leaf: string;
+			is_left: boolean;
+		}[];
+	};
+}
+
+interface SidechainBtcSpvCreate {
+	fee: IAmount;
+	committee_member_id: AccountId;
+	header: {
+		version: number;
+		prev_block_hash: string;
+		merkle_root: string;
+		timestamp: number;
+		bits: number;
+		nonce: number;
+		height: number;
+	};
+	proofs: IBtcSpvProof[];
+	extensions: ExtensionsArr;
+}
+
+interface SidechainBtcSpvAddMissedTxReceipt {
+	fee: IAmount;
+	reporter: AccountId;
+	block_hash: string;
+	proofs: IBtcSpvProof[];
+	extensions: ExtensionsArr;
+}
+
+interface SidechainSpvExchangeExcessFunds {
+	fee: IAmount;
+	account: AccountId;
+	amount: IAmount;
+	extensions: ExtensionsArr;
 }

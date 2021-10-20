@@ -75,8 +75,6 @@ import EchoRepository from '../../../repositories/echo.repository';
 import ERC20TokenRepository from '../../../repositories/erc20-token.repository';
 import EVMAddressRegister from './evm.address.register.operation';
 import { IERC20TokenObject } from 'echojs-lib/types/interfaces/objects';
-import SidechainBtcCreateIntermediateDepositOperation from './sidechain.btc.create.intermediate.deposit.operation';
-import SidechainBtcIntermediateDepositOperation from './sidechain.btc.intermediate.deposit.operation';
 import SidechainBtcDepositOperation from './sidechain.btc.deposit.operation';
 import SidechainBtcAggregateOperation from './sidechain.btc.aggregate.operation';
 import SidechainBtcApproveAggregateOperation from './sidechain.btc.approve.aggregate.operation';
@@ -91,6 +89,14 @@ import DidCreateOperation from './did.create.operation';
 import DidUpdateOperation from './did.update.operation';
 import DidDeleteOperation from './did.delete.operation';
 import { TDocument } from 'types/mongoose/tdocument';
+import SidechainBtcSpvCreateOperation from './sidechain.btc.spv.create.operation';
+import SidechainBtcSpvAddMissedTxReceiptOperation from './sidechain.btc.spv.add.missed.tx.receipt.operation';
+import SidechainErc20RegisterContractOperation from './sidechain.erc20.register.contract.operation';
+import SidechainErc20TransferAssetOperation from './sidechain.erc20.transfer.asset.operation';
+import SidechainEthSpvCreateOperation from './sidechain.eth.spv.create.operation';
+import SidechainEthSpvAddMissedTxReceiptOperation from './sidechain.eth.spv.add.missed.tx.receipt.operation';
+import SidechainEthUpdateContractAddressOperation from './sidechain.eth.update.contract.address.operation';
+import SidechainSpvExchangeExcessFunds from './sidechain.spv.exchange.excess.funds';
 
 type OperationsMap = { [x in ECHO.OPERATION_ID]?: AbstractOperation<x> };
 
@@ -142,18 +148,22 @@ export default class OperationManager {
 		committeeMemberUpdateOperation: CommitteeMemberUpdateOperation,
 		accountAddressCreateOperation: AccountAddressCreateOperation,
 		transferToAddressOperation: TransferToAddressOperation,
+	 	sidechainSpvExchangeExcessFunds: SidechainSpvExchangeExcessFunds,
 		sidechainBtcCreateAddressOperation: SidechainBtcCreateAddressOperation,
 		sidechainBtcDepositOperation: SidechainBtcDepositOperation,
-		sidechainBtcIntermediateDepositOperation: SidechainBtcIntermediateDepositOperation,
-		sidechainBtcCreateIntermediateDepositOperation: SidechainBtcCreateIntermediateDepositOperation,
 		sidechainBtcAggregateOperation: SidechainBtcAggregateOperation,
 		sidechainBtcApproveAggregateOperation: SidechainBtcApproveAggregateOperation,
+		sidechainBtcSpvCreateOperation: SidechainBtcSpvCreateOperation,
+		sidechainBtcSpvAddMissedTxReceiptOperation: SidechainBtcSpvAddMissedTxReceiptOperation,
 		sidechainEthCreateAddressOperation: SidechainEthCreateAddressOperation,
 		sidechainEthDepositOperation: SidechainEthDepositOperation,
 		sidechainEthSendDepositOperation: SidechainEthSendDepositOperation,
 		sidechainEthWithdrawOperation: SidechainEthWithdrawOperation,
 		sidechainEthApproveAddressOperation: SidechainEthApproveAddressOperation,
 		sidechainEthApproveWithdrawOperation: SidechainEthApproveWithdrawOperation,
+		sidechainEthSpvCreateOperation: SidechainEthSpvCreateOperation,
+		sidechainEthSpvAddMissedTxReceiptOperation: SidechainEthSpvAddMissedTxReceiptOperation,
+		sidechainEthUpdateContractAddressOperation: SidechainEthUpdateContractAddressOperation,
 		contractFundPoolOperation: ContractFundPoolOperation,
 		blockRewardOperation: BlockRewardOperation,
 		contractWhitelistOperation: ContractWhitelistOperation,
@@ -168,6 +178,8 @@ export default class OperationManager {
 		sidechainErc20ApproveTokenWithdrawOperation: SidechainErc20ApproveTokenWithdrawOperation,
 		sidechainErc20BurnOperation: SidechainErc20BurnOperation,
 		sidechainErc20IssueOperation: SidechainErc20IssueOperation,
+		sidechainErc20RegisterContractOperation: SidechainErc20RegisterContractOperation,
+		sidechainErc20TransferAssetOperation: SidechainErc20TransferAssetOperation,
 		contractUpdateOperation: ContractUpdateOperation,
 		contractInternalCreateOperation: ContractInternalCreateOperaiton,
 		contractInternalCallOperation: ContractInternalCallOperation,
@@ -219,17 +231,22 @@ export default class OperationManager {
 			sidechainEthWithdrawOperation,
 			sidechainEthApproveAddressOperation,
 			sidechainEthApproveWithdrawOperation,
+			sidechainEthSpvCreateOperation,
+			sidechainEthSpvAddMissedTxReceiptOperation,
+			sidechainEthUpdateContractAddressOperation,
 			contractFundPoolOperation,
 			contractSelfdestructOperation,
 			sidechainBtcWithdrawOperation,
 			blockRewardOperation,
 			contractWhitelistOperation,
+			sidechainSpvExchangeExcessFunds,
 			sidechainBtcCreateAddressOperation,
 			sidechainBtcAggregateOperation,
 			sidechainBtcDepositOperation,
-			sidechainBtcIntermediateDepositOperation,
-			sidechainBtcCreateIntermediateDepositOperation,
 			sidechainBtcApproveAggregateOperation,
+			sidechainBtcSpvCreateOperation,
+			sidechainBtcSpvAddMissedTxReceiptOperation,
+			sidechainErc20TransferAssetOperation,
 			sidechainEthIssueOperation,
 			sidechainEthBurnOperation,
 			sidechainErc20RegisterTokenOperation,
@@ -240,6 +257,7 @@ export default class OperationManager {
 			sidechainErc20WithdrawTokenOperation,
 			sidechainErc20ApproveTokenWithdrawOperation,
 			sidechainErc20BurnOperation,
+			sidechainErc20RegisterContractOperation,
 			sidechainErc20IssueOperation,
 			contractUpdateOperation,
 			contractInternalCreateOperation,
@@ -446,35 +464,23 @@ export default class OperationManager {
 	): Promise<void> {
 		let accountIds: string[] = [];
 		switch (id) {
-			case ECHO.OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS:
-			case ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT:
+			case ECHO.OPERATION_ID.SIDECHAIN_BTC_SPV_CREATE:
 			case ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT:
 			case ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_WITHDRAW:
-			case ECHO.OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW:
-			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN:
 			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN:
 			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN:
-			case ECHO.OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW:
-			case ECHO.OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT:
-			case ECHO.OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT:
-			case ECHO.OPERATION_ID.SIDECHAIN_BTC_DEPOSIT:
 			case ECHO.OPERATION_ID.SIDECHAIN_BTC_AGGREGATE:
-			case ECHO.OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE: {
+			case ECHO.OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE:
+			case ECHO.OPERATION_ID.SIDECHAIN_BTC_SPV_CREATE: {
 				const accountId = (body as
-					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_APPROVE_ADDRESS> |
-					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_DEPOSIT> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_SPV_CREATE> |
 					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_DEPOSIT> |
 					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_SEND_WITHDRAW> |
-					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ETH_APPROVE_WITHDRAW> |
-					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_DEPOSIT_TOKEN> |
 					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_SEND_DEPOSIT_TOKEN> |
 					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_SEND_WITHDRAW_TOKEN> |
-					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_ERC20_APPROVE_TOKEN_WITHDRAW> |
-					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_CREATE_INTERMEDIATE_DEPOSIT> |
-					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_INTERMEDIATE_DEPOSIT> |
-					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_DEPOSIT> |
 					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_AGGREGATE> |
-					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE>
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_APPROVE_AGGREGATE> |
+					ECHO.OPERATION_PROPS<ECHO.OPERATION_ID.SIDECHAIN_BTC_SPV_CREATE>
 				).committee_member_id;
 				accountIds = [accountId];
 				break;

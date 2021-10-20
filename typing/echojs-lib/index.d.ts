@@ -156,17 +156,17 @@ declare module 'echojs-lib' {
 		head_block_number: number;
 		head_block_id: string;
 		time: string;
-		current_withness: string;
 		next_maintenance_time: string;
-		last_budget_time: string;
-		withness_budget: number;
-		accounts_registered_this_interval: number;
-		recently_missed_count: number;
-		current_aslot: number;
-		dynamic_flags: number;
+		last_maintenance_time: string;
+
 		last_irreversible_block_num: number;
 		last_block_of_previous_interval: number;
+		payed_blocks_in_interval: number;
+
 		last_processed_btc_block: number;
+		last_retarget_time: number;
+
+		last_processed_eth_block: number;
 	}
 
 	export interface GlobalProperties {
@@ -218,8 +218,6 @@ declare module 'echojs-lib' {
 		id: string;
 		account: string;
 		eth_addr: string;
-		is_approved: boolean;
-		approves: any[];
 		extensions: any[];
 	}
 

@@ -1,6 +1,6 @@
 {
 	"name": "echodb",
-	"version": "0.8.0",
+	"version": "0.9.0",
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:echoprotocol/echodb.git"
@@ -39,7 +39,7 @@
 		"connect-mongo": "^3.1.2",
 		"cors": "^2.8.5",
 		"echojs-contract": "git+https://gitlab+deploy-token-9:f17aTdMVy2-EVxdmQpUb@gitlab.pixelplex.by/645.echo/echojs/echojs-contract.git#1.0.0",
-		"echojs-lib": "^1.13.2",
+		"echojs-lib": "^1.13.5",
 		"express": "^4.16.4",
 		"express-graphql": "^0.7.1",
 		"graphql": "^14.1.1",
@@ -51,7 +51,7 @@
 		"raven": "^2.6.4",
 		"redis": "^2.8.0",
 		"reflect-metadata": "^0.1.13",
-		"type-graphql": "^0.17.0"
+		"type-graphql": "^0.17.6"
 	},
 	"devDependencies": {
 		"@babel/runtime": "^7.3.1",
