@@ -114,8 +114,8 @@ export default class ParserModule extends AbstractModule {
 						transactionHex,
 					);
 					dOperations.push(dOperation);
-					txIndex += 1;
 				}
+				txIndex += 1;
 				this.redisConnection.emit(REDIS.EVENT.NEW_TRANSACTION, dTx);
 			}
 

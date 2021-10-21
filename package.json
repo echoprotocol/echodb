@@ -17,6 +17,7 @@
 	},
 	"private": true,
 	"scripts": {
+		"preinstall": "npx npm-force-resolutions",
 		"build": "rm -rf ./dist && npx tsc",
 		"start": "npm run start:api",
 		"start:api": "npm run build && cd dist && cross-env MODULE=api NODE_CONFIG_DIR=../config node server.js",
@@ -31,7 +32,7 @@
 		"test": "echo \"we need tests!\""
 	},
 	"dependencies": {
-		"apollo-server-express": "^2.14.1",
+		"apollo-server-express": "2.14.1",
 		"awilix": "^4.2.0",
 		"bignumber.js": "^8.1.1",
 		"body-parser": "^1.18.3",
@@ -47,6 +48,7 @@
 		"joi": "^14.3.1",
 		"log4js": "^4.0.2",
 		"mongoose": "^5.7.12",
+		"npm-force-resolutions": "0.0.10",
 		"passport": "^0.4.0",
 		"raven": "^2.6.4",
 		"redis": "^2.8.0",
@@ -76,6 +78,10 @@
 		"nodemon": "^1.18.9",
 		"tslint": "^5.12.1",
 		"tslint-config-airbnb": "^5.11.1",
-		"typescript": "^3.3.1"
+		"typescript": "3.4.1"
+	},
+	"resolutions": {
+		"apollo-server-core": "2.17.0",
+		"@types/http-assert": "1.5.1"
 	}
 }
