@@ -8,6 +8,10 @@ export const EETH_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.1`;
 export const EBTC_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.2`;
 export const SETH_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.3`;
 export const SBTC_ASSET = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ASSET}.4`;
+export const BASE_CONTRACTS = [
+	`1.${constants.PROTOCOL_OBJECT_TYPE_ID.CONTRACT}.0`,
+	`1.${constants.PROTOCOL_OBJECT_TYPE_ID.CONTRACT}.1`,
+];
 export const COMMITTEE_GLOBAL_ACCOUNT = `1.${constants.PROTOCOL_OBJECT_TYPE_ID.ACCOUNT}.1`;
 export const CONNECT_STATUS = 'connect';
 

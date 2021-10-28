@@ -10,9 +10,11 @@ import InfoRepository from '../../repositories/info.repository';
 import OperationManager from './operations/operation.manager';
 import RavenHelper from 'helpers/raven.helper';
 import RedisConnection from '../../connections/redis.connection';
+import ContractRepository from '../../repositories/contract.repository';
 import TransactionRepository from '../../repositories/transaction.repository';
 import AccountService from '../../services/account.service';
 import BlockService from '../../services/block.service';
+import ContractService from '../../services/contract.service';
 import * as INFO from '../../constants/info.constants';
 import * as ECHO from '../../constants/echo.constants';
 import * as REDIS from '../../constants/redis.constants';
@@ -22,8 +24,9 @@ import { getLogger } from 'log4js';
 import { TDoc } from 'types/mongoose';
 import { ITransactionExtended } from 'interfaces/ITransaction';
 import { BlockWithInjectedVirtualOperations } from 'interfaces/IBlock';
-import { TDocument } from 'types/mongoose/tdocument';
+import { IContract } from 'interfaces/IContract';
 import { IOperation } from 'interfaces/IOperation';
+import { TDocument } from 'types/mongoose/tdocument';
 
 const logger = getLogger('parser.module');
 
@@ -39,21 +42,26 @@ export default class ParserModule extends AbstractModule {
 		readonly echoRepository: EchoRepository,
 		readonly blockRepository: BlockRepository,
 		readonly blockService: BlockService,
+		readonly contractService: ContractService,
 		readonly transactionRepository: TransactionRepository,
 		readonly accountService: AccountService,
 		readonly memoryHelper: MemoryHelper,
 		readonly operationManager: OperationManager,
+		readonly contractRepository: ContractRepository,
 	) {
 		super();
 	}
 
 	async init() {
-		const from = await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
+		let from = await this.infoRepository.get(INFO.KEY.BLOCK_TO_PARSE_NUMBER);
 		logger.trace(`Inited from block #${from}`);
 		if (from === 0) {
 			await this.syncAllAccounts();
 			await this.syncCoreAsset();
 			await this.syncCommitteeMembers();
+			await this.parseZeroBlock();
+			await this.syncContracts();
+			from += 1;
 		}
 		for await (const block of this.blockEngine.start(from)) {
 			try {
@@ -205,6 +213,35 @@ export default class ParserModule extends AbstractModule {
 		});
 
 		await Promise.all(updatedAccounts);
+	}
+
+	async parseZeroBlock() {
+		logger.info('Parsing first block. Synchronizing zero block');
+		const block = await this.echoRepository.getBlockWithInjectedVirtualOperations(0);
+		await this.parseBlock(block);
+		await this.infoRepository.set(INFO.KEY.BLOCK_TO_PARSE_NUMBER, 1);
+	}
+
+	// Call only after syncCommitteeMembers and parseZeroBlock methods
+	async syncContracts() {
+		logger.info('Parsing first block. Synchronizing base contracts');
+		await Promise.all(ECHO.BASE_CONTRACTS.map(async (contractId) => {
+			const echoContract: any = await this.echoRepository.getObject(contractId);
+			const fullContract = await this.echoRepository.getContract(contractId);
+			const bytecode = fullContract[1].code;
+			const committeeMember = await this.accountRepository.findOne({ id: echoContract.owner });
+
+			const contract: IContract = {
+				id: contractId,
+				_registrar: committeeMember._id,
+				eth_accuracy: echoContract.eth_accuracy,
+				supported_asset_id: echoContract.supported_asset_id,
+				type: this.contractService.getTypeByCode(bytecode),
+				_block: null,
+				problem: false,
+			};
+			await this.contractRepository.create(contract);
+		}));
 	}
 
 }
