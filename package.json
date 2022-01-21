@@ -46,7 +46,7 @@
 		"graphql": "^14.1.1",
 		"graphql-type-json": "^0.2.2",
 		"joi": "^14.3.1",
-		"log4js": "^4.0.2",
+		"log4js": "^6.4.0",
 		"mongoose": "^5.7.12",
 		"npm-force-resolutions": "0.0.10",
 		"passport": "^0.4.0",
