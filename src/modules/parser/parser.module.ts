@@ -157,6 +157,9 @@ export default class ParserModule extends AbstractModule {
 			[ECHO.CORE_ASSET, ECHO.EETH_ASSET, ECHO.EBTC_ASSET, ECHO.SETH_ASSET, ECHO.SBTC_ASSET],
 		);
 		const coreAssetsPromises = coreAssets.map(async(coreAsset) => {
+			if (!coreAsset) {
+				return;
+			}
 			const dAccount = await this.accountRepository.findById(coreAsset.issuer);
 			await this.assetRepository.create([{
 				bitasset: !coreAsset.bitasset ? null : {
@@ -228,6 +231,9 @@ export default class ParserModule extends AbstractModule {
 		await Promise.all(ECHO.BASE_CONTRACTS.map(async (contractId) => {
 			const echoContract: any = await this.echoRepository.getObject(contractId);
 			const fullContract = await this.echoRepository.getContract(contractId);
+			if (!(echoContract && fullContract)) {
+				return;
+			}
 			const bytecode = fullContract[1].code;
 			const committeeMember = await this.accountRepository.findOne({ id: echoContract.owner });
 
