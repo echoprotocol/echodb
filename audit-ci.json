@@ -1,4 +1,4 @@
 {
 	"high": true,
-	"whitelist": []
+	"whitelist": ["dicer", "node-fetch"]
 }
