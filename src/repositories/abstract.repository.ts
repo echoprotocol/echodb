@@ -1,5 +1,5 @@
 import RavenHelper from '../helpers/raven.helper';
-import { Document, Model, ModelPopulateOptions } from 'mongoose';
+import { Document, Model, PopulateOptions, ModelUpdateOptions, UpdateWriteOpResult } from 'mongoose';
 import { QueryOptions, MongoId, TDoc } from '../types/mongoose';
 
 // TODO: use mongoose Query<T>
@@ -41,7 +41,7 @@ export default abstract class AbstractRepository<T = object> {
 		}
 	}
 
-	async find(query: object, projection = {}, options: QueryOptions['Find'] = {}) {
+	async find(query: object, projection = {}, options: ModelUpdateOptions = {}) {
 		try {
 			return await this.model.find(query, projection, options);
 		} catch (error) {
@@ -59,7 +59,7 @@ export default abstract class AbstractRepository<T = object> {
 	}
 
 	// TODO: check return type
-	async update(query: object, update: Update<T>, options: QueryOptions['Update'] = {}): Promise<Number> {
+	async update(query: object, update: Update<T>, options: QueryOptions['Update'] = {}): Promise<UpdateWriteOpResult> {
 		try {
 			return await this.model.update(query, update, options);
 		} catch (error) {
@@ -68,7 +68,7 @@ export default abstract class AbstractRepository<T = object> {
 	}
 
 	// TODO: check return type
-	async updateOne(query: object, update: Update<T>, options: QueryOptions['UpdateOne'] = {}): Promise<Number> {
+	async updateOne(query: object, update: Update<T>, options: QueryOptions['UpdateOne'] = {}): Promise<UpdateWriteOpResult> {
 		try {
 			return await this.model.updateOne(query, update, options);
 		} catch (error) {
@@ -117,7 +117,7 @@ export default abstract class AbstractRepository<T = object> {
 	}
 
 	// FIXME: refactor, add types
-	async populate(documents: Document[], fieldOrOptions: string | ModelPopulateOptions) {
+	async populate(documents: Document[], fieldOrOptions: string | PopulateOptions) {
 		try {
 			const options = typeof fieldOrOptions === 'string' ? { path: fieldOrOptions } : fieldOrOptions;
 			return await this.model.populate(documents, options);
