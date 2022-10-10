@@ -1,6 +1,6 @@
 {
 	"echo": {
-		"url": "wss://testnet.echo-dev.io/ws"
+		"url": "wss://echo-devnet.pixelplexlabs.com/ws"
 	},
 	"raven": {
 		"enabled": true,
